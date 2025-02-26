@@ -30,7 +30,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/registry")
-    @Operation(summary = "新增单个用户", description = "新增单个用户")
+    @Operation(summary = "注册单个用户", description = "注册单个用户")
     public BaseApiResult registry(@RequestBody @Valid RegistryUserDTO userDTO) {
         return userService.registry(userDTO);
     }

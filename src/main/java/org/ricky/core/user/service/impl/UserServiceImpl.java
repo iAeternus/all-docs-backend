@@ -33,8 +33,6 @@ public class UserServiceImpl implements UserService {
             return error(PROCESS_ERROR_CODE, OPERATE_FAILED);
         }
 
-
-
         return null;
     }
 }
