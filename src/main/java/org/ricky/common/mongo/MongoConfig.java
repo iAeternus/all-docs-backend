@@ -7,6 +7,8 @@ import com.mongodb.client.gridfs.GridFSBuckets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.mongodb.MongoDatabaseFactory;
+import org.springframework.data.mongodb.MongoTransactionManager;
 
 /**
  * @author Ricky
@@ -34,6 +36,11 @@ public class MongoConfig {
     public GridFSBucket getGridFsBucket(MongoClient mongoClient) {
         MongoDatabase mongoDatabase = mongoClient.getDatabase(db);
         return GridFSBuckets.create(mongoDatabase);
+    }
+
+    @Bean
+    MongoTransactionManager transactionManager(MongoDatabaseFactory factory) {
+        return new MongoTransactionManager(factory);
     }
 
 }
