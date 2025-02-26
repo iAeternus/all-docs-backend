@@ -2,16 +2,15 @@ package org.ricky.common.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.apache.commons.lang3.StringUtils;
 
-import static org.ricky.common.utils.ValidationUtils.isBlank;
+import static org.ricky.common.util.ValidationUtil.isBlank;
 
 /**
  * @author Ricky
  * @version 1.0
  * @date 2025/2/26
  * @className PermissionEnum
- * @desc
+ * @desc 权限枚举
  */
 @Getter
 @AllArgsConstructor

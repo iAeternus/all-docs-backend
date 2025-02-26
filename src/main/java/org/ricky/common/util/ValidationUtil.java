@@ -1,4 +1,4 @@
-package org.ricky.common.utils;
+package org.ricky.common.util;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -7,6 +7,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 /**
  * 对象校验工具类
  *
@@ -14,7 +17,7 @@ import java.util.Objects;
  * @version 1.0
  * @date 2024/10/24
  */
-public class ValidationUtils {
+public class ValidationUtil {
 
     // --------------------- 字符串校验相关 ---------------------
 
@@ -154,6 +157,16 @@ public class ValidationUtils {
      */
     public static boolean notEquals(Object obj1, Object obj2) {
         return !equals(obj1, obj2);
+    }
+
+    // -------------------- bool 校验相关 --------------------
+
+    public static boolean isTrue(Boolean expr) {
+        return TRUE.equals(expr);
+    }
+
+    public static boolean isFalse(Boolean expr) {
+        return FALSE.equals(expr);
     }
 
     // --------------------- 异常抛出相关 ---------------------

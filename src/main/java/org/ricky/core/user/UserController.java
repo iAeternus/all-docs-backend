@@ -1,0 +1,38 @@
+package org.ricky.core.user;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.result.BaseApiResult;
+import org.ricky.core.user.domain.dto.RegistryUserDTO;
+import org.ricky.core.user.service.UserService;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+/**
+ * @author Ricky
+ * @version 1.0
+ * @date 2025/2/26
+ * @className UserController
+ * @desc 用户模块
+ */
+@Slf4j
+@Validated
+@CrossOrigin
+@RestController
+@Tag(name = "用户模块")
+@RequiredArgsConstructor
+@RequestMapping("/user")
+public class UserController {
+
+    private final UserService userService;
+
+    @PostMapping("/registry")
+    @Operation(summary = "新增单个用户", description = "新增单个用户")
+    public BaseApiResult registry(@RequestBody @Valid RegistryUserDTO userDTO) {
+        return userService.registry(userDTO);
+    }
+
+}
