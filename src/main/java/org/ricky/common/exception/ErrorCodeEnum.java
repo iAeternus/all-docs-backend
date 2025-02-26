@@ -38,6 +38,7 @@ public enum ErrorCodeEnum {
     DOMAIN_EVENT_NOT_FOUND(404),
 
     // 409
+    ILLEGAL_ARGUMENT(400),
 
     // 426
 

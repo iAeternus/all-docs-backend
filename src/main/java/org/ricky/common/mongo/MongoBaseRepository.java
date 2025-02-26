@@ -1,5 +1,6 @@
 package org.ricky.common.mongo;
 
+import com.google.common.collect.Maps;
 import org.ricky.common.context.ThreadLocalContext;
 import org.ricky.common.domain.AggregateRoot;
 import org.ricky.common.domain.event.DomainEvent;
@@ -40,7 +41,7 @@ public abstract class MongoBaseRepository<AR extends AggregateRoot> {
     /**
      * 数据仓库管理的聚合根
      */
-    private final Map<String, Class> classMapper = new HashMap<>();
+    private final Map<String, Class> classMapper = Maps.newHashMap();
 
     @Autowired
     protected MongoTemplate mongoTemplate;

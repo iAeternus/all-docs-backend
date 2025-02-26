@@ -1,5 +1,6 @@
 package org.ricky.common.exception;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class MyException extends RuntimeException {
      * 异常数据
      * key=数据名 value=数据
      */
-    private final Map<String, Object> data = new HashMap<>();
+    private final Map<String, Object> data = Maps.newHashMap();
 
     /**
      * 使用者提供的异常信息
