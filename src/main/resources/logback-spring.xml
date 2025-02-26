@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <!-- Spring Properties -->
+    <springProperty scope="context" name="LOG_PATH" source="project.folder" defaultValue="log"/>
+    <springProperty scope="context" name="LOG_ROOT_LEVEL" source="log.root.level" defaultValue="INFO"/>
+    <springProperty scope="context" name="APP_NAME" source="spring.application.name" defaultValue="myapp"/>
+
+    <!-- Console Appender with Color Coding -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%boldCyan(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %green([%thread]) %highlight([%-5level]) %boldMagenta(%logger{36}):%boldCyan(%method) %yellow([%X{tid}]) [%white(%property{APP_NAME})] %cyan(%msg%n)</pattern>
+        </layout>
+    </appender>
+
+    <!-- File Appender with Rolling and Compression -->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH}/${APP_NAME}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <FileNamePattern>${LOG_PATH}/${APP_NAME}.%d{yyyy-MM-dd}.%i.log.gz</FileNamePattern>
+            <TimeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <MaxFileSize>20MB</MaxFileSize>
+            </TimeBasedFileNamingAndTriggeringPolicy>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss,GMT+8} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger Configurations -->
+    <logger name="org.springframework.boot.autoconfigure.logging" level="ERROR"/>
+    <logger name="org.redisson.connection" level="ERROR"/>
+    <logger name="com.zaxxer.hikari" level="INFO"/>
+    <logger name="io.lettuce.core" level="INFO"/>
+    <logger name="org.springframework.data.redis" level="INFO"/>
+
+    <!-- Root Logger -->
+    <root level="${LOG_ROOT_LEVEL}">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+</configuration>

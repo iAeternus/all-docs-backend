@@ -1,0 +1,55 @@
+spring:
+  data:
+    mongodb:
+      database: ${MONGO_DATABASE:test}
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      threads-allowed-to-block-for-connection-multiplier: 20
+      connect-timeout: 10000
+      socket-timeout: 10000
+      max-wait-time: 5000
+      connections-per-host: 20
+    redis:
+      database: 0
+      host: ${REDIS_HOST:127.0.0.1}
+      password: ${REDIS_PWD}
+      port: ${REDIS_PORT:6379}
+      timeout: 3000
+      jedis:
+        pool:
+          # 连接池中的最大空闲连接
+          max-idle: 500
+          # 连接池中的最小空闲连接
+          min-idle: 50
+          # 连接池最大连接数（使用负值表示没有限制）
+          max-active: 2000
+          # 连接池最大阻塞等待时间（使用负值表示没有限制）
+          max-wait: 1000
+      testOnBorrow: true
+    servlet:
+      multipart:
+        max-file-size: 300MB
+        max-request-size: 500MB
+
+cloud:
+  elasticsearch:
+    host: ${ES_HOST:localhost}
+    port: ${ES_PORT:9200}
+
+all-docs:
+  config:
+    # user can upload document to all-docs. You can set true or false.
+    user-upload: ${AD_USER_UPLOAD:true}
+    # all documents be reviewed by administrator. You can set true or false
+    admin-review: ${AD_ADMIN_REVIEW:false}
+    # prohibited word.
+    prohibited-word: ${AD_PROHIBITED_WORD:true}
+    # users can registry account by self.
+    user-registry: ${AD_USER_REGISTRY:true}
+    initial-username: ${AD_INITIAL_USERNAME:admin123}
+    initial-password: ${AD_INITIAL_PASSWORD:admin123}
+    # reset admin password when reboot system.
+    cover-admin: ${COVER_ADMIN:true}
+  file-path:
+    # sensitive file name
+    sensitive-file: sensitive.txt
