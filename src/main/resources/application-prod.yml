@@ -53,3 +53,7 @@ all-docs:
   file-path:
     # sensitive file name
     sensitive-file: sensitive.txt
+  redis:
+    domainEventStream: DomainEvent.LOCAL
+    notificationStream: Notification.LOCAL
+    webhookStream: Webhook.LOCAL

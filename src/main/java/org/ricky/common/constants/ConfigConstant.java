@@ -9,9 +9,17 @@ package org.ricky.common.constants;
  */
 public interface ConfigConstant {
 
+    String CHINA_TIME_ZONE = "Asia/Shanghai";
+
     String AUTHORIZATION = "authorization";
+
+    String LOCAL_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 
     String EVENT_COLLECTION = "event";
     String USER_COLLECTION = "user";
+
+    String REDIS_DOMAIN_EVENT_CONSUMER_GROUP = "domain.event.group";
+    String REDIS_WEBHOOK_CONSUMER_GROUP = "webhook.group";
+    String REDIS_NOTIFICATION_CONSUMER_GROUP = "notification.group";
 
 }

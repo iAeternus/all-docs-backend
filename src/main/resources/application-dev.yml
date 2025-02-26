@@ -1,4 +1,8 @@
 spring:
+  elasticsearch:
+    uris: http://${ES_HOST:192.168.137.128}:${ES_PORT:9200}
+    connection-timeout: 1s
+    read-timeout: 30s
   data:
     mongodb:
       database: ${MONGO_DATABASE:test}
@@ -30,11 +34,6 @@ spring:
         max-file-size: 300MB
         max-request-size: 500MB
 
-cloud:
-  elasticsearch:
-    host: ${ES_HOST:192.168.137.128}
-    port: ${ES_PORT:9200}
-
 all-docs:
   config:
     # user can upload document to all-docs. You can set true or false.
@@ -52,3 +51,7 @@ all-docs:
   file-path:
     # sensitive file name
     sensitive-file: sensitive.txt
+  redis:
+    domainEventStream: DomainEvent.LOCAL
+    notificationStream: Notification.LOCAL
+    webhookStream: Webhook.LOCAL

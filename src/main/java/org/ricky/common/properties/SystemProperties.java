@@ -30,4 +30,9 @@ public class SystemProperties {
 
     private Boolean coverAdmin;
 
+    /**
+     * 是否启用流控
+     */
+    private Boolean enableLimitRate = false;
+
 }
