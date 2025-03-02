@@ -2,13 +2,10 @@ package org.ricky.common.converter.type;
 
 import com.google.common.collect.Maps;
 import lombok.NonNull;
-import org.ricky.common.exception.MyException;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.HashMap;
 import java.util.Map;
 
-import static org.ricky.common.exception.ErrorCodeEnum.ILLEGAL_ARGUMENT;
 import static org.ricky.common.util.ValidationUtil.isNull;
 
 /**
@@ -32,7 +29,7 @@ public class IntegerToEnumConverter<T extends BaseEnum> implements Converter<Int
     @Override
     public T convert(@NonNull Integer source) {
         T t = enumMap.get(source);
-        if(isNull(t)) {
+        if (isNull(t)) {
             throw new IllegalArgumentException("无法匹配对应的枚举类型");
         }
         return t;

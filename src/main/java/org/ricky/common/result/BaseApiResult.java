@@ -12,6 +12,7 @@ import java.io.Serializable;
  * @className BaseApiResult
  * @desc 通用返回体
  */
+@Deprecated
 public abstract class BaseApiResult implements Serializable {
 
     @Serial

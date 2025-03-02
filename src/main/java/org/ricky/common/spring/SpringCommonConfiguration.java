@@ -9,8 +9,6 @@ import org.springframework.retry.annotation.EnableRetry;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.client.RestTemplate;
 
-import java.time.Duration;
-
 import static java.time.Duration.ofSeconds;
 
 /**

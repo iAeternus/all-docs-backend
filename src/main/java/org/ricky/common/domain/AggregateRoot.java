@@ -3,7 +3,6 @@ package org.ricky.common.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.ricky.common.context.ThreadLocalContext;
-import org.ricky.common.context.UserContext;
 import org.ricky.common.domain.event.DomainEvent;
 import org.springframework.data.annotation.Version;
 
@@ -13,7 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.time.Instant.now;
-import static org.ricky.common.util.ValidationUtil.*;
+import static org.ricky.common.util.ValidationUtil.isNull;
+import static org.ricky.common.util.ValidationUtil.requireNonBlank;
 
 /**
  * @author Ricky

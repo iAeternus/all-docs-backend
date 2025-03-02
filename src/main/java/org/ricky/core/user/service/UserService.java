@@ -1,6 +1,6 @@
 package org.ricky.core.user.service;
 
-import org.ricky.common.result.BaseApiResult;
+import org.ricky.common.result.ApiResult;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 
 /**
@@ -11,5 +11,5 @@ import org.ricky.core.user.domain.dto.RegistryUserDTO;
  * @desc
  */
 public interface UserService {
-    BaseApiResult registry(RegistryUserDTO userDTO);
+    ApiResult<String> registry(RegistryUserDTO userDTO);
 }

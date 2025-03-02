@@ -3,7 +3,6 @@ package org.ricky.common.exception;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.apache.commons.collections4.MapUtils.isNotEmpty;

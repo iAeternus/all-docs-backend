@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.result.BaseApiResult;
+import org.ricky.common.result.ApiResult;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.validation.annotation.Validated;
@@ -31,7 +31,7 @@ public class UserController {
 
     @PostMapping("/registry")
     @Operation(summary = "注册单个用户", description = "注册单个用户")
-    public BaseApiResult registry(@RequestBody @Valid RegistryUserDTO userDTO) {
+    public ApiResult<String> registry(@RequestBody @Valid RegistryUserDTO userDTO) {
         return userService.registry(userDTO);
     }
 

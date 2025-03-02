@@ -14,6 +14,5 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class UserDomainService {
 
-    
 
 }

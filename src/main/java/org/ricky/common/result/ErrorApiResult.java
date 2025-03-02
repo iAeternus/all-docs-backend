@@ -10,6 +10,7 @@ import java.io.Serializable;
  * @className ErrorApiResult
  * @desc 失败返回体
  */
+@Deprecated(forRemoval = true)
 public final class ErrorApiResult extends BaseApiResult implements Serializable {
 
     @Serial

@@ -15,6 +15,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
+@Deprecated(forRemoval = true)
 public final class SuccessApiResult<T> extends BaseApiResult implements Serializable {
 
     @Serial

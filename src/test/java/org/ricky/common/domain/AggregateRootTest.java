@@ -3,7 +3,6 @@ package org.ricky.common.domain;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.ricky.BaseUnitTest;
 import org.ricky.common.context.ThreadLocalContext;
 import org.ricky.common.context.UserContext;
 import org.ricky.common.domain.event.DomainEvent;

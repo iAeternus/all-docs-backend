@@ -14,5 +14,4 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
 public class AuthConfig extends WebMvcConfigurationSupport {
 
 
-
 }

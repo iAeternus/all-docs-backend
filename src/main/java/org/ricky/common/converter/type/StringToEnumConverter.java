@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import lombok.NonNull;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.ricky.common.util.ValidationUtil.isNull;
