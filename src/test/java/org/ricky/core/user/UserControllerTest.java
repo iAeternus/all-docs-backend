@@ -15,6 +15,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.nio.charset.Charset;
+
+import static java.nio.charset.Charset.defaultCharset;
+
 /**
  * @author Ricky
  * @version 1.0
@@ -41,16 +45,32 @@ class UserControllerTest {
     @Test
     @Rollback
     @Transactional
-    void should_registry() throws Exception {
+    void should_registry() {
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/registry")
-                .body(RegistryUserDTO.builder()
-                        .username("Ricky")
-                        .password("123456")
-                        .build())
+                .body(RegistryUserDTO.builder().username("Ricky").password("123456").build())
                 .execute()
-                .expectCode(200)
+                .expectStatus(200)
                 .expectData("SUCCESS");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_registry_if_username_already_exists() {
+        // 注册以抢占用户名
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/registry")
+                .body(RegistryUserDTO.builder().username("Ricky").password("123456").build())
+                .execute();
+
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/registry")
+                .body(RegistryUserDTO.builder().username("Ricky").password("123456").build())
+                .charset(defaultCharset())
+                .execute()
+                .expectStatus(409)
+                .expectUserMessage("注册失败，用户名已存在");
     }
 
 }

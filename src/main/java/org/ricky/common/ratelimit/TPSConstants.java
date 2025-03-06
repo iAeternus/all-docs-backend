@@ -9,7 +9,7 @@ package org.ricky.common.ratelimit;
  */
 public interface TPSConstants {
 
-    int MIN_TPS = 1;
+    int MINIMUM_TPS = 1;
     int EXTREMELY_LOW_TPS = 5;
     int LOW_TPS = 10;
     int NORMAL_TPS = 20;

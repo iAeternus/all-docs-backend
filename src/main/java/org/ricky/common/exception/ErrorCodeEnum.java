@@ -21,9 +21,10 @@ import lombok.Getter;
 public enum ErrorCodeEnum {
 
     // 400
-    REQUEST_VALIDATION_FAILED(400),
+    PARAMS_ERROR(400),
     INVALID_EPS(400),
     INVALID_ENUM_KEY(400),
+    REQUEST_VALIDATION_FAILED(400),
 
     // 401
     AUTHENTICATION_FAILED(401),
@@ -38,7 +39,9 @@ public enum ErrorCodeEnum {
     DOMAIN_EVENT_NOT_FOUND(404),
 
     // 409
-    ILLEGAL_ARGUMENT(400),
+    PROCESS_ERROR(409),
+    PROHIBITED_REGISTRATION(409),
+    USER_NAME_ALREADY_EXISTS(409),
 
     // 426
 

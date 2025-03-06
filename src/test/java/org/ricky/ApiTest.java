@@ -2,7 +2,6 @@ package org.ricky;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import org.junit.jupiter.api.Assertions;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -12,11 +11,12 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.HttpMethod.*;
 
 /**
@@ -60,7 +60,7 @@ public class ApiTest {
     private MediaType accept = MediaType.APPLICATION_JSON;
     private final Map<String, String> headers = new HashMap<>();
     private final Map<String, String> params = new HashMap<>();
-    private Charset charset = StandardCharsets.UTF_8;
+    private Charset charset = UTF_8;
 
 
     private ApiTest(MockMvc mockMvc) {
@@ -194,26 +194,28 @@ public class ApiTest {
      * 执行配置的HTTP请求
      *
      * @return 响应处理器，用于进行断言验证
-     * @throws Exception 如果请求执行失败
      */
-    public ResponseExecutor execute() throws Exception {
-        MockHttpServletRequestBuilder requestBuilder = createRequestBuilder()
-                .contentType(contentType)
-                .accept(accept)
-                .characterEncoding(charset.name());
+    public ResponseExecutor execute() {
+        try {
+            MockHttpServletRequestBuilder requestBuilder = createRequestBuilder()
+                    .contentType(contentType)
+                    .accept(accept)
+                    .characterEncoding(charset.name());
 
-        headers.forEach(requestBuilder::header);
-        params.forEach(requestBuilder::param);
+            headers.forEach(requestBuilder::header);
+            params.forEach(requestBuilder::param);
 
-        if (requestBody != null) {
-            String content = requestBody instanceof String ?
-                    (String) requestBody :
-                    JSON.toJSONString(requestBody);
-            requestBuilder.content(content);
+            if (requestBody != null) {
+                String content = requestBody instanceof String ?
+                        (String) requestBody :
+                        JSON.toJSONString(requestBody);
+                requestBuilder.content(content);
+            }
+            MvcResult result = mockMvc.perform(requestBuilder).andReturn();
+            return new ResponseExecutor(result);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-
-        MvcResult result = mockMvc.perform(requestBuilder).andReturn();
-        return new ResponseExecutor(result);
     }
 
     private MockHttpServletRequestBuilder createRequestBuilder() {
@@ -251,7 +253,7 @@ public class ApiTest {
         public ResponseExecutor(MvcResult result) {
             this.response = result.getResponse();
             try {
-                String content = response.getContentAsString();
+                String content = response.getContentAsString(UTF_8);
                 this.jsonBody = content.isEmpty() ? new JSONObject() : JSON.parseObject(content);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse response body", e);
@@ -261,32 +263,86 @@ public class ApiTest {
         /**
          * 验证HTTP状态码
          *
-         * @param expected 期望的状态码（如200、404等）
+         * @param expected 期望的状态码
          * @return 当前响应处理器实例
          */
         public ResponseExecutor expectStatus(int expected) {
-            return assertThat(res -> Assertions.assertEquals(expected, res.getStatus()));
+            return assertThat(res -> assertEquals(expected, res.getStatus()));
         }
 
-
         /**
-         * 验证响应JSON中的code字段值
+         * 验证响应JSON中的code字段值，校验异常专用
+         * 参考异常返回结构
+         * <pre>{@code
+         * {
+         *     "code": "USER_NAME_ALREADY_EXISTS",
+         *     "message": "[USER_NAME_ALREADY_EXISTS]注册失败，用户名已存在Data: {username=So9OC8NQ}",
+         *     "userMessage": "注册失败，用户名已存在",
+         *     "status": 409,
+         *     "path": "/api/v1.0/user/registry",
+         *     "timestamp": 1741256799.975529000,
+         *     "traceId": "201999f84582c18df94b1f6ab7ddc412",
+         *     "data": {
+         *         "username": "So9OC8NQ"
+         *     }
+         * }
+         * }</pre>
          *
          * @param expected 期望的code值
          * @return 当前响应处理器实例
          */
         public ResponseExecutor expectCode(int expected) {
-            return assertJson("code", code -> Assertions.assertEquals(expected, code));
+            return assertJson("code", code -> assertEquals(expected, code));
         }
 
         /**
-         * 验证响应JSON中的data字段值
+         * 验证响应JSON中的data字段值，校验异常专用
+         * 参考异常返回结构
+         * <pre>{@code
+         * {
+         *     "code": "USER_NAME_ALREADY_EXISTS",
+         *     "message": "[USER_NAME_ALREADY_EXISTS]注册失败，用户名已存在Data: {username=So9OC8NQ}",
+         *     "userMessage": "注册失败，用户名已存在",
+         *     "status": 409,
+         *     "path": "/api/v1.0/user/registry",
+         *     "timestamp": 1741256799.975529000,
+         *     "traceId": "201999f84582c18df94b1f6ab7ddc412",
+         *     "data": {
+         *         "username": "So9OC8NQ"
+         *     }
+         * }
+         * }</pre>
          *
          * @param expected 期望的data值
          * @return 当前响应处理器实例
          */
         public ResponseExecutor expectData(Object expected) {
-            return assertJson("data", data -> Assertions.assertEquals(expected, data));
+            return assertJson("data", data -> assertEquals(expected, data));
+        }
+
+        /**
+         * 验证响应JSON中的userMessage字段值，校验异常专用
+         * 参考异常返回结构
+         * <pre>{@code
+         * {
+         *     "code": "USER_NAME_ALREADY_EXISTS",
+         *     "message": "[USER_NAME_ALREADY_EXISTS]注册失败，用户名已存在Data: {username=So9OC8NQ}",
+         *     "userMessage": "注册失败，用户名已存在",
+         *     "status": 409,
+         *     "path": "/api/v1.0/user/registry",
+         *     "timestamp": 1741256799.975529000,
+         *     "traceId": "201999f84582c18df94b1f6ab7ddc412",
+         *     "data": {
+         *         "username": "So9OC8NQ"
+         *     }
+         * }
+         * }</pre>
+         *
+         * @param expected 期望的userMessage值
+         * @return 当前响应处理器实例
+         */
+        public ResponseExecutor expectUserMessage(String expected) {
+            return assertJson("userMessage", data -> assertEquals(expected, data));
         }
 
         /**
@@ -332,7 +388,7 @@ public class ApiTest {
 
         private Object getJsonValue(String jsonPath) {
             Object value = jsonBody.get(jsonPath);
-            Assertions.assertNotNull(value, "JSON路径不存在: " + jsonPath);
+            assertNotNull(value, "JSON路径不存在: " + jsonPath);
             return value;
         }
 
@@ -358,7 +414,7 @@ public class ApiTest {
              * @return 上级响应处理器
              */
             public ResponseExecutor isEqualTo(Object expected) {
-                Assertions.assertEquals(expected, value, jsonPath + " 值不匹配");
+                assertEquals(expected, value, jsonPath + " 值不匹配");
                 return executor;
             }
 
@@ -369,7 +425,7 @@ public class ApiTest {
              * @return 上级响应处理器
              */
             public ResponseExecutor isNotEqualTo(Object expected) {
-                Assertions.assertNotEquals(expected, value, jsonPath + " 值不应相等");
+                assertNotEquals(expected, value, jsonPath + " 值不应相等");
                 return executor;
             }
 
@@ -379,7 +435,7 @@ public class ApiTest {
              * @return 上级响应处理器
              */
             public ResponseExecutor isNull() {
-                Assertions.assertNull(value, jsonPath + " 应为null");
+                assertNull(value, jsonPath + " 应为null");
                 return executor;
             }
 
@@ -389,7 +445,7 @@ public class ApiTest {
              * @return 上级响应处理器
              */
             public ResponseExecutor isNotNull() {
-                Assertions.assertNotNull(value, jsonPath + " 不应为null");
+                assertNotNull(value, jsonPath + " 不应为null");
                 return executor;
             }
 
@@ -402,21 +458,21 @@ public class ApiTest {
              * @throws AssertionError 如果字段不是数值类型或超出范围
              */
             public ResponseExecutor inRange(Number min, Number max) {
-                Assertions.assertInstanceOf(Number.class, value, jsonPath + " 不是数值类型");
+                assertInstanceOf(Number.class, value, jsonPath + " 不是数值类型");
                 double actual = ((Number) value).doubleValue();
-                Assertions.assertTrue(actual >= min.doubleValue() && actual <= max.doubleValue(),
+                assertTrue(actual >= min.doubleValue() && actual <= max.doubleValue(),
                         () -> String.format("%s 超出范围 [%s, %s]，实际值：%s", jsonPath, min, max, actual));
                 return executor;
             }
 
             public ResponseExecutor contains(String substring) {
-                Assertions.assertTrue(value.toString().contains(substring),
+                assertTrue(value.toString().contains(substring),
                         () -> String.format("%s 不包含子字符串，内容：%s", jsonPath, value));
                 return executor;
             }
 
             public ResponseExecutor matches(String regex) {
-                Assertions.assertTrue(value.toString().matches(regex),
+                assertTrue(value.toString().matches(regex),
                         () -> String.format("%s 不匹配正则表达式，内容：%s", jsonPath, value));
                 return executor;
             }

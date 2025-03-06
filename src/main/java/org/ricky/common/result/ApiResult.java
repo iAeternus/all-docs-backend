@@ -11,7 +11,10 @@ import java.io.Serializable;
  * @version 1.0
  * @date 2025/3/2
  * @className ApiResult
- * @desc 通用返回体
+ * @desc 通用返回体 <br>
+ * 规范：<br>
+ * 1. 其静态方法只允许在controller中调用<br>
+ * 2. api接口中所有异常只允许使用MyException抛出<br>
  */
 @Value
 @Getter
@@ -59,17 +62,6 @@ public class ApiResult<T> implements Serializable {
      */
     public static <T> ApiResult<T> success(T data) {
         return new ApiResult<>(System.currentTimeMillis(), 200, data);
-    }
-
-    /**
-     * 创建错误返回体
-     *
-     * @param code    错误码
-     * @param message 错误信息
-     * @return ApiResult
-     */
-    public static ApiResult<String> error(Integer code, String message) {
-        return new ApiResult<>(System.currentTimeMillis(), code, message);
     }
 
 }
