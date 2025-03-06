@@ -16,6 +16,8 @@ import java.lang.reflect.Method;
 import java.util.Map;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
+import static java.util.Arrays.stream;
+import static org.ricky.common.auth.PermissionEnum.NO;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.context.UserContext.of;
 import static org.ricky.common.util.JwtUtil.verifyToken;
@@ -48,36 +50,25 @@ public class AuthInterceptor implements HandlerInterceptor {
         if (!(handler instanceof HandlerMethod handlerMethod)) {
             return true;
         }
+
+        // 从请求头中获取用户
+        User userInfo = getUser(request, response);
+        if (userInfo == null) {
+            return false;
+        }
+
+        // 设置上下文
+        ThreadLocalContext.setContext(of(userInfo.getId(), userInfo.getUsername()));
+
         // 获取方法中的注解
         Method method = handlerMethod.getMethod();
         Permission classAnno = AnnotationUtils.findAnnotation(handlerMethod.getBeanType(), Permission.class);
         Permission methodAnno = AnnotationUtils.findAnnotation(method, Permission.class);
 
         // 判断是否需要权限校验
-        if (isNull(classAnno) && isNull(methodAnno)) {
+        if (noValidationRequired(classAnno, methodAnno)) {
             return true; // 不需要权限校验，直接放行
         }
-
-        // 获取header中的token
-        final String token = request.getHeader(AUTHORIZATION);
-        if (isNull(token)) {
-            response.setStatus(SC_UNAUTHORIZED); // 401
-            return false;
-        }
-
-        Map<String, Claim> userData = verifyToken(token);
-        if (isEmpty(userData)) {
-            response.setStatus(SC_UNAUTHORIZED);
-            return false;
-        }
-
-        User userInfo = userRepository.getById(userData.get("id").asString());
-        if (isNull(userInfo) || isNull(userInfo.getPermission())) {
-            response.setStatus(SC_UNAUTHORIZED);
-            return false;
-        }
-        // 设置上下文
-        ThreadLocalContext.setContext(of(userInfo.getId(), userInfo.getUsername()));
 
         // 获取注解中的权限数组
         PermissionEnum[] permissionEnums = getPermissionEnums(classAnno, methodAnno);
@@ -127,4 +118,36 @@ public class AuthInterceptor implements HandlerInterceptor {
         }
         return permissionEnums;
     }
+
+    private User getUser(HttpServletRequest request, HttpServletResponse response) {
+        // 获取header中的token
+        final String token = request.getHeader(AUTHORIZATION);
+        if (isNull(token)) {
+            response.setStatus(SC_UNAUTHORIZED); // 401
+            return null;
+        }
+
+        Map<String, Claim> userData = verifyToken(token);
+        if (isEmpty(userData)) {
+            response.setStatus(SC_UNAUTHORIZED);
+            return null;
+        }
+
+        User userInfo = userRepository.cachedById(userData.get("id").asString());
+        if (isNull(userInfo) || isNull(userInfo.getPermission())) {
+            response.setStatus(SC_UNAUTHORIZED);
+            return null;
+        }
+        return userInfo;
+    }
+
+    /**
+     * 判断是否不需要权限校验
+     */
+    private boolean noValidationRequired(Permission classAnno, Permission methodAnno) {
+        return isNull(classAnno) && isNull(methodAnno) ||
+                nonNull(methodAnno) && stream((methodAnno.name())).anyMatch(permissionEnum -> permissionEnum == NO) ||
+                nonNull(classAnno) && stream((classAnno.name())).anyMatch(permissionEnum -> permissionEnum == NO);
+    }
+
 }

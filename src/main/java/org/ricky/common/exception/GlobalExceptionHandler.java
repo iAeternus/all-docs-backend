@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(MyException.class)
-    public ApiResult<ResponseEntity<MyError>> handleMryException(MyException ex, HttpServletRequest request) {
+    public ResponseEntity<MyError> handleMryException(MyException ex, HttpServletRequest request) {
         if (WARN_CODES.contains(ex.getCode().getStatus())) {
             log.warn("Warning: {}", ex.getMessage());
         } else {
@@ -51,13 +51,13 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler({AccessDeniedException.class})
-    public ApiResult<ResponseEntity<MyError>> handleAccessDinedException(HttpServletRequest request) {
+    public ResponseEntity<MyError> handleAccessDinedException(HttpServletRequest request) {
         return createApiResult(accessDeniedException(), request.getRequestURI());
     }
 
     @ResponseBody
     @ExceptionHandler({MethodArgumentNotValidException.class})
-    public ApiResult<ResponseEntity<MyError>> handleInvalidRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
+    public ResponseEntity<MyError> handleInvalidRequest(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, Object> error = ex.getBindingResult().getFieldErrors().stream()
                 .collect(toImmutableMap(FieldError::getField, fieldError -> {
                     String message = fieldError.getDefaultMessage();
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler({ServletRequestBindingException.class, HttpMessageNotReadableException.class, ConstraintViolationException.class})
-    public ApiResult<ResponseEntity<MyError>> handleServletRequestBindingException(Exception ex, HttpServletRequest request) {
+    public ResponseEntity<MyError> handleServletRequestBindingException(Exception ex, HttpServletRequest request) {
         MyException exception = requestValidationException("message", "请求验证失败。");
         log.error("Request processing Error: {}", ex.getMessage());
         return createApiResult(exception, request.getRequestURI());
@@ -79,19 +79,19 @@ public class GlobalExceptionHandler {
 
     @ResponseBody
     @ExceptionHandler(Throwable.class)
-    public ApiResult<ResponseEntity<MyError>> handleGeneralException(Throwable ex, HttpServletRequest request) {
+    public ResponseEntity<MyError> handleGeneralException(Throwable ex, HttpServletRequest request) {
         String path = request.getRequestURI();
         String traceId = tracingService.currentTraceId();
 
         log.error("Error access[{}]:", path, ex);
         MyError error = new MyError(SYSTEM_ERROR, SYSTEM_ERROR.getStatus(), "系统错误。", path, traceId, null);
-        return success(new ResponseEntity<>(error, new HttpHeaders(), valueOf(SYSTEM_ERROR.getStatus())));
+        return new ResponseEntity<>(error, new HttpHeaders(), valueOf(SYSTEM_ERROR.getStatus()));
     }
 
-    private ApiResult<ResponseEntity<MyError>> createApiResult(MyException exception, String path) {
+    private ResponseEntity<MyError> createApiResult(MyException exception, String path) {
         String traceId = tracingService.currentTraceId();
         MyError error = new MyError(exception, path, traceId);
-        return success(new ResponseEntity<>(error, new HttpHeaders(), valueOf(error.getStatus())));
+        return new ResponseEntity<>(error, new HttpHeaders(), valueOf(error.getStatus()));
     }
 
 }

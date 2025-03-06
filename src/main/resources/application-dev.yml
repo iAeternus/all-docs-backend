@@ -8,6 +8,7 @@ spring:
       database: ${MONGO_DATABASE:test}
       host: ${MONGO_HOST:192.168.137.128}
       port: ${MONGO_PORT:27017}
+      replica-set-name: rs0
       threads-allowed-to-block-for-connection-multiplier: 20
       connect-timeout: 10000
       socket-timeout: 10000

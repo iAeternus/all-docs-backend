@@ -16,7 +16,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static java.time.LocalDateTime.now;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
+import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
+import static org.ricky.core.user.domain.GenderEnum.UNKNOWN;
 
 /**
  * @author Ricky
@@ -54,7 +58,7 @@ public class User extends AggregateRoot {
     /**
      * 性别，默认为空，没有性别
      */
-    private Boolean gender = null;
+    private GenderEnum gender;
 
     /**
      * 简介
@@ -64,7 +68,7 @@ public class User extends AggregateRoot {
     /**
      * 头像列表
      */
-    private List<String> avatarList = new ArrayList<>();
+    private List<String> avatarList;
 
     /**
      * 头像
@@ -79,7 +83,7 @@ public class User extends AggregateRoot {
     /**
      * 封禁状态
      */
-    private Boolean banning = false;
+    private Boolean banning;
 
     /**
      * 权限
@@ -90,6 +94,22 @@ public class User extends AggregateRoot {
      * 上次登录时间
      */
     private LocalDateTime lastLogin;
+
+    public User(String username, String password, PermissionEnum permission) {
+        super(newUserId());
+        this.username = username;
+        this.password = password;
+        this.gender = UNKNOWN;
+        this.avatarList = new ArrayList<>();
+        this.banning = false;
+        this.permission = permission;
+        this.lastLogin = now();
+        addOpsLog("create");
+    }
+
+    public static String newUserId() {
+        return USER_ID_PREFIX + newSnowflakeId();
+    }
 
     /**
      * 校验用户权限
@@ -107,4 +127,5 @@ public class User extends AggregateRoot {
     public String toString() {
         return JSON.toJSONString(this);
     }
+
 }

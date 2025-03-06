@@ -1,5 +1,7 @@
 package org.ricky.core.user.domain;
 
+import java.util.List;
+
 /**
  * @author Ricky
  * @version 1.0
@@ -8,5 +10,9 @@ package org.ricky.core.user.domain;
  * @desc
  */
 public interface UserRepository {
-    User getById(String id);
+    User cachedById(String id);
+
+    List<User> listByUsername(String username);
+
+    void save(User user);
 }

@@ -18,6 +18,10 @@ public interface ConfigConstant {
     String EVENT_COLLECTION = "event";
     String USER_COLLECTION = "user";
 
+    String USER_ID_PREFIX = "USR";
+
+    String USER_CACHE = "user";
+
     String REDIS_DOMAIN_EVENT_CONSUMER_GROUP = "domain.event.group";
     String REDIS_WEBHOOK_CONSUMER_GROUP = "webhook.group";
     String REDIS_NOTIFICATION_CONSUMER_GROUP = "notification.group";

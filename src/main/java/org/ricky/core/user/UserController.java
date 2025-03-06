@@ -5,11 +5,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.auth.Permission;
+import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import static org.ricky.common.auth.PermissionEnum.NO;
 
 /**
  * @author Ricky
