@@ -9,11 +9,6 @@ spring:
       host: ${MONGO_HOST:192.168.137.128}
       port: ${MONGO_PORT:27017}
       replica-set-name: rs0
-      threads-allowed-to-block-for-connection-multiplier: 20
-      connect-timeout: 10000
-      socket-timeout: 10000
-      max-wait-time: 5000
-      connections-per-host: 20
     redis:
       database: 0
       host: ${REDIS_HOST:192.168.137.128}

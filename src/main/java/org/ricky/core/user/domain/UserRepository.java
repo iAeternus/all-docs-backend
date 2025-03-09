@@ -1,6 +1,7 @@
 package org.ricky.core.user.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Ricky
@@ -15,4 +16,9 @@ public interface UserRepository {
     List<User> listByUsername(String username);
 
     void save(User user);
+
+    Optional<User> getByUsernameAndPasswordOptional(String username);
+
+    void updateLastLogin(String userId);
+
 }

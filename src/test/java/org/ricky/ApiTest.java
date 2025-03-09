@@ -13,43 +13,13 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
+import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.springframework.http.HttpMethod.*;
 
-/**
- * API测试工具类，提供链式调用的HTTP请求构建和响应验证功能
- *
- * <h3>Example</h3>
- * <pre>{@code
- * // 基本请求验证
- * ApiTest.using(mockMvc)
- *     .post("/api/test")
- *     .body(new Data("aaa", 123))
- *     .execute()
- *     .expectCode(200)
- *     .expectData("SUCCESS");
- *
- * // 带路径参数和查询参数
- * ApiTest.using(mockMvc)
- *     .get("/api/test/{id}", 123)
- *     .param("detail", "true")
- *     .execute()
- *     .expectStatus(200)
- *     .assertJson("data.username").isEqualTo("Ricky");
- *
- * // 自定义响应断言
- * ApiTest.using(mockMvc)
- *     .get("/api/test")
- *     .execute()
- *     .assertThat(res -> {
- *         Assertions.assertTrue(res.getContentAsString().contains("iPhone"));
- *         Assertions.assertEquals("application/json", res.getContentType());
- *     });
- * }</pre>
- */
 public class ApiTest {
     private final MockMvc mockMvc;
     private HttpMethod httpMethod;
@@ -62,40 +32,18 @@ public class ApiTest {
     private final Map<String, String> params = new HashMap<>();
     private Charset charset = UTF_8;
 
-
     private ApiTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
     }
 
-    /**
-     * 创建基于给定MockMvc实例的测试构建器
-     *
-     * @param mockMvc Spring MVC测试框架的Mock实例
-     * @return 配置好的ApiTest构建器
-     */
     public static ApiTest using(MockMvc mockMvc) {
         return new ApiTest(mockMvc);
     }
 
-    /**
-     * 配置GET请求
-     *
-     * @param urlTemplate  请求URL模板（支持路径参数）
-     * @param uriVariables 路径参数值
-     * @return 当前构建器实例
-     * @see #uriVariables(Object...)
-     */
     public ApiTest get(String urlTemplate, Object... uriVariables) {
         return prepareRequest(GET, urlTemplate, uriVariables);
     }
 
-    /**
-     * 配置POST请求
-     *
-     * @param urlTemplate  请求URL模板（支持路径参数）
-     * @param uriVariables 路径参数值
-     * @return 当前构建器实例
-     */
     public ApiTest post(String urlTemplate, Object... uriVariables) {
         return prepareRequest(POST, urlTemplate, uriVariables);
     }
@@ -119,51 +67,25 @@ public class ApiTest {
         return this;
     }
 
-    /**
-     * 设置自定义HTTP方法
-     *
-     * @param method HTTP方法枚举值
-     * @return 当前构建器实例
-     * @throws IllegalArgumentException 如果是不支持的HTTP方法
-     */
     public ApiTest method(HttpMethod method) {
         this.httpMethod = method;
         return this;
     }
 
-    /**
-     * 设置请求URL（覆盖通过HTTP方法设置的URL）
-     *
-     * @param url 完整的请求URL
-     * @return 当前构建器实例
-     */
     public ApiTest url(String url) {
         this.url = url;
         return this;
     }
 
-    /**
-     * 设置路径参数（需在URL中使用{param}占位符）
-     *
-     * @param uriVariables 路径参数值，按顺序替换占位符
-     * @return 当前构建器实例
-     */
     public ApiTest uriVariables(Object... uriVariables) {
         this.uriVariables = uriVariables;
         return this;
     }
 
-    /**
-     * 设置请求正文（自动JSON序列化）
-     *
-     * @param requestBody 请求体对象，支持String或POJO
-     * @return 当前构建器实例
-     */
     public ApiTest body(Object requestBody) {
         this.requestBody = requestBody;
         return this;
     }
-
 
     public ApiTest contentType(MediaType contentType) {
         this.contentType = contentType;
@@ -180,6 +102,11 @@ public class ApiTest {
         return this;
     }
 
+    public ApiTest bearerToken(String token) {
+        headers.put(AUTHORIZATION, BEARER + token);
+        return this;
+    }
+
     public ApiTest param(String name, String value) {
         params.put(name, value);
         return this;
@@ -190,11 +117,6 @@ public class ApiTest {
         return this;
     }
 
-    /**
-     * 执行配置的HTTP请求
-     *
-     * @return 响应处理器，用于进行断言验证
-     */
     public ResponseExecutor execute() {
         try {
             MockHttpServletRequestBuilder requestBuilder = createRequestBuilder()
@@ -220,262 +142,81 @@ public class ApiTest {
 
     private MockHttpServletRequestBuilder createRequestBuilder() {
         if (GET.equals(httpMethod)) {
-            return MockMvcRequestBuilders.get(url);
+            return MockMvcRequestBuilders.get(url, uriVariables);
         } else if (POST.equals(httpMethod)) {
-            return MockMvcRequestBuilders.post(url);
+            return MockMvcRequestBuilders.post(url, uriVariables);
         } else if (PUT.equals(httpMethod)) {
-            return MockMvcRequestBuilders.put(url);
+            return MockMvcRequestBuilders.put(url, uriVariables);
         } else if (DELETE.equals(httpMethod)) {
-            return MockMvcRequestBuilders.delete(url);
+            return MockMvcRequestBuilders.delete(url, uriVariables);
         } else if (PATCH.equals(httpMethod)) {
-            return MockMvcRequestBuilders.patch(url);
+            return MockMvcRequestBuilders.patch(url, uriVariables);
         } else {
             throw new IllegalArgumentException("Unsupported HTTP method: " + httpMethod);
         }
     }
 
-    /**
-     * 响应处理器，提供多种断言验证方法
-     *
-     * <h3>Example</h3>
-     * <pre>{@code
-     * .execute()
-     *   .expectStatus(200)
-     *   .expectCode(200)
-     *   .assertJson("data.age").inRange(18, 60)
-     *   .assertJson("data.email").matches("\\w+@\\w+\\.com")
-     * }</pre>
-     */
     public static class ResponseExecutor {
         private final MockHttpServletResponse response;
+        private final String responseContent;
         private final JSONObject jsonBody;
 
         public ResponseExecutor(MvcResult result) {
             this.response = result.getResponse();
             try {
-                String content = response.getContentAsString(UTF_8);
-                this.jsonBody = content.isEmpty() ? new JSONObject() : JSON.parseObject(content);
+                this.responseContent = response.getContentAsString(UTF_8);
+                this.jsonBody = responseContent.isEmpty() ? new JSONObject() : JSON.parseObject(responseContent);
             } catch (Exception e) {
                 throw new RuntimeException("Failed to parse response body", e);
             }
         }
 
         /**
-         * 验证HTTP状态码
+         * 校验HTTP状态码（保留的断言方法）
          *
-         * @param expected 期望的状态码
-         * @return 当前响应处理器实例
+         * @param expectedStatus 预期的HTTP状态码
+         * @return 当前响应处理器实例（保持链式调用）
          */
-        public ResponseExecutor expectStatus(int expected) {
-            return assertThat(res -> assertEquals(expected, res.getStatus()));
+        public ResponseExecutor expectStatus(int expectedStatus) {
+            assertEquals(expectedStatus, response.getStatus());
+            return this;
         }
 
-        /**
-         * 验证响应JSON中的code字段值，校验异常专用
-         * 参考异常返回结构
-         * <pre>{@code
-         * {
-         *     "code": "USER_NAME_ALREADY_EXISTS",
-         *     "message": "[USER_NAME_ALREADY_EXISTS]注册失败，用户名已存在Data: {username=So9OC8NQ}",
-         *     "userMessage": "注册失败，用户名已存在",
-         *     "status": 409,
-         *     "path": "/api/v1.0/user/registry",
-         *     "timestamp": 1741256799.975529000,
-         *     "traceId": "201999f84582c18df94b1f6ab7ddc412",
-         *     "data": {
-         *         "username": "So9OC8NQ"
-         *     }
-         * }
-         * }</pre>
-         *
-         * @param expected 期望的code值
-         * @return 当前响应处理器实例
-         */
-        public ResponseExecutor expectCode(int expected) {
-            return assertJson("code", code -> assertEquals(expected, code));
-        }
-
-        /**
-         * 验证响应JSON中的data字段值，校验异常专用
-         * 参考异常返回结构
-         * <pre>{@code
-         * {
-         *     "code": "USER_NAME_ALREADY_EXISTS",
-         *     "message": "[USER_NAME_ALREADY_EXISTS]注册失败，用户名已存在Data: {username=So9OC8NQ}",
-         *     "userMessage": "注册失败，用户名已存在",
-         *     "status": 409,
-         *     "path": "/api/v1.0/user/registry",
-         *     "timestamp": 1741256799.975529000,
-         *     "traceId": "201999f84582c18df94b1f6ab7ddc412",
-         *     "data": {
-         *         "username": "So9OC8NQ"
-         *     }
-         * }
-         * }</pre>
-         *
-         * @param expected 期望的data值
-         * @return 当前响应处理器实例
-         */
-        public ResponseExecutor expectData(Object expected) {
-            return assertJson("data", data -> assertEquals(expected, data));
-        }
-
-        /**
-         * 验证响应JSON中的userMessage字段值，校验异常专用
-         * 参考异常返回结构
-         * <pre>{@code
-         * {
-         *     "code": "USER_NAME_ALREADY_EXISTS",
-         *     "message": "[USER_NAME_ALREADY_EXISTS]注册失败，用户名已存在Data: {username=So9OC8NQ}",
-         *     "userMessage": "注册失败，用户名已存在",
-         *     "status": 409,
-         *     "path": "/api/v1.0/user/registry",
-         *     "timestamp": 1741256799.975529000,
-         *     "traceId": "201999f84582c18df94b1f6ab7ddc412",
-         *     "data": {
-         *         "username": "So9OC8NQ"
-         *     }
-         * }
-         * }</pre>
-         *
-         * @param expected 期望的userMessage值
-         * @return 当前响应处理器实例
-         */
-        public ResponseExecutor expectUserMessage(String expected) {
-            return assertJson("userMessage", data -> assertEquals(expected, data));
-        }
-
-        /**
-         * 创建JSON路径断言器
-         *
-         * @param jsonPath JSON路径表达式（如"data.username"）
-         * @return Json断言构建器
-         * @example {@code
-         * .assertJson("data.items[0].price").isEqualTo(199.9)
-         * }
-         */
-        public JsonAssert assertJson(String jsonPath) {
-            Object value = getJsonValue(jsonPath);
-            return new JsonAssert(this, jsonPath, value);
-        }
-
-        /**
-         * 自定义响应断言
-         *
-         * @param assertion 接收MockHttpServletResponse的断言逻辑
-         * @return 当前响应处理器实例
-         */
-        public ResponseExecutor assertThat(Consumer<MockHttpServletResponse> assertion) {
-            assertion.accept(response);
+        public ResponseExecutor expectUserMessage(String expectMessage) {
+            Object value = jsonBody.get("userMessage");
+            assertEquals(expectMessage, value);
             return this;
         }
 
         /**
-         * 自定义JSON字段断言
+         * 将响应内容中的data字段反序列化为指定类型的对象
          *
-         * @param jsonPath  JSON路径表达式
-         * @param assertion 接收字段值的断言逻辑
-         * @return 当前响应处理器实例
-         * @example {@code
-         * .assertJson("data.roles", roles -> Assertions.assertTrue(roles.toString().contains("ADMIN"))
-         * }
+         * @param clazz data字段对应的目标类型Class
+         * @return data字段反序列化后的对象实例
          */
-        public ResponseExecutor assertJson(String jsonPath, Consumer<Object> assertion) {
-            Object value = getJsonValue(jsonPath);
-            assertion.accept(value);
-            return this;
+        public <T> T as(Class<T> clazz) {
+            try {
+                Object data = jsonBody.get("data");
+                if (data == null) {
+                    throw new RuntimeException("Response body does not contain 'data' field");
+                }
+                return JSON.parseObject(JSON.toJSONString(data), clazz);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to deserialize data field to " + clazz.getSimpleName(), e);
+            }
         }
 
-        private Object getJsonValue(String jsonPath) {
-            Object value = jsonBody.get(jsonPath);
-            assertNotNull(value, "JSON路径不存在: " + jsonPath);
-            return value;
+        // 保留其他获取元数据的方法
+        public int getStatus() {
+            return response.getStatus();
         }
 
-        /**
-         * JSON字段断言构建器
-         */
-        public static class JsonAssert {
-            private final ResponseExecutor executor;
-            private final String jsonPath;
-            private final Object value;
+        public String getContent() {
+            return responseContent;
+        }
 
-
-            JsonAssert(ResponseExecutor executor, String jsonPath, Object value) {
-                this.executor = executor;
-                this.jsonPath = jsonPath;
-                this.value = value;
-            }
-
-            /**
-             * 验证字段等于指定值
-             *
-             * @param expected 期望值
-             * @return 上级响应处理器
-             */
-            public ResponseExecutor isEqualTo(Object expected) {
-                assertEquals(expected, value, jsonPath + " 值不匹配");
-                return executor;
-            }
-
-            /**
-             * 验证字段不等于指定值
-             *
-             * @param expected 期望值
-             * @return 上级响应处理器
-             */
-            public ResponseExecutor isNotEqualTo(Object expected) {
-                assertNotEquals(expected, value, jsonPath + " 值不应相等");
-                return executor;
-            }
-
-            /**
-             * 验证字段为空
-             *
-             * @return 上级响应处理器
-             */
-            public ResponseExecutor isNull() {
-                assertNull(value, jsonPath + " 应为null");
-                return executor;
-            }
-
-            /**
-             * 验证字段不为空
-             *
-             * @return 上级响应处理器
-             */
-            public ResponseExecutor isNotNull() {
-                assertNotNull(value, jsonPath + " 不应为null");
-                return executor;
-            }
-
-            /**
-             * 验证字段数值在指定范围内
-             *
-             * @param min 最小值（包含）
-             * @param max 最大值（包含）
-             * @return 上级响应处理器
-             * @throws AssertionError 如果字段不是数值类型或超出范围
-             */
-            public ResponseExecutor inRange(Number min, Number max) {
-                assertInstanceOf(Number.class, value, jsonPath + " 不是数值类型");
-                double actual = ((Number) value).doubleValue();
-                assertTrue(actual >= min.doubleValue() && actual <= max.doubleValue(),
-                        () -> String.format("%s 超出范围 [%s, %s]，实际值：%s", jsonPath, min, max, actual));
-                return executor;
-            }
-
-            public ResponseExecutor contains(String substring) {
-                assertTrue(value.toString().contains(substring),
-                        () -> String.format("%s 不包含子字符串，内容：%s", jsonPath, value));
-                return executor;
-            }
-
-            public ResponseExecutor matches(String regex) {
-                assertTrue(value.toString().matches(regex),
-                        () -> String.format("%s 不匹配正则表达式，内容：%s", jsonPath, value));
-                return executor;
-            }
+        public String getHeader(String name) {
+            return response.getHeader(name);
         }
     }
 }

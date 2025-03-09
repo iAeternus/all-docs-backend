@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.domain.AggregateRoot;
+import org.ricky.common.exception.MyException;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,12 +15,16 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.time.LocalDateTime.now;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.exception.ErrorCodeEnum.THE_USER_IS_BANNED;
 import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
+import static org.ricky.common.util.ValidationUtil.isNull;
+import static org.ricky.common.util.ValidationUtil.isTrue;
 import static org.ricky.core.user.domain.GenderEnum.UNKNOWN;
 
 /**
@@ -128,4 +133,13 @@ public class User extends AggregateRoot {
         return JSON.toJSONString(this);
     }
 
+    public void checkActive() {
+        if(isTrue(banning)) {
+            throw new MyException(THE_USER_IS_BANNED, "此用户已被封禁", Map.of("userId", getId()));
+        }
+    }
+
+    public String getType() {
+        return isNull(permission) ? null : permission.toString();
+    }
 }

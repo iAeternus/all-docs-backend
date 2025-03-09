@@ -42,6 +42,7 @@ public enum ErrorCodeEnum {
     PROCESS_ERROR(409),
     PROHIBITED_REGISTRATION(409),
     USER_NAME_ALREADY_EXISTS(409),
+    THE_USER_IS_BANNED(409),
 
     // 426
 

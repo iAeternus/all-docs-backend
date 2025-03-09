@@ -12,19 +12,20 @@ import org.ricky.common.domain.DTO;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.ricky.common.constants.MessageConstants.*;
+import static org.ricky.common.constants.MessageConstants.PARAMS_FORMAT_ERROR;
 import static org.ricky.common.constants.RegexConstant.NUM_WORD_REG;
 
 /**
  * @author Ricky
  * @version 1.0
- * @date 2025/2/26
- * @className RegistryUserDTO
- * @desc 用户注册对象
+ * @date 2025/3/9
+ * @className UserLoginDTO
+ * @desc
  */
 @Value
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class RegistryUserDTO implements DTO {
+public class UserLoginDTO implements DTO {
 
     @NotNull(message = PARAMS_IS_NOT_NULL)
     @Size(min = 3, max = 32, message = PARAMS_LENGTH_REQUIRED)

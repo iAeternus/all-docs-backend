@@ -19,6 +19,7 @@ import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.util.Arrays.stream;
 import static org.ricky.common.auth.PermissionEnum.NO;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
+import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.ricky.common.context.UserContext.of;
 import static org.ricky.common.util.JwtUtil.verifyToken;
 import static org.ricky.common.util.ValidationUtil.*;
@@ -121,11 +122,14 @@ public class AuthInterceptor implements HandlerInterceptor {
 
     private User getUser(HttpServletRequest request, HttpServletResponse response) {
         // 获取header中的token
-        final String token = request.getHeader(AUTHORIZATION);
-        if (isNull(token)) {
+        final String authHeader = request.getHeader(AUTHORIZATION);
+        if (isNull(authHeader) || !authHeader.startsWith(BEARER)) {
             response.setStatus(SC_UNAUTHORIZED); // 401
             return null;
         }
+
+        // 提取Bearer Token
+        final String token = authHeader.substring(BEARER.length());
 
         Map<String, Claim> userData = verifyToken(token);
         if (isEmpty(userData)) {

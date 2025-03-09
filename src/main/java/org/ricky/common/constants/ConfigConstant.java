@@ -11,7 +11,8 @@ public interface ConfigConstant {
 
     String CHINA_TIME_ZONE = "Asia/Shanghai";
 
-    String AUTHORIZATION = "authorization";
+    String AUTHORIZATION = "Authorization";
+    String BEARER = "Bearer ";
 
     String LOCAL_DATE_TIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
 

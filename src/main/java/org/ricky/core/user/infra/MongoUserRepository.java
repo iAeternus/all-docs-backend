@@ -6,12 +6,18 @@ import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
 
 /**
  * @author Ricky
@@ -34,7 +40,7 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
 
     @Override
     public List<User> listByUsername(String username) {
-        Query query = new Query().addCriteria(Criteria.where("username").is(username));
+        Query query = new Query().addCriteria(where("username").is(username));
         return mongoTemplate.find(query, User.class, USER_COLLECTION);
     }
 
@@ -42,5 +48,21 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
     public void save(User user) {
         super.save(user);
         cachedUserRepository.evictAppCache(user.getId());
+    }
+
+    @Override
+    public Optional<User> getByUsernameAndPasswordOptional(String username) {
+        requireNonBlank(username, "Username must not be blank");
+
+        Criteria criteria = new Criteria("username").is(username);
+        return ofNullable(mongoTemplate.findOne(query(criteria), User.class));
+    }
+
+    @Override
+    public void updateLastLogin(String userId) {
+        Query query = new Query(where("_id").is(userId));
+        Update update = new Update().set("lastLogin", LocalDateTime.now());
+        mongoTemplate.updateFirst(query, update, User.class, USER_COLLECTION);
+        cachedUserRepository.evictAppCache(userId);
     }
 }

@@ -6,6 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
+import org.ricky.core.user.domain.dto.UserLoginDTO;
+import org.ricky.core.user.domain.vo.UserLoginVO;
+import org.ricky.core.user.domain.vo.UserVO;
+import org.ricky.util.SetUpApi;
+import org.ricky.util.SetUpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.Rollback;
@@ -15,9 +20,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.nio.charset.Charset;
-
 import static java.nio.charset.Charset.defaultCharset;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.core.user.domain.User.newUserId;
 
 /**
  * @author Ricky
@@ -35,6 +41,9 @@ class UserControllerTest {
     @Autowired
     WebApplicationContext webApplicationContext;
 
+    @Autowired
+    SetUpApi setUpApi;
+
     static final String ROOT_URL = "/user";
 
     @BeforeEach
@@ -46,12 +55,13 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_registry() {
-        ApiTest.using(mockMvc)
+        String userId = ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/registry")
                 .body(RegistryUserDTO.builder().username("Ricky").password("123456").build())
                 .execute()
                 .expectStatus(200)
-                .expectData("SUCCESS");
+                .as(String.class);
+        assertTrue(userId.startsWith(USER_ID_PREFIX));
     }
 
     @Test
@@ -59,11 +69,7 @@ class UserControllerTest {
     @Transactional
     void should_fail_to_registry_if_username_already_exists() {
         // 注册以抢占用户名
-        ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/registry")
-                .body(RegistryUserDTO.builder().username("Ricky").password("123456").build())
-                .execute();
-
+        setUpApi.registry("Ricky", "123456");
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/registry")
                 .body(RegistryUserDTO.builder().username("Ricky").password("123456").build())
@@ -71,6 +77,78 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(409)
                 .expectUserMessage("注册失败，用户名已存在");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_login() {
+        String userId = setUpApi.registry("Ricky", "123456");
+        UserLoginVO userLoginVO = ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/login")
+                .body(UserLoginDTO.builder().username("Ricky").password("123456").build())
+                .execute()
+                .expectStatus(200)
+                .as(UserLoginVO.class);
+
+        assertEquals(userId, userLoginVO.getUserId());
+        assertNotNull(userLoginVO.getToken());
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_login_if_password_incorrect() {
+        setUpApi.registry("Ricky", "123456");
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/login")
+                .body(UserLoginDTO.builder().username("Ricky").password("1234567").build())
+                .execute()
+                .expectStatus(401)
+                .expectUserMessage("登录失败。");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_get_user_by_id() {
+        SetUpResponse response = setUpApi.registryWithLogin();
+        UserVO userVO = ApiTest.using(mockMvc)
+                .get(ROOT_URL + "/id/{userId}", response.getUserId())
+                .bearerToken(response.getToken())
+                .execute()
+                .expectStatus(200)
+                .as(UserVO.class);
+
+        assertNotNull(userVO);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_get_if_user_id_not_exists() {
+        SetUpResponse response = setUpApi.registryWithLogin();
+        ApiTest.using(mockMvc)
+                .get(ROOT_URL + "/id/{userId}", newUserId())
+                .bearerToken(response.getToken())
+                .execute()
+                .expectStatus(404)
+                .expectUserMessage("未找到资源。");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_get_user_by_username() {
+        SetUpResponse response = setUpApi.registryWithLogin("Ricky", "123456");
+        UserVO userVO = ApiTest.using(mockMvc)
+                .get(ROOT_URL + "/username/{userId}", "Ricky")
+                .bearerToken(response.getToken())
+                .execute()
+                .expectStatus(200)
+                .as(UserVO.class);
+
+        assertEquals(userVO.getUsername(), "Ricky");
     }
 
 }
