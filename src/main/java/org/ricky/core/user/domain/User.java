@@ -21,11 +21,12 @@ import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.time.LocalDateTime.now;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
-import static org.ricky.common.exception.ErrorCodeEnum.THE_USER_IS_BANNED;
+import static org.ricky.common.exception.ErrorCodeEnum.USER_ALREADY_DEACTIVATED;
 import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
-import static org.ricky.common.util.ValidationUtil.isNull;
-import static org.ricky.common.util.ValidationUtil.isTrue;
+import static org.ricky.common.util.ValidationUtil.*;
 import static org.ricky.core.user.domain.GenderEnum.UNKNOWN;
+import static org.ricky.core.user.domain.StatusEnum.DISABLE;
+import static org.ricky.core.user.domain.StatusEnum.ENABLE;
 
 /**
  * @author Ricky
@@ -88,7 +89,7 @@ public class User extends AggregateRoot {
     /**
      * 封禁状态
      */
-    private Boolean banning;
+    private StatusEnum status;
 
     /**
      * 权限
@@ -106,10 +107,10 @@ public class User extends AggregateRoot {
         this.password = password;
         this.gender = UNKNOWN;
         this.avatarList = new ArrayList<>();
-        this.banning = false;
+        this.status = ENABLE;
         this.permission = permission;
         this.lastLogin = now();
-        addOpsLog("create");
+        addOpsLog("创建");
     }
 
     public static String newUserId() {
@@ -128,18 +129,54 @@ public class User extends AggregateRoot {
                 .contains(permission);
     }
 
-    @Override
-    public String toString() {
-        return JSON.toJSONString(this);
+    public boolean isActivate() {
+        return status == ENABLE;
+    }
+
+    public boolean isDeactivate() {
+        return status == DISABLE;
+    }
+
+    public void activate() {
+        if (isActivate()) {
+            return;
+        }
+
+        status = ENABLE;
+        addOpsLog("启用");
+    }
+
+    public void deactivate() {
+        if (isDeactivate()) {
+            return;
+        }
+
+        status = DISABLE;
+        addOpsLog("禁用");
     }
 
     public void checkActive() {
-        if(isTrue(banning)) {
-            throw new MyException(THE_USER_IS_BANNED, "此用户已被封禁", Map.of("userId", getId()));
+        if (isDeactivate()) {
+            throw new MyException(USER_ALREADY_DEACTIVATED, "当前用户已经被禁用。", Map.of("userId", getId()));
         }
     }
 
     public String getType() {
         return isNull(permission) ? null : permission.toString();
+    }
+
+    public void update(String password, String mobile, String email, GenderEnum gender, String description, LocalDate birthday) {
+        this.password = isNotBlank(password) ? password : this.password;
+        this.mobile = isNotBlank(mobile) ? mobile : this.mobile;
+        this.email = isNotBlank(email) ? email : this.email;
+        this.gender = nonNull(gender) ? gender : this.gender;
+        this.description = isNotBlank(description) ? description : this.description;
+        this.birthday = nonNull(birthday) ? birthday : this.birthday;
+        addOpsLog("变更");
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this);
     }
 }

@@ -34,7 +34,7 @@ public class UserFactory {
                 .avatarList(user.getAvatarList())
                 .avatar(user.getAvatar())
                 .birthday(user.getBirthday())
-                .banning(user.getBanning())
+                .status(user.getStatus())
                 .permission(user.getPermission())
                 .lastLogin(user.getLastLogin())
                 .build();

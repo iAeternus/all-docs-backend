@@ -2,6 +2,7 @@ package org.ricky.core.user.service;
 
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
+import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
@@ -25,4 +26,6 @@ public interface UserService {
     ApiResult<UserVO> getById(String userId);
 
     ApiResult<UserVO> getByUsername(String username);
+
+    ApiResult<String> updateById(UserDTO userDTO);
 }

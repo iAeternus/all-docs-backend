@@ -5,7 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
+import org.ricky.common.constants.MessageConstants;
+import org.ricky.core.user.domain.GenderEnum;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
+import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
@@ -20,9 +23,13 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.time.LocalDate;
+
 import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.constants.MessageConstants.SUCCESS;
+import static org.ricky.core.user.domain.GenderEnum.MALE;
 import static org.ricky.core.user.domain.User.newUserId;
 
 /**
@@ -149,6 +156,27 @@ class UserControllerTest {
                 .as(UserVO.class);
 
         assertEquals(userVO.getUsername(), "Ricky");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_update() {
+        SetUpResponse response = setUpApi.registryWithLogin("Ricky", "123456");
+        String res = ApiTest.using(mockMvc)
+                .put(ROOT_URL)
+                .body(UserDTO.builder()
+                        .id(response.getUserId())
+                        .password("1234567")
+                        .gender(MALE)
+                        .birthday(LocalDate.of(2004, 7, 23))
+                        .build())
+                .bearerToken(response.getToken())
+                .execute()
+                .expectStatus(200)
+                .as(String.class);
+
+        assertEquals(SUCCESS, res);
     }
 
 }

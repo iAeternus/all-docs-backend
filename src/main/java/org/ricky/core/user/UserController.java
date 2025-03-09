@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
+import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
@@ -53,6 +54,12 @@ public class UserController {
     @Operation(summary = "用户登录")
     public ApiResult<UserLoginVO> login(@RequestBody @Valid UserLoginDTO userDTO) {
         return userService.login(userDTO);
+    }
+
+    @PutMapping
+    @Operation(summary = "变更用户信息", description = "成功返回SUCCESS字符串")
+    public ApiResult<String> updateById(@RequestBody @Valid UserDTO userDTO) {
+        return userService.updateById(userDTO);
     }
 
     @GetMapping("/id/{userId}")

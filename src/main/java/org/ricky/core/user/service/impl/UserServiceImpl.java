@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.context.ThreadLocalContext;
 import org.ricky.common.exception.MyException;
+import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
 import org.ricky.common.result.ApiResult;
@@ -12,11 +13,13 @@ import org.ricky.core.user.domain.UserDomainService;
 import org.ricky.core.user.domain.UserFactory;
 import org.ricky.core.user.domain.UserRepository;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
+import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -24,8 +27,7 @@ import java.util.Map;
 import static org.ricky.common.constants.MessageConstants.SUCCESS;
 import static org.ricky.common.exception.ErrorCodeEnum.AR_NOT_FOUND;
 import static org.ricky.common.exception.ErrorCodeEnum.PROHIBITED_REGISTRATION;
-import static org.ricky.common.ratelimit.TPSConstants.EXTREMELY_LOW_TPS;
-import static org.ricky.common.ratelimit.TPSConstants.NORMAL_TPS;
+import static org.ricky.common.ratelimit.TPSConstants.*;
 import static org.ricky.common.util.ValidationUtil.isEmpty;
 import static org.ricky.common.util.ValidationUtil.isFalse;
 
@@ -46,6 +48,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserDomainService userDomainService;
     private final UserFactory userFactory;
+    private final IPasswordEncoder passwordEncoder;
 
     @Override
     public ApiResult<String> registry(RegistryUserDTO userDTO) {
@@ -74,6 +77,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public ApiResult<UserLoginVO> login(UserLoginDTO userDTO) {
         rateLimiter.applyFor("User:Login", NORMAL_TPS);
 
@@ -101,6 +105,18 @@ public class UserServiceImpl implements UserService {
         }
         UserVO userVO = userFactory.user2vo(users.get(0));
         return ApiResult.success(userVO);
+    }
+
+    @Override
+    public ApiResult<String> updateById(UserDTO userDTO) {
+        rateLimiter.applyFor("User:Update", MINIMUM_TPS);
+
+        User user = userRepository.cachedById(userDTO.getId());
+        String encodePassword = passwordEncoder.encode(userDTO.getPassword());
+        user.update(encodePassword, userDTO.getMobile(), userDTO.getEmail(), userDTO.getGender(), userDTO.getDescription(), userDTO.getBirthday());
+        userRepository.save(user);
+
+        return ApiResult.success(SUCCESS);
     }
 
 }

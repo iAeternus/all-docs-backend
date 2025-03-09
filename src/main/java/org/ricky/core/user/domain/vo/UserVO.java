@@ -5,6 +5,7 @@ import lombok.*;
 import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.domain.VO;
 import org.ricky.core.user.domain.GenderEnum;
+import org.ricky.core.user.domain.StatusEnum;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,7 +31,7 @@ public class UserVO implements VO {
     List<String> avatarList;
     String avatar;
     LocalDate birthday;
-    Boolean banning;
+    StatusEnum status;
     PermissionEnum permission;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime lastLogin;
