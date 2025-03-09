@@ -1,7 +1,10 @@
 package org.ricky.core.user.domain.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Value;
 import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.domain.VO;
 import org.ricky.core.user.domain.GenderEnum;

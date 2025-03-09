@@ -4,7 +4,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.result.ApiResult;
 import org.ricky.common.tracing.TracingService;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpHeaders;
@@ -26,7 +25,6 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 import static org.ricky.common.exception.ErrorCodeEnum.SYSTEM_ERROR;
 import static org.ricky.common.exception.MyException.accessDeniedException;
 import static org.ricky.common.exception.MyException.requestValidationException;
-import static org.ricky.common.result.ApiResult.success;
 import static org.springframework.http.HttpStatus.valueOf;
 
 @Slf4j

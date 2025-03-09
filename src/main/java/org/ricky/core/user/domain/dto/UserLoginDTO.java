@@ -12,7 +12,6 @@ import org.ricky.common.domain.DTO;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.ricky.common.constants.MessageConstants.*;
-import static org.ricky.common.constants.MessageConstants.PARAMS_FORMAT_ERROR;
 import static org.ricky.common.constants.RegexConstant.NUM_WORD_REG;
 
 /**

@@ -1,17 +1,14 @@
 package org.ricky.core.user.service;
 
 import lombok.RequiredArgsConstructor;
-import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.context.ThreadLocalContext;
 import org.ricky.common.context.UserContext;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
-import org.ricky.management.SystemAdmin;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import static org.ricky.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.management.SystemAdmin.*;
 
 /**
@@ -30,7 +27,7 @@ public class InitSystemAdmin implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        if(userRepository.exists(ADMIN_UID)) {
+        if (userRepository.exists(ADMIN_UID)) {
             return;
         }
 

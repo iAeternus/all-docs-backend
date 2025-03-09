@@ -6,7 +6,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.auth.Permission;
-import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;

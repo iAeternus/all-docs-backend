@@ -9,8 +9,6 @@ import org.ricky.common.domain.DTO;
 import org.ricky.core.user.domain.GenderEnum;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 /**
  * @author Ricky
