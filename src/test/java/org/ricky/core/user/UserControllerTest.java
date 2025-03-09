@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
+import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
@@ -22,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.jupiter.api.Assertions.*;
@@ -119,10 +121,10 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_get_user_by_id() {
-        SetUpResponse response = setUpApi.registryWithLogin();
+        SetUpResponse operator = setUpApi.registryWithLogin();
         UserVO userVO = ApiTest.using(mockMvc)
-                .get(ROOT_URL + "/id/{userId}", response.getUserId())
-                .bearerToken(response.getToken())
+                .get(ROOT_URL + "/id/{userId}", operator.getUserId())
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
                 .as(UserVO.class);
@@ -134,10 +136,10 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_fail_to_get_if_user_id_not_exists() {
-        SetUpResponse response = setUpApi.registryWithLogin();
+        SetUpResponse operator = setUpApi.registryWithLogin();
         ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/id/{userId}", newUserId())
-                .bearerToken(response.getToken())
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(404)
                 .expectUserMessage("未找到资源。");
@@ -147,10 +149,10 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_get_user_by_username() {
-        SetUpResponse response = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+        SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
         UserVO userVO = ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/username/{userId}", TEST_USERNAME)
-                .bearerToken(response.getToken())
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
                 .as(UserVO.class);
@@ -162,16 +164,16 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_update() {
-        SetUpResponse response = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+        SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
         String res = ApiTest.using(mockMvc)
                 .put(ROOT_URL)
                 .body(UserDTO.builder()
-                        .id(response.getUserId())
+                        .id(operator.getUserId())
                         .password("1234567")
                         .gender(MALE)
                         .birthday(LocalDate.of(2004, 7, 23))
                         .build())
-                .bearerToken(response.getToken())
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
                 .as(String.class);
@@ -183,11 +185,11 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_delete_user_by_id() {
-        UserLoginVO userLoginVO = setUpApi.adminLogin();
+        UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
         String res = ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", userId)
-                .bearerToken(userLoginVO.getToken())
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
                 .as(String.class);
@@ -199,11 +201,11 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_fail_to_delete_if_permission_not_admin() {
-        SetUpResponse response = setUpApi.registryWithLogin();
+        SetUpResponse operator = setUpApi.registryWithLogin();
         String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", userId)
-                .bearerToken(response.getToken())
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(401);
     }
@@ -212,10 +214,50 @@ class UserControllerTest {
     @Rollback
     @Transactional
     void should_fail_to_delete_if_delete_self() {
-        UserLoginVO userLoginVO = setUpApi.adminLogin();
+        UserLoginVO operator = setUpApi.adminLogin();
         ApiTest.using(mockMvc)
-                .delete(ROOT_URL + "/{userId}", userLoginVO.getUserId())
-                .bearerToken(userLoginVO.getToken())
+                .delete(ROOT_URL + "/{userId}", operator.getUserId())
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(409)
+                .expectUserMessage("不能删除自身");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_delete_by_id_batch() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        List<String> userIds = List.of(
+                setUpApi.registry(TEST_USERNAME + "1"),
+                setUpApi.registry(TEST_USERNAME + "2"),
+                setUpApi.registry(TEST_USERNAME + "3")
+        );
+        String res = ApiTest.using(mockMvc)
+                .delete(ROOT_URL + "/batch")
+                .bearerToken(operator.getToken())
+                .body(DeleteByIdBatchDTO.builder().ids(userIds).build())
+                .execute()
+                .expectStatus(200)
+                .as(String.class);
+
+        assertEquals(SUCCESS, res);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_delete_batch_if_contains_self() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        List<String> userIds = List.of(
+                setUpApi.registry(TEST_USERNAME + "1"),
+                setUpApi.registry(TEST_USERNAME + "2"),
+                operator.getUserId()
+        );
+        ApiTest.using(mockMvc)
+                .delete(ROOT_URL + "/batch")
+                .bearerToken(operator.getToken())
+                .body(DeleteByIdBatchDTO.builder().ids(userIds).build())
                 .execute()
                 .expectStatus(409)
                 .expectUserMessage("不能删除自身");

@@ -8,10 +8,12 @@ import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
 import org.ricky.common.result.ApiResult;
+import org.ricky.common.util.ValidationUtil;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserDomainService;
 import org.ricky.core.user.domain.UserFactory;
 import org.ricky.core.user.domain.UserRepository;
+import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
@@ -23,7 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static org.ricky.common.constants.MessageConstants.SUCCESS;
 import static org.ricky.common.exception.ErrorCodeEnum.*;
 import static org.ricky.common.ratelimit.TPSConstants.*;
@@ -128,8 +132,24 @@ public class UserServiceImpl implements UserService {
         }
 
         User user = userRepository.cachedById(userId);
-        user.onDelete();
         userRepository.deleteById(user);
+        // TODO 删除头像
+
+        return ApiResult.success(SUCCESS);
+    }
+
+    @Override
+    public ApiResult<String> deleteByIdBatch(DeleteByIdBatchDTO dto) {
+        rateLimiter.applyFor("User:DeleteByIdBatch", MINIMUM_TPS);
+
+        Set<String> ids = dto.getIds().stream().collect(toImmutableSet());
+        String selfUid = ThreadLocalContext.getContext().getUid();
+        if (dto.getIds().stream().anyMatch(s -> ValidationUtil.equals(selfUid, s))) {
+            throw new MyException(CANNOT_DELETE_SELF, "不能删除自身", Map.of("userIds", ids));
+        }
+
+        List<User> users = userRepository.listByIds(ids);
+        userRepository.delete(users);
 
         return ApiResult.success(SUCCESS);
     }

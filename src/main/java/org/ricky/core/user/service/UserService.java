@@ -1,6 +1,7 @@
 package org.ricky.core.user.service;
 
 import org.ricky.common.result.ApiResult;
+import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
@@ -30,4 +31,6 @@ public interface UserService {
     ApiResult<String> updateById(UserDTO userDTO);
 
     ApiResult<String> deleteById(String userId);
+
+    ApiResult<String> deleteByIdBatch(DeleteByIdBatchDTO dto);
 }

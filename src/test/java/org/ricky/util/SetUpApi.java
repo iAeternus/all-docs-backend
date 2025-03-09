@@ -35,6 +35,10 @@ public class SetUpApi {
         return registry(TEST_USERNAME, TEST_PASSWORD);
     }
 
+    public String registry(String username) {
+        return registry(username, TEST_PASSWORD);
+    }
+
     public String registry(String username, String password) {
         mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
         return ApiTest.using(mockMvc)

@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
-import org.ricky.management.SystemAdmin;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -13,11 +12,12 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.util.ValidationUtil.requireNonBlank;
-import static org.ricky.management.SystemAdmin.ADMIN_UID;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -49,7 +49,7 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
     @Override
     public void save(User user) {
         super.save(user);
-        cachedUserRepository.evictAppCache(user.getId());
+        cachedUserRepository.evictUserCache(user.getId());
     }
 
     @Override
@@ -65,17 +65,28 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
         Query query = new Query(where("_id").is(userId));
         Update update = new Update().set("lastLogin", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, User.class, USER_COLLECTION);
-        cachedUserRepository.evictAppCache(userId);
+        cachedUserRepository.evictUserCache(userId);
     }
 
     @Override
     public void deleteById(User user) {
         super.delete(user);
-        cachedUserRepository.evictAppCache(user.getId());
+        cachedUserRepository.evictUserCache(user.getId());
     }
 
     @Override
     public boolean exists(String arId) {
         return super.exists(arId);
+    }
+
+    @Override
+    public List<User> listByIds(Set<String> ids) {
+        return byIdsAll(ids);
+    }
+
+    @Override
+    public void delete(List<User> users) {
+        super.delete(users);
+        cachedUserRepository.evictAll();
     }
 }

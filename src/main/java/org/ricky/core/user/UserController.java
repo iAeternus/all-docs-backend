@@ -9,6 +9,7 @@ import org.ricky.common.auth.Permission;
 import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.common.validation.id.Id;
+import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
 import org.ricky.core.user.domain.dto.UserDTO;
 import org.ricky.core.user.domain.dto.UserLoginDTO;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static org.ricky.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 
 /**
@@ -76,11 +78,18 @@ public class UserController {
         return userService.getByUsername(username);
     }
 
+    @Permission(ADMIN)
     @DeleteMapping("/{userId}")
-    @Permission(PermissionEnum.ADMIN)
     @Operation(summary = "根据ID删除用户", description = "需要管理员权限")
     public ApiResult<String> deleteById(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
         return userService.deleteById(userId);
+    }
+
+    @Permission(ADMIN)
+    @DeleteMapping("/batch")
+    @Operation(summary = "根据ID批量删除用户", description = "需要管理员权限")
+    public ApiResult<String> deleteByIdBatch(@RequestBody DeleteByIdBatchDTO dto) {
+        return userService.deleteByIdBatch(dto);
     }
 
 }

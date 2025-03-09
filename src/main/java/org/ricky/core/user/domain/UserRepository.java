@@ -2,6 +2,7 @@ package org.ricky.core.user.domain;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Ricky
@@ -25,4 +26,7 @@ public interface UserRepository {
 
     boolean exists(String userId);
 
+    List<User> listByIds(Set<String> ids);
+
+    void delete(List<User> users);
 }

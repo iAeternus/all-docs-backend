@@ -29,9 +29,12 @@ public class MongoCachedUserRepository extends MongoBaseRepository<User> {
     }
 
     @Caching(evict = {@CacheEvict(value = USER_CACHE, key = "#userId")})
-    public void evictAppCache(String userId) {
+    public void evictUserCache(String userId) {
         requireNonBlank(userId, "User ID must not be blank.");
         log.info("Evicted cache for user[{}].", userId);
     }
 
+    @Caching(evict = {@CacheEvict(value = USER_CACHE, allEntries = true)})
+    public void evictAll() {
+    }
 }
