@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.time.LocalDateTime.now;
+import static org.ricky.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 import static org.ricky.common.exception.ErrorCodeEnum.USER_ALREADY_DEACTIVATED;
@@ -101,6 +102,14 @@ public class User extends AggregateRoot {
      */
     private LocalDateTime lastLogin;
 
+    public User(String id, String username, String password) {
+        super(id);
+        this.username = username;
+        this.password = password;
+        this.permission = ADMIN;
+        addOpsLog("新建");
+    }
+
     public User(String username, String password, PermissionEnum permission) {
         super(newUserId());
         this.username = username;
@@ -110,7 +119,7 @@ public class User extends AggregateRoot {
         this.status = ENABLE;
         this.permission = permission;
         this.lastLogin = now();
-        addOpsLog("创建");
+        addOpsLog("新建");
     }
 
     public static String newUserId() {
@@ -178,5 +187,9 @@ public class User extends AggregateRoot {
     @Override
     public String toString() {
         return JSON.toJSONString(this);
+    }
+
+    public void onDelete() {
+
     }
 }

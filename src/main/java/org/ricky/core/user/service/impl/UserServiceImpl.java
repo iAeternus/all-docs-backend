@@ -25,8 +25,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.ricky.common.constants.MessageConstants.SUCCESS;
-import static org.ricky.common.exception.ErrorCodeEnum.AR_NOT_FOUND;
-import static org.ricky.common.exception.ErrorCodeEnum.PROHIBITED_REGISTRATION;
+import static org.ricky.common.exception.ErrorCodeEnum.*;
 import static org.ricky.common.ratelimit.TPSConstants.*;
 import static org.ricky.common.util.ValidationUtil.isEmpty;
 import static org.ricky.common.util.ValidationUtil.isFalse;
@@ -115,6 +114,22 @@ public class UserServiceImpl implements UserService {
         String encodePassword = passwordEncoder.encode(userDTO.getPassword());
         user.update(encodePassword, userDTO.getMobile(), userDTO.getEmail(), userDTO.getGender(), userDTO.getDescription(), userDTO.getBirthday());
         userRepository.save(user);
+
+        return ApiResult.success(SUCCESS);
+    }
+
+    @Override
+    @Transactional
+    public ApiResult<String> deleteById(String userId) {
+        rateLimiter.applyFor("User:DeleteById", MINIMUM_TPS);
+
+        if (ThreadLocalContext.getContext().isSelf(userId)) {
+            throw new MyException(CANNOT_DELETE_SELF, "不能删除自身", Map.of("userId", userId));
+        }
+
+        User user = userRepository.cachedById(userId);
+        user.onDelete();
+        userRepository.deleteById(user);
 
         return ApiResult.success(SUCCESS);
     }

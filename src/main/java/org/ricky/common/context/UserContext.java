@@ -1,6 +1,9 @@
 package org.ricky.common.context;
 
 import lombok.Data;
+import org.ricky.common.util.ValidationUtil;
+
+import static org.ricky.common.util.ValidationUtil.requireNonBlank;
 
 /**
  * @author Ricky
@@ -29,6 +32,11 @@ public class UserContext {
 
     public static UserContext of(String uid, String username) {
         return new UserContext(uid, username);
+    }
+
+    public boolean isSelf(String uid) {
+        requireNonBlank(uid, "uid must not be null");
+        return ValidationUtil.equals(uid, this.uid);
     }
 
 }

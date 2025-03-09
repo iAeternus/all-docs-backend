@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
+import org.ricky.management.SystemAdmin;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -16,6 +17,7 @@ import java.util.Optional;
 import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.ricky.management.SystemAdmin.ADMIN_UID;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -64,5 +66,16 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
         Update update = new Update().set("lastLogin", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, User.class, USER_COLLECTION);
         cachedUserRepository.evictAppCache(userId);
+    }
+
+    @Override
+    public void deleteById(User user) {
+        super.delete(user);
+        cachedUserRepository.evictAppCache(user.getId());
+    }
+
+    @Override
+    public boolean exists(String arId) {
+        return super.exists(arId);
     }
 }

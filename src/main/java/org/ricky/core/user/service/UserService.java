@@ -28,4 +28,6 @@ public interface UserService {
     ApiResult<UserVO> getByUsername(String username);
 
     ApiResult<String> updateById(UserDTO userDTO);
+
+    ApiResult<String> deleteById(String userId);
 }

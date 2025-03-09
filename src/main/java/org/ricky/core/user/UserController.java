@@ -5,6 +5,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.auth.Permission;
+import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
@@ -72,6 +74,13 @@ public class UserController {
     @Operation(summary = "根据用户名查询", description = "返回查询到的第一个用户")
     public ApiResult<UserVO> getByUsername(@PathVariable("username") String username) {
         return userService.getByUsername(username);
+    }
+
+    @DeleteMapping("/{userId}")
+    @Permission(PermissionEnum.ADMIN)
+    @Operation(summary = "根据ID删除用户", description = "需要管理员权限")
+    public ApiResult<String> deleteById(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
+        return userService.deleteById(userId);
     }
 
 }

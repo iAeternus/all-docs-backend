@@ -21,4 +21,8 @@ public interface UserRepository {
 
     void updateLastLogin(String userId);
 
+    void deleteById(User user);
+
+    boolean exists(String userId);
+
 }
