@@ -139,4 +139,11 @@ public class UserController {
         return userService.deleteAvatar();
     }
 
+    @Permission(ADMIN)
+    @PutMapping("/reset/pwd")
+    @Operation(summary = "重置密码", description = "需要管理员权限")
+    public ApiResult<Boolean> resetPwd(@RequestBody @Valid ResetPwdDTO dto) {
+        return userService.resetPwd(dto);
+    }
+
 }

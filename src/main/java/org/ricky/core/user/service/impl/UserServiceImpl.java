@@ -294,4 +294,15 @@ public class UserServiceImpl implements UserService {
         return ApiResult.success();
     }
 
+    @Override
+    public ApiResult<Boolean> resetPwd(ResetPwdDTO dto) {
+        rateLimiter.applyFor("User:ResetPwd", MINIMUM_TPS);
+
+        User user = userRepository.cachedById(dto.getUserId());
+        userDomainService.resetPwd(user);
+        userRepository.save(user);
+
+        return ApiResult.success();
+    }
+
 }

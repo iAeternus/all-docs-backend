@@ -7,6 +7,7 @@ import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
 import org.ricky.common.domain.PageDTO;
 import org.ricky.common.domain.PageVO;
+import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
 import org.ricky.core.user.domain.dto.*;
@@ -62,6 +63,9 @@ class UserControllerTest {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    IPasswordEncoder passwordEncoder;
 
     static final String ROOT_URL = "/user";
 
@@ -503,6 +507,7 @@ class UserControllerTest {
         assertTrue(user.isActivate());
     }
 
+    // TODO 该事务仅仅回滚了mongodb，没有删除mongodb的gridFs，导致头像数据仍存在数据库中
     @Test
     @Rollback
     @Transactional
@@ -563,6 +568,40 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectSuccess();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_reset_pwd() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry(TEST_USERNAME, "1234567");
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/reset/pwd")
+                .bearerToken(operator.getToken())
+                .body(ResetPwdDTO.builder().userId(userId).build())
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
+
+        User user = userRepository.cachedById(userId);
+        assertTrue(passwordEncoder.matches("123456", user.getPassword()));
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_reset_if_permission_not_admin() {
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        String userId = setUpApi.registry(TEST_USERNAME, "1234567");
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/reset/pwd")
+                .bearerToken(operator.getToken())
+                .body(ResetPwdDTO.builder().userId(userId).build())
+                .execute()
+                .expectStatus(401);
     }
 
 }

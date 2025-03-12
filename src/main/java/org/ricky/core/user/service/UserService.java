@@ -49,4 +49,6 @@ public interface UserService {
     ApiResult<Boolean> uploadAvatar(MultipartFile img);
 
     ApiResult<Boolean> deleteAvatar();
+
+    ApiResult<Boolean> resetPwd(ResetPwdDTO dto);
 }

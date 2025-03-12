@@ -60,4 +60,9 @@ public class UserDomainService {
                 .type(user.getType())
                 .build();
     }
+
+    public void resetPwd(User user) {
+        // 设置为默认密码
+        user.resetPwd(passwordEncoder.encode("123456"));
+    }
 }

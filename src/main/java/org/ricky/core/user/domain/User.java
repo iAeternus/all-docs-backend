@@ -205,4 +205,9 @@ public class User extends AggregateRoot {
         this.avatar = null;
         addOpsLog("删除头像");
     }
+
+    public void resetPwd(String newPwd) {
+        this.password = newPwd;
+        addOpsLog("重置密码");
+    }
 }
