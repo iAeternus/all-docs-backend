@@ -23,7 +23,6 @@ public interface MessageConstants {
     String FILE_SIZE_ERROR = "上传的文件超过大小限制!";
     String USER_HAS_BANNED = "该账号已经被屏蔽，请联系管理员！";
     String OPERATE_FAILED = "操作失败！";
-    String SUCCESS = "SUCCESS";
     String FILE_NOT_FOUND = "File was not found";
 
 }

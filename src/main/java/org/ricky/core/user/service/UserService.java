@@ -2,11 +2,10 @@ package org.ricky.core.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.ricky.common.domain.PageDTO;
+import org.ricky.common.domain.PageVO;
 import org.ricky.common.result.ApiResult;
-import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
-import org.ricky.core.user.domain.dto.RegistryUserDTO;
-import org.ricky.core.user.domain.dto.UserDTO;
-import org.ricky.core.user.domain.dto.UserLoginDTO;
+import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
 
@@ -22,7 +21,7 @@ import java.util.List;
 public interface UserService {
     ApiResult<String> registry(RegistryUserDTO userDTO);
 
-    ApiResult<String> registryBatch(List<RegistryUserDTO> userDTOS);
+    ApiResult<Boolean> registryBatch(List<RegistryUserDTO> userDTOS);
 
     ApiResult<UserLoginVO> login(UserLoginDTO userDTO);
 
@@ -30,11 +29,15 @@ public interface UserService {
 
     ApiResult<UserVO> getByUsername(String username);
 
-    ApiResult<String> updateById(UserDTO userDTO);
+    ApiResult<Boolean> updateById(UserDTO userDTO);
 
-    ApiResult<String> deleteById(String userId);
+    ApiResult<Boolean> deleteById(String userId);
 
-    ApiResult<String> deleteByIdBatch(DeleteByIdBatchDTO dto);
+    ApiResult<Boolean> deleteByIdBatch(DeleteByIdBatchDTO dto);
 
     ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response);
+
+    ApiResult<PageVO<UserVO>> page(PageDTO pageDTO);
+
+    ApiResult<Boolean> updateRole(UpdateRoleDTO dto);
 }

@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import org.ricky.common.domain.DTO;
+import org.ricky.core.common.validation.password.Password;
 
 import static io.swagger.v3.oas.annotations.media.Schema.RequiredMode.REQUIRED;
 import static org.ricky.common.constants.MessageConstants.*;
@@ -32,10 +33,8 @@ public class UserLoginDTO implements DTO {
     @Schema(description = "用户名，最小3个字符，最长32个字符", requiredMode = REQUIRED)
     String username;
 
+    @Password
     @NotNull(message = PARAMS_IS_NOT_NULL)
-    @Size(min = 3, max = 32, message = PARAMS_LENGTH_REQUIRED)
-    @Pattern(regexp = NUM_WORD_REG, message = PARAMS_FORMAT_ERROR)
-    @Schema(description = "用户密码，最小3个字符， 最长32个字符", requiredMode = REQUIRED)
     String password;
 
 }

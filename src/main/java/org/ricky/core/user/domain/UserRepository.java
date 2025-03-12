@@ -29,4 +29,8 @@ public interface UserRepository {
     List<User> listByIds(Set<String> ids);
 
     void delete(List<User> users);
+
+    long count();
+
+    List<User> page(int totalCnt, int pageNum, int pageSize);
 }

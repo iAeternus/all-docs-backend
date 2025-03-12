@@ -6,6 +6,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.context.ThreadLocalContext;
+import org.ricky.common.domain.PageDTO;
+import org.ricky.common.domain.PageVO;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
@@ -17,10 +19,7 @@ import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserDomainService;
 import org.ricky.core.user.domain.UserFactory;
 import org.ricky.core.user.domain.UserRepository;
-import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
-import org.ricky.core.user.domain.dto.RegistryUserDTO;
-import org.ricky.core.user.domain.dto.UserDTO;
-import org.ricky.core.user.domain.dto.UserLoginDTO;
+import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
@@ -31,10 +30,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
-import static org.ricky.common.constants.MessageConstants.SUCCESS;
 import static org.ricky.common.exception.ErrorCodeEnum.*;
 import static org.ricky.common.ratelimit.TPSConstants.*;
 import static org.ricky.common.util.ValidationUtil.*;
@@ -73,7 +72,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResult<String> registryBatch(List<RegistryUserDTO> userDTOS) {
+    public ApiResult<Boolean> registryBatch(List<RegistryUserDTO> userDTOS) {
         rateLimiter.applyFor("User:RegistryBatch", EXTREMELY_LOW_TPS);
 
         for (RegistryUserDTO userDTO : userDTOS) {
@@ -81,7 +80,7 @@ public class UserServiceImpl implements UserService {
         }
 
         ThreadLocalContext.removeContext();
-        return ApiResult.success(SUCCESS);
+        return ApiResult.success();
     }
 
     @Override
@@ -116,7 +115,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ApiResult<String> updateById(UserDTO userDTO) {
+    public ApiResult<Boolean> updateById(UserDTO userDTO) {
         rateLimiter.applyFor("User:Update", MINIMUM_TPS);
 
         User user = userRepository.cachedById(userDTO.getId());
@@ -124,12 +123,12 @@ public class UserServiceImpl implements UserService {
         user.update(encodePassword, userDTO.getMobile(), userDTO.getEmail(), userDTO.getGender(), userDTO.getDescription(), userDTO.getBirthday());
         userRepository.save(user);
 
-        return ApiResult.success(SUCCESS);
+        return ApiResult.success();
     }
 
     @Override
     @Transactional
-    public ApiResult<String> deleteById(String userId) {
+    public ApiResult<Boolean> deleteById(String userId) {
         rateLimiter.applyFor("User:DeleteById", MINIMUM_TPS);
 
         if (ThreadLocalContext.getContext().isSelf(userId)) {
@@ -140,11 +139,11 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(user);
         // TODO 删除头像
 
-        return ApiResult.success(SUCCESS);
+        return ApiResult.success();
     }
 
     @Override
-    public ApiResult<String> deleteByIdBatch(DeleteByIdBatchDTO dto) {
+    public ApiResult<Boolean> deleteByIdBatch(DeleteByIdBatchDTO dto) {
         rateLimiter.applyFor("User:DeleteByIdBatch", MINIMUM_TPS);
 
         Set<String> ids = dto.getIds().stream().collect(toImmutableSet());
@@ -156,7 +155,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userRepository.listByIds(ids);
         userRepository.delete(users);
 
-        return ApiResult.success(SUCCESS);
+        return ApiResult.success();
     }
 
     @Override
@@ -167,18 +166,53 @@ public class UserServiceImpl implements UserService {
         response.setHeader("Cache-Control", "max-age=2, public");
 
         // 获取token
-        final String token = request.getHeader(AUTHORIZATION).substring(BEARER.length());
+        final String token = request.getHeader(AUTHORIZATION);
         if (isBlank(token)) {
-            return ApiResult.success(false);
+            return ApiResult.fail();
         }
 
         // 解析token
-        Map<String, Claim> claim = JwtUtil.verifyToken(token);
+        Map<String, Claim> claim = JwtUtil.verifyToken(token.substring(BEARER.length()));
         if (isEmpty(claim)) {
-            return ApiResult.success(false);
+            return ApiResult.fail();
         }
 
-        return ApiResult.success(true);
+        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult<PageVO<UserVO>> page(PageDTO pageDTO) {
+        rateLimiter.applyFor("User:Page", NORMAL_TPS);
+
+        long cnt = userRepository.count();
+        List<User> users = userRepository.page((int) cnt, pageDTO.getPageNum(), pageDTO.getPageSize());
+
+        PageVO<UserVO> pageVO = PageVO.<UserVO>builder()
+                .totalCnt((int) cnt)
+                .pageNum(pageDTO.getPageNum())
+                .pageSize(pageDTO.getPageSize())
+                .data(users.stream().map(userFactory::user2vo).collect(toImmutableList()))
+                .build();
+
+        return ApiResult.success(pageVO);
+    }
+
+    @Override
+    public ApiResult<Boolean> updateRole(UpdateRoleDTO dto) {
+        rateLimiter.applyFor("User:Page", MINIMUM_TPS);
+
+        if (ThreadLocalContext.getContext().isSelf(dto.getUserId())) {
+            throw new MyException(CANNOT_UPDATE_SELF_ROLE, "不能变更自身权限", Map.of("userId", dto.getUserId()));
+        }
+
+        User user = userRepository.cachedById(dto.getUserId());
+        if (user.getPermission() == dto.getNewRole()) {
+            return ApiResult.fail();
+        }
+        user.updateRole(dto.getNewRole());
+        userRepository.save(user);
+
+        return ApiResult.success();
     }
 
 }

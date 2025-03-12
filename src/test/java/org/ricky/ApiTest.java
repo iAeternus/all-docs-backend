@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.springframework.http.HttpMethod.*;
@@ -185,6 +185,18 @@ public class ApiTest {
         public ResponseExecutor expectUserMessage(String expectMessage) {
             Object value = jsonBody.get("userMessage");
             assertEquals(expectMessage, value);
+            return this;
+        }
+
+        public ResponseExecutor expectSuccess() {
+            Object data = jsonBody.get("data");
+            assertTrue((Boolean) data);
+            return this;
+        }
+
+        public ResponseExecutor expectFail() {
+            Object data = jsonBody.get("data");
+            assertFalse((Boolean) data);
             return this;
         }
 

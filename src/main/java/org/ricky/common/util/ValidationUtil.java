@@ -218,4 +218,10 @@ public class ValidationUtil {
         }
         return map;
     }
+
+    public static void requireTrue(boolean expr, String message) {
+        if(!expr) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 }

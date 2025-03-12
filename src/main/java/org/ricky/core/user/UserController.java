@@ -6,14 +6,14 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.auth.Permission;
+import org.ricky.common.domain.PageDTO;
+import org.ricky.common.domain.PageVO;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.common.validation.id.Id;
-import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
-import org.ricky.core.user.domain.dto.RegistryUserDTO;
-import org.ricky.core.user.domain.dto.UserDTO;
-import org.ricky.core.user.domain.dto.UserLoginDTO;
+import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
@@ -51,7 +51,7 @@ public class UserController {
 
     @PostMapping("/registry/batch")
     @Operation(summary = "批量注册用户", description = "批量新增用户; 支持使用xls进行导入用户信息")
-    public ApiResult<String> registryBatch(@RequestBody List<@Valid RegistryUserDTO> userDTOS) {
+    public ApiResult<Boolean> registryBatch(@RequestBody List<@Valid RegistryUserDTO> userDTOS) {
         return userService.registryBatch(userDTOS);
     }
 
@@ -63,7 +63,7 @@ public class UserController {
 
     @PutMapping
     @Operation(summary = "变更用户信息", description = "成功返回SUCCESS字符串")
-    public ApiResult<String> updateById(@RequestBody @Valid UserDTO userDTO) {
+    public ApiResult<Boolean> updateById(@RequestBody @Valid UserDTO userDTO) {
         return userService.updateById(userDTO);
     }
 
@@ -82,14 +82,14 @@ public class UserController {
     @Permission(ADMIN)
     @DeleteMapping("/{userId}")
     @Operation(summary = "根据ID删除用户", description = "需要管理员权限")
-    public ApiResult<String> deleteById(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
+    public ApiResult<Boolean> deleteById(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
         return userService.deleteById(userId);
     }
 
     @Permission(ADMIN)
     @DeleteMapping("/batch")
     @Operation(summary = "根据ID批量删除用户", description = "需要管理员权限")
-    public ApiResult<String> deleteByIdBatch(@RequestBody DeleteByIdBatchDTO dto) {
+    public ApiResult<Boolean> deleteByIdBatch(@RequestBody DeleteByIdBatchDTO dto) {
         return userService.deleteByIdBatch(dto);
     }
 
@@ -97,6 +97,20 @@ public class UserController {
     @Operation(summary = "检查登录状态", description = "返回true代表已登录")
     public ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response) {
         return userService.checkLoginState(request, response);
+    }
+
+    @Permission(ADMIN)
+    @GetMapping("/page")
+    @Operation(summary = "分页查询所有用户", description = "需要管理员权限")
+    public ApiResult<PageVO<UserVO>> page(@RequestBody @Valid PageDTO pageDTO) {
+        return userService.page(pageDTO);
+    }
+
+    @Permission(ADMIN)
+    @PutMapping("/role")
+    @Operation(summary = "变更用户权限", description = "需要管理员权限")
+    public ApiResult<Boolean> updateRole(@RequestBody @Valid UpdateRoleDTO dto) {
+        return userService.updateRole(dto);
     }
 
 }

@@ -1,9 +1,11 @@
 package org.ricky.core.user.infra;
 
 import lombok.RequiredArgsConstructor;
+import org.ricky.common.exception.MyException;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
@@ -16,7 +18,9 @@ import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
+import static org.ricky.common.exception.ErrorCodeEnum.AR_NOT_FOUND;
 import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.ricky.common.util.ValidationUtil.requireTrue;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -88,4 +92,30 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
         super.delete(users);
         cachedUserRepository.evictAll();
     }
+
+    @Override
+    public long count() {
+        long cnt = super.count();
+        if (cnt < 1) {
+            throw new MyException(AR_NOT_FOUND, "User not found.");
+        }
+        return cnt;
+    }
+
+    @Override
+    public List<User> page(int totalCnt, int pageNum, int pageSize) {
+        requireTrue(pageNum > 0, "PageNum must be greater than 0.");
+        requireTrue(pageSize > 0, "PageSize must be greater than 0.");
+
+        if ((long) (pageNum - 1) * pageSize > totalCnt) {
+            pageNum = 1;
+        }
+
+        Query query = new Query()
+                .skip((long) (pageNum - 1) * pageSize)
+                .limit(pageSize)
+                .with(Sort.by(Sort.Direction.DESC, "updatedAt"));
+        return mongoTemplate.find(query, User.class);
+    }
+
 }

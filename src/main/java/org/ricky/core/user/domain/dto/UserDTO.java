@@ -1,14 +1,22 @@
 package org.ricky.core.user.domain.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
 import org.ricky.common.domain.DTO;
+import org.ricky.core.common.validation.id.Id;
+import org.ricky.core.common.validation.mobile.Mobile;
+import org.ricky.core.common.validation.password.Password;
 import org.ricky.core.user.domain.GenderEnum;
 
 import java.time.LocalDate;
+
+import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 
 /**
  * @author Ricky
@@ -22,12 +30,26 @@ import java.time.LocalDate;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserDTO implements DTO {
 
+    @NotNull
+    @Id(pre = USER_ID_PREFIX)
     String id;
+
+    @NotNull
+    @Password
     String password;
+
+    @Mobile
     String mobile;
+
+    @Email
     String email;
+
+    @NotNull
     GenderEnum gender;
+
+    @Size(max = 32)
     String description;
+
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDate birthday;
 

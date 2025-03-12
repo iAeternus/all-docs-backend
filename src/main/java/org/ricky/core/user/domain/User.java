@@ -184,12 +184,17 @@ public class User extends AggregateRoot {
         addOpsLog("变更");
     }
 
+    public void onDelete() {
+        addOpsLog("删除");
+    }
+
+    public void updateRole(PermissionEnum newRole) {
+        this.permission = newRole;
+        addOpsLog("变更权限");
+    }
+
     @Override
     public String toString() {
         return JSON.toJSONString(this);
-    }
-
-    public void onDelete() {
-
     }
 }

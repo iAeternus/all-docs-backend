@@ -5,10 +5,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
-import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
-import org.ricky.core.user.domain.dto.RegistryUserDTO;
-import org.ricky.core.user.domain.dto.UserDTO;
-import org.ricky.core.user.domain.dto.UserLoginDTO;
+import org.ricky.common.auth.PermissionEnum;
+import org.ricky.common.domain.PageDTO;
+import org.ricky.common.domain.PageVO;
+import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.util.SetUpApi;
@@ -27,8 +27,9 @@ import java.util.List;
 
 import static java.nio.charset.Charset.defaultCharset;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.ricky.common.auth.PermissionEnum.ADMIN;
+import static org.ricky.common.auth.PermissionEnum.USER;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
-import static org.ricky.common.constants.MessageConstants.SUCCESS;
 import static org.ricky.core.user.domain.GenderEnum.MALE;
 import static org.ricky.core.user.domain.User.newUserId;
 import static org.ricky.util.SetUpApi.TEST_PASSWORD;
@@ -165,7 +166,8 @@ class UserControllerTest {
     @Transactional
     void should_update() {
         SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
-        String res = ApiTest.using(mockMvc)
+
+        ApiTest.using(mockMvc)
                 .put(ROOT_URL)
                 .body(UserDTO.builder()
                         .id(operator.getUserId())
@@ -176,9 +178,7 @@ class UserControllerTest {
                 .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
-                .as(String.class);
-
-        assertEquals(SUCCESS, res);
+                .expectSuccess();
     }
 
     @Test
@@ -187,14 +187,13 @@ class UserControllerTest {
     void should_delete_user_by_id() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
-        String res = ApiTest.using(mockMvc)
+
+        ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", userId)
                 .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
-                .as(String.class);
-
-        assertEquals(SUCCESS, res);
+                .expectSuccess();
     }
 
     @Test
@@ -233,15 +232,14 @@ class UserControllerTest {
                 setUpApi.registry(TEST_USERNAME + "2"),
                 setUpApi.registry(TEST_USERNAME + "3")
         );
-        String res = ApiTest.using(mockMvc)
+
+        ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/batch")
                 .bearerToken(operator.getToken())
                 .body(DeleteByIdBatchDTO.builder().ids(userIds).build())
                 .execute()
                 .expectStatus(200)
-                .as(String.class);
-
-        assertEquals(SUCCESS, res);
+                .expectSuccess();
     }
 
     @Test
@@ -268,27 +266,96 @@ class UserControllerTest {
     @Transactional
     void should_get_true_if_you_are_logged_in() {
         SetUpResponse operator = setUpApi.registryWithLogin();
-        Boolean res = ApiTest.using(mockMvc)
+        ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/login/state")
                 .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
-                .as(Boolean.class);
-
-        assertTrue(res);
+                .expectSuccess();
     }
 
     @Test
     @Rollback
     @Transactional
     void should_get_false_if_you_are_not_logged_in() {
-        Boolean res = ApiTest.using(mockMvc)
+        ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/login/state")
                 .execute()
                 .expectStatus(200)
-                .as(Boolean.class);
+                .expectSuccess();
+    }
 
-        assertFalse(res);
+    @Test
+    @Rollback
+    @Transactional
+    void should_page() {
+        int cnt = 10;
+        for (int i = 0; i < cnt; ++i) {
+            setUpApi.registry(TEST_USERNAME + i);
+        }
+        UserLoginVO operator = setUpApi.adminLogin();
+
+        PageVO<?> pageVO = ApiTest.using(mockMvc)
+                .bearerToken(operator.getToken())
+                .get(ROOT_URL + "/page")
+                .body(PageDTO.builder()
+                        .pageNum(1)
+                        .pageSize(3)
+                        .build())
+                .execute()
+                .expectStatus(200)
+                .as(PageVO.class);
+
+        assertEquals(1, pageVO.getPageNum());
+        assertEquals(3, pageVO.getPageSize());
+        assertEquals(3, pageVO.getData().size());
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_update_role() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/role")
+                .bearerToken(operator.getToken())
+                .body(UpdateRoleDTO.builder().userId(userId).newRole(ADMIN).build())
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_update_if_update_self_role() {
+        UserLoginVO operator = setUpApi.adminLogin();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/role")
+                .bearerToken(operator.getToken())
+                .body(UpdateRoleDTO.builder().userId(operator.getUserId()).newRole(USER).build())
+                .execute()
+                .expectStatus(409)
+                .expectUserMessage("不能变更自身权限");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_update_if_given_same_role() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/role")
+                .bearerToken(operator.getToken())
+                .body(UpdateRoleDTO.builder().userId(userId).newRole(USER).build())
+                .execute()
+                .expectStatus(200)
+                .expectFail();
     }
 
 }

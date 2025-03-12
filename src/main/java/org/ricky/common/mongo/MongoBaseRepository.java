@@ -9,6 +9,7 @@ import org.ricky.common.event.publish.interception.ThreadLocalDomainEventIdHolde
 import org.ricky.common.exception.MyException;
 import org.ricky.common.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.transaction.annotation.Transactional;
@@ -320,16 +321,12 @@ public abstract class MongoBaseRepository<AR extends AggregateRoot> {
     }
 
     /**
-     * 查询同一用户ID下聚合根的个数
+     * 查询聚合根的个数
      *
-     * @param tenantId 用户ID
      * @return 个数
      */
-    public int count(String tenantId) {
-        requireNonBlank(tenantId, "UserContext ID must not be blank.");
-
-        Query query = query(where("tenantId").is(tenantId));
-        return (int) mongoTemplate.count(query, getType());
+    public long count() {
+        return mongoTemplate.count(new Query(), getType());
     }
 
     /**
