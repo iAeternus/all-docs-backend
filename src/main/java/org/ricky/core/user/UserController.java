@@ -2,6 +2,8 @@ package org.ricky.core.user;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -89,6 +91,12 @@ public class UserController {
     @Operation(summary = "根据ID批量删除用户", description = "需要管理员权限")
     public ApiResult<String> deleteByIdBatch(@RequestBody DeleteByIdBatchDTO dto) {
         return userService.deleteByIdBatch(dto);
+    }
+
+    @GetMapping("/login/state")
+    @Operation(summary = "检查登录状态", description = "返回true代表已登录")
+    public ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response) {
+        return userService.checkLoginState(request, response);
     }
 
 }

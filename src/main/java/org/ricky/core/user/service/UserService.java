@@ -1,5 +1,7 @@
 package org.ricky.core.user.service;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.ricky.common.result.ApiResult;
 import org.ricky.core.user.domain.dto.DeleteByIdBatchDTO;
 import org.ricky.core.user.domain.dto.RegistryUserDTO;
@@ -33,4 +35,6 @@ public interface UserService {
     ApiResult<String> deleteById(String userId);
 
     ApiResult<String> deleteByIdBatch(DeleteByIdBatchDTO dto);
+
+    ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response);
 }

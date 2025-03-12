@@ -1,5 +1,8 @@
 package org.ricky.core.user.service.impl;
 
+import com.auth0.jwt.interfaces.Claim;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.context.ThreadLocalContext;
@@ -8,6 +11,7 @@ import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
 import org.ricky.common.result.ApiResult;
+import org.ricky.common.util.JwtUtil;
 import org.ricky.common.util.ValidationUtil;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserDomainService;
@@ -28,11 +32,12 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
+import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.ricky.common.constants.MessageConstants.SUCCESS;
 import static org.ricky.common.exception.ErrorCodeEnum.*;
 import static org.ricky.common.ratelimit.TPSConstants.*;
-import static org.ricky.common.util.ValidationUtil.isEmpty;
-import static org.ricky.common.util.ValidationUtil.isFalse;
+import static org.ricky.common.util.ValidationUtil.*;
 
 /**
  * @author Ricky
@@ -152,6 +157,28 @@ public class UserServiceImpl implements UserService {
         userRepository.delete(users);
 
         return ApiResult.success(SUCCESS);
+    }
+
+    @Override
+    public ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response) {
+        rateLimiter.applyFor("User:CheckLoginState", EXTREMELY_HIGH_TPS);
+
+        // 缓存2s，避免前端频繁刷新
+        response.setHeader("Cache-Control", "max-age=2, public");
+
+        // 获取token
+        final String token = request.getHeader(AUTHORIZATION).substring(BEARER.length());
+        if (isBlank(token)) {
+            return ApiResult.success(false);
+        }
+
+        // 解析token
+        Map<String, Claim> claim = JwtUtil.verifyToken(token);
+        if (isEmpty(claim)) {
+            return ApiResult.success(false);
+        }
+
+        return ApiResult.success(true);
     }
 
 }

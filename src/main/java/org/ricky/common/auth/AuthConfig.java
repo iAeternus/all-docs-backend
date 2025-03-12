@@ -26,6 +26,7 @@ public class AuthConfig extends WebMvcConfigurationSupport {
     private static final String[] EXCLUDE_PATTERNS = {
             "/user/registry",
             "/user/login",
+            "/user/login/state",
     };
 
     /**

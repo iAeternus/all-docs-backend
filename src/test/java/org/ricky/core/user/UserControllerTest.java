@@ -263,4 +263,32 @@ class UserControllerTest {
                 .expectUserMessage("不能删除自身");
     }
 
+    @Test
+    @Rollback
+    @Transactional
+    void should_get_true_if_you_are_logged_in() {
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        Boolean res = ApiTest.using(mockMvc)
+                .get(ROOT_URL + "/login/state")
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(200)
+                .as(Boolean.class);
+
+        assertTrue(res);
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_get_false_if_you_are_not_logged_in() {
+        Boolean res = ApiTest.using(mockMvc)
+                .get(ROOT_URL + "/login/state")
+                .execute()
+                .expectStatus(200)
+                .as(Boolean.class);
+
+        assertFalse(res);
+    }
+
 }
