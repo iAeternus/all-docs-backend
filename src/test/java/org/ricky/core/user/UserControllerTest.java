@@ -14,6 +14,7 @@ import org.ricky.util.SetUpApi;
 import org.ricky.util.SetUpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
@@ -21,13 +22,19 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
 import static java.nio.charset.Charset.defaultCharset;
+import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.auth.PermissionEnum.USER;
+import static org.ricky.common.constants.ConfigConstant.AVATAR_TYPES;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 import static org.ricky.core.user.domain.GenderEnum.MALE;
 import static org.ricky.core.user.domain.User.newUserId;
@@ -457,6 +464,50 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectFail();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_upload_avatar() throws IOException {
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        byte[] content = readAllBytes(Path.of("src/test/resources/avatar.jpg"));
+        MockMultipartFile img = new MockMultipartFile(
+                "img",
+                "avatar.jpg",
+                AVATAR_TYPES[1],
+                content
+        );
+
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/avatar/{userId}", operator.getUserId())
+                .bearerToken(operator.getToken())
+                .file(img)
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_upload_avatar_if_content_type_not_support() throws IOException {
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        byte[] content = readAllBytes(Path.of("src/test/resources/test.txt"));
+        MockMultipartFile img = new MockMultipartFile(
+                "img",
+                "test.txt",
+                "text/plain",
+                content
+        );
+
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/avatar/{userId}", operator.getUserId())
+                .bearerToken(operator.getToken())
+                .file(img)
+                .execute()
+                .expectStatus(400)
+                .expectUserMessage("不支持的文件类型");
     }
 
 }

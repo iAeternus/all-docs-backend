@@ -18,6 +18,7 @@ import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -61,7 +62,7 @@ public class UserController {
     }
 
     @PutMapping
-    @Operation(summary = "变更用户信息", description = "成功返回SUCCESS字符串")
+    @Operation(summary = "变更用户信息")
     public ApiResult<Boolean> updateById(@RequestBody @Valid UserDTO userDTO) {
         return userService.updateById(userDTO);
     }
@@ -124,6 +125,13 @@ public class UserController {
     @Operation(summary = "解封用户", description = "需要管理员权限")
     public ApiResult<Boolean> active(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
         return userService.activate(userId);
+    }
+
+    @PostMapping("/avatar/{userId}")
+    @Operation(summary = "上传头像")
+    public ApiResult<Boolean> uploadAvatar(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId,
+                                           @RequestParam("img") MultipartFile img) {
+        return userService.uploadAvatar(userId, img);
     }
 
 }

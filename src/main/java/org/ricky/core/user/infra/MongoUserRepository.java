@@ -1,6 +1,8 @@
 package org.ricky.core.user.infra;
 
 import lombok.RequiredArgsConstructor;
+import org.ricky.common.constants.ConfigConstant;
+import org.ricky.common.exception.ErrorCodeEnum;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.user.domain.User;
@@ -10,16 +12,20 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.exception.ErrorCodeEnum.AR_NOT_FOUND;
-import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.ricky.common.exception.ErrorCodeEnum.FAILURE_TO_UPLOAD_DFS;
+import static org.ricky.common.util.ValidationUtil.requireNotBlank;
 import static org.ricky.common.util.ValidationUtil.requireTrue;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
@@ -36,10 +42,11 @@ import static org.springframework.data.mongodb.core.query.Query.query;
 public class MongoUserRepository extends MongoBaseRepository<User> implements UserRepository {
 
     private final MongoCachedUserRepository cachedUserRepository;
+    private final GridFsUserRepository gridFsUserRepository;
 
     @Override
     public User cachedById(String id) {
-        requireNonBlank(id, "User ID must not be blank.");
+        requireNotBlank(id, "User ID must not be blank.");
         return cachedUserRepository.cachedById(id);
     }
 
@@ -57,7 +64,7 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
 
     @Override
     public Optional<User> getByUsernameAndPasswordOptional(String username) {
-        requireNonBlank(username, "Username must not be blank");
+        requireNotBlank(username, "Username must not be blank");
 
         Criteria criteria = new Criteria("username").is(username);
         return ofNullable(mongoTemplate.findOne(query(criteria), User.class));
@@ -116,6 +123,17 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
                 .limit(pageSize)
                 .with(Sort.by(Sort.Direction.DESC, "updatedAt"));
         return mongoTemplate.find(query, User.class);
+    }
+
+    @Override
+    public String uploadAvatar(String userId, MultipartFile img) {
+        try {
+            String gridFsId = gridFsUserRepository.upload("userAvatar", img.getInputStream(), img.getContentType());
+            cachedUserRepository.evictUserCache(userId);
+            return gridFsId;
+        } catch (IOException ex) {
+            throw new MyException(FAILURE_TO_UPLOAD_DFS, "上传dfs失败", Map.of("msg", ex.getLocalizedMessage()));
+        }
     }
 
 }

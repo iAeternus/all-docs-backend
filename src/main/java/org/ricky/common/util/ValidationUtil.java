@@ -179,7 +179,7 @@ public class ValidationUtil {
      * @param message 异常信息
      * @return 非空字符串
      */
-    public static String requireNonBlank(String str, String message) {
+    public static String requireNotBlank(String str, String message) {
         if (StringUtils.isBlank(str)) {
             throw new IllegalArgumentException(message);
         }

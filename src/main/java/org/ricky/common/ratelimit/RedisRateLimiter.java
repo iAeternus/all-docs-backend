@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.ricky.common.exception.ErrorCodeEnum.TOO_MANY_REQUEST;
-import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.ricky.common.util.ValidationUtil.requireNotBlank;
 
 /**
  * @author Ricky
@@ -46,8 +46,8 @@ public class RedisRateLimiter implements RateLimiter {
 
     @Override
     public void applyFor(String uid, String key, int tps) {
-        requireNonBlank(uid, "UID must not be blank.");
-        requireNonBlank(key, "Key must not be blank.");
+        requireNotBlank(uid, "UID must not be blank.");
+        requireNotBlank(key, "Key must not be blank.");
 
         // 以5秒为周期统计
         doApply(
@@ -60,7 +60,7 @@ public class RedisRateLimiter implements RateLimiter {
 
     @Override
     public void applyFor(String key, int tps) {
-        requireNonBlank(key, "Key must not be blank.");
+        requireNotBlank(key, "Key must not be blank.");
 
         // 以5秒为周期统计
         doApply(

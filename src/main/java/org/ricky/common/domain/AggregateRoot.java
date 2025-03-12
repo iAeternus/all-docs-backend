@@ -13,7 +13,7 @@ import java.util.List;
 
 import static java.time.Instant.now;
 import static org.ricky.common.util.ValidationUtil.isNull;
-import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.ricky.common.util.ValidationUtil.requireNotBlank;
 
 /**
  * @author Ricky
@@ -95,7 +95,7 @@ public abstract class AggregateRoot implements Identified {
     }
 
     protected AggregateRoot(String id) {
-        requireNonBlank(id, "ID must not be blank.");
+        requireNotBlank(id, "ID must not be blank.");
 
         this.id = id;
         this.userId = ThreadLocalContext.getContext().getUid();
@@ -105,8 +105,8 @@ public abstract class AggregateRoot implements Identified {
     }
 
     protected AggregateRoot(String id, String userId) {
-        requireNonBlank(id, "AR ID must not be blank.");
-        requireNonBlank(userId, "User ID must not be blank.");
+        requireNotBlank(id, "AR ID must not be blank.");
+        requireNotBlank(userId, "User ID must not be blank.");
 
         this.id = id;
         this.userId = userId;

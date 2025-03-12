@@ -27,4 +27,6 @@ public interface ConfigConstant {
     String REDIS_WEBHOOK_CONSUMER_GROUP = "webhook.group";
     String REDIS_NOTIFICATION_CONSUMER_GROUP = "notification.group";
 
+    String[] AVATAR_TYPES = {"image/png", "image/jpeg", "image/gif"};
+
 }

@@ -8,6 +8,7 @@ import org.ricky.common.result.ApiResult;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -44,4 +45,6 @@ public interface UserService {
     ApiResult<Boolean> deactivate(String userId);
 
     ApiResult<Boolean> activate(String userId);
+
+    ApiResult<Boolean> uploadAvatar(String userId, MultipartFile img);
 }

@@ -21,7 +21,7 @@ import static java.util.Objects.requireNonNull;
 import static org.ricky.common.domain.event.DomainEventStatusEnum.*;
 import static org.ricky.common.exception.ErrorCodeEnum.DOMAIN_EVENT_NOT_FOUND;
 import static org.ricky.common.util.ValidationUtil.isNull;
-import static org.ricky.common.util.ValidationUtil.requireNonBlank;
+import static org.ricky.common.util.ValidationUtil.requireNotBlank;
 import static org.springframework.data.domain.Sort.Direction.ASC;
 import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -50,7 +50,7 @@ public class MongoDomainEventDao implements DomainEventDao {
 
     @Override
     public DomainEvent byId(String id) {
-        requireNonBlank(id, "Domain event ID must not be blank.");
+        requireNotBlank(id, "Domain event ID must not be blank.");
 
         DomainEvent domanEvent = mongoTemplate.findOne(query(where("_id").is(id)), DomainEvent.class);
         if (isNull(domanEvent)) {
@@ -70,7 +70,7 @@ public class MongoDomainEventDao implements DomainEventDao {
 
     @Override
     public <T extends DomainEvent> T latestEventFor(String arId, DomainEventTypeEnum type, Class<T> eventClass) {
-        requireNonBlank(arId, "AR ID must not be blank.");
+        requireNotBlank(arId, "AR ID must not be blank.");
         requireNonNull(type, "Domain event type must not be null.");
         requireNonNull(eventClass, "Domain event class must not be null.");
 
@@ -120,7 +120,7 @@ public class MongoDomainEventDao implements DomainEventDao {
 
     @Override
     public List<DomainEvent> tobePublishedEvents(String startId, int limit) {
-        requireNonBlank(startId, "Start ID must not be blank.");
+        requireNotBlank(startId, "Start ID must not be blank.");
 
         Query query = query(where("status").in(CREATED, PUBLISH_FAILED, CONSUME_FAILED)
                 .and("_id").gt(startId)

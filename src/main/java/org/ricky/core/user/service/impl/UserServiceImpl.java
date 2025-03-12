@@ -25,6 +25,7 @@ import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -32,8 +33,8 @@ import java.util.Set;
 
 import static com.google.common.collect.ImmutableList.toImmutableList;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
-import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
-import static org.ricky.common.constants.ConfigConstant.BEARER;
+import static java.util.Arrays.stream;
+import static org.ricky.common.constants.ConfigConstant.*;
 import static org.ricky.common.exception.ErrorCodeEnum.*;
 import static org.ricky.common.ratelimit.TPSConstants.*;
 import static org.ricky.common.util.ValidationUtil.*;
@@ -246,6 +247,24 @@ public class UserServiceImpl implements UserService {
             return ApiResult.fail();
         }
         user.activate();
+        userRepository.save(user);
+
+        return ApiResult.success();
+    }
+
+    @Override
+    @Transactional
+    public ApiResult<Boolean> uploadAvatar(String userId, MultipartFile img) {
+        rateLimiter.applyFor("User:UploadAvatar", MINIMUM_TPS);
+
+        if(stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
+            throw new MyException(UNSUPPORTED_FILE_TYPES, "不支持的文件类型",
+                    Map.of("contentType", img.getContentType()));
+        }
+
+        User user = userRepository.cachedById(userId);
+        String gridFsId = userRepository.uploadAvatar(userId, img);
+        user.addAvatar(gridFsId);
         userRepository.save(user);
 
         return ApiResult.success();

@@ -106,7 +106,11 @@ public class User extends AggregateRoot {
         super(id);
         this.username = username;
         this.password = password;
+        this.gender = UNKNOWN;
+        this.avatarList = new ArrayList<>();
+        this.status = ENABLE;
         this.permission = ADMIN;
+        this.lastLogin = now();
         addOpsLog("新建");
     }
 
@@ -183,6 +187,12 @@ public class User extends AggregateRoot {
     public void updateRole(PermissionEnum newRole) {
         this.permission = newRole;
         addOpsLog("变更权限");
+    }
+
+    public void addAvatar(String gridFsId) {
+        this.avatarList.add(gridFsId);
+        this.avatar = gridFsId;
+        addOpsLog("新增头像");
     }
 
     @Override

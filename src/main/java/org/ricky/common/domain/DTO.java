@@ -13,4 +13,7 @@ package org.ricky.common.domain;
  */
 public interface DTO {
 
+    default void correctAndValidate() {
+    }
+
 }

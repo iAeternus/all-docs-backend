@@ -1,5 +1,7 @@
 package org.ricky.core.user.domain;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,4 +35,6 @@ public interface UserRepository {
     long count();
 
     List<User> page(int totalCnt, int pageNum, int pageSize);
+
+    String uploadAvatar(String userId, MultipartFile img);
 }

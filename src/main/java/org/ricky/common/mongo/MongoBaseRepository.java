@@ -9,7 +9,6 @@ import org.ricky.common.event.publish.interception.ThreadLocalDomainEventIdHolde
 import org.ricky.common.exception.MyException;
 import org.ricky.common.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.transaction.annotation.Transactional;
@@ -197,7 +196,7 @@ public abstract class MongoBaseRepository<AR extends AggregateRoot> {
      * @return 聚合根
      */
     public AR byId(String id) {
-        requireNonBlank(id, "AggregateRoot ID must not be blank.");
+        requireNotBlank(id, "AggregateRoot ID must not be blank.");
 
         Object ar = mongoTemplate.findById(id, getType());
         if (isNull(ar)) {
@@ -216,7 +215,7 @@ public abstract class MongoBaseRepository<AR extends AggregateRoot> {
      * @return 聚合根
      */
     public Optional<AR> byIdOptional(String id) {
-        requireNonBlank(id, "AggregateRoot ID must not be blank.");
+        requireNotBlank(id, "AggregateRoot ID must not be blank.");
 
         Object ar = mongoTemplate.findById(id, getType());
         return isNull(ar) ? Optional.empty() : Optional.of((AR) ar);
@@ -231,7 +230,7 @@ public abstract class MongoBaseRepository<AR extends AggregateRoot> {
      * @return 聚合根
      */
     public AR byIdAndCheckUserShip(String id) {
-        requireNonBlank(id, "AggregateRoot ID must not be blank.");
+        requireNotBlank(id, "AggregateRoot ID must not be blank.");
 
         AR ar = byId(id);
         checkUserShip(ar);
@@ -336,7 +335,7 @@ public abstract class MongoBaseRepository<AR extends AggregateRoot> {
      * @return true=存在 false=不存在
      */
     public boolean exists(String arId) {
-        requireNonBlank(arId, "AggregateRoot ID must not be blank.");
+        requireNotBlank(arId, "AggregateRoot ID must not be blank.");
 
         Query query = query(where("_id").is(arId));
         return mongoTemplate.exists(query, getType());
