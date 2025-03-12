@@ -22,6 +22,7 @@ import static java.time.LocalDateTime.now;
 import static org.ricky.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.domain.OpsLogTypeEnum.*;
 import static org.ricky.common.exception.ErrorCodeEnum.USER_ALREADY_DEACTIVATED;
 import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
 import static org.ricky.common.util.ValidationUtil.*;
@@ -111,7 +112,7 @@ public class User extends AggregateRoot {
         this.status = ENABLE;
         this.permission = ADMIN;
         this.lastLogin = now();
-        addOpsLog("新建");
+        addOpsLog(CREATE, "新建");
     }
 
     public User(String username, String password, PermissionEnum permission) {
@@ -123,7 +124,7 @@ public class User extends AggregateRoot {
         this.status = ENABLE;
         this.permission = permission;
         this.lastLogin = now();
-        addOpsLog("新建");
+        addOpsLog(CREATE, "新建");
     }
 
     public static String newUserId() {
@@ -152,12 +153,12 @@ public class User extends AggregateRoot {
 
     public void activate() {
         status = ENABLE;
-        addOpsLog("启用");
+        addOpsLog(MODIFY, "启用");
     }
 
     public void deactivate() {
         status = DISABLE;
-        addOpsLog("禁用");
+        addOpsLog(MODIFY, "禁用");
     }
 
     public void checkActive() {
@@ -177,22 +178,22 @@ public class User extends AggregateRoot {
         this.gender = nonNull(gender) ? gender : this.gender;
         this.description = isNotBlank(description) ? description : this.description;
         this.birthday = nonNull(birthday) ? birthday : this.birthday;
-        addOpsLog("变更");
+        addOpsLog(MODIFY, "变更");
     }
 
     public void onDelete() {
-        addOpsLog("删除");
+        addOpsLog(DELETE, "删除");
     }
 
     public void updateRole(PermissionEnum newRole) {
         this.permission = newRole;
-        addOpsLog("变更权限");
+        addOpsLog(MODIFY, "变更权限");
     }
 
     public void addAvatar(String gridFsId) {
         this.avatarList.add(gridFsId);
         this.avatar = gridFsId;
-        addOpsLog("新增头像");
+        addOpsLog(MODIFY, "新增头像");
     }
 
     @Override
@@ -203,11 +204,11 @@ public class User extends AggregateRoot {
     public void removeAvatar() {
         this.avatarList.remove(avatar);
         this.avatar = null;
-        addOpsLog("删除头像");
+        addOpsLog(MODIFY, "删除头像");
     }
 
     public void resetPwd(String newPwd) {
         this.password = newPwd;
-        addOpsLog("重置密码");
+        addOpsLog(MODIFY, "重置密码");
     }
 }

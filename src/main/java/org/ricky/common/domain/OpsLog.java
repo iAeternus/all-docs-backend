@@ -36,6 +36,11 @@ public class OpsLog implements Serializable {
     String obn;
 
     /**
+     * 操作类型
+     */
+    OpsLogTypeEnum type;
+
+    /**
      * 记录
      */
     String note;

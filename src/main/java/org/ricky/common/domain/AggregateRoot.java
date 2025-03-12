@@ -31,7 +31,7 @@ public abstract class AggregateRoot implements Identified {
     /**
      * 最多保留的操作日志数量
      */
-    public static final int MAX_OPS_LOG_SIZE = 100;
+    public static final int MAX_OPS_LOG_SIZE = 128;
 
     /**
      * 标识符，通过Snowflake算法生成
@@ -116,12 +116,23 @@ public abstract class AggregateRoot implements Identified {
     }
 
     /**
-     * 添加操作日志
+     * 添加操作日志，默认无类型
      *
      * @param note 记录
      */
     protected void addOpsLog(String note) {
+        addOpsLog(OpsLogTypeEnum.NONE, note);
+    }
+
+    /**
+     * 添加操作日志
+     *
+     * @param type 操作类型
+     * @param note 记录
+     */
+    protected void addOpsLog(OpsLogTypeEnum type, String note) {
         OpsLog log = OpsLog.builder()
+                .type(type)
                 .note(note)
                 .optAt(now())
                 .optBy(ThreadLocalContext.getContext().getUid())
