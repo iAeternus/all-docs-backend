@@ -12,7 +12,7 @@ import org.ricky.common.exception.MyException;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
-import org.ricky.common.result.ApiResult;
+import org.ricky.common.domain.ApiResult;
 import org.ricky.common.util.JwtUtil;
 import org.ricky.common.util.ValidationUtil;
 import org.ricky.core.user.domain.User;

@@ -4,7 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.ricky.common.domain.PageDTO;
 import org.ricky.common.domain.PageVO;
-import org.ricky.common.result.ApiResult;
+import org.ricky.common.domain.ApiResult;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;

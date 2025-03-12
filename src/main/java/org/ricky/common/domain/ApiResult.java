@@ -1,4 +1,4 @@
-package org.ricky.common.result;
+package org.ricky.common.domain;
 
 import lombok.Getter;
 import lombok.Value;

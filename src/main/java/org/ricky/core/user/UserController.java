@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.auth.Permission;
 import org.ricky.common.domain.PageDTO;
 import org.ricky.common.domain.PageVO;
-import org.ricky.common.result.ApiResult;
+import org.ricky.common.domain.ApiResult;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
