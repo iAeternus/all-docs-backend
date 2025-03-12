@@ -7,6 +7,8 @@ import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
 import org.ricky.common.domain.PageDTO;
 import org.ricky.common.domain.PageVO;
+import org.ricky.core.user.domain.User;
+import org.ricky.core.user.domain.UserRepository;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
@@ -22,9 +24,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
@@ -60,6 +60,9 @@ class UserControllerTest {
     @Autowired
     SetUpApi setUpApi;
 
+    @Autowired
+    UserRepository userRepository;
+
     static final String ROOT_URL = "/user";
 
     @BeforeEach
@@ -77,6 +80,7 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .as(String.class);
+
         assertTrue(userId.startsWith(USER_ID_PREFIX));
     }
 
@@ -86,6 +90,7 @@ class UserControllerTest {
     void should_fail_to_registry_if_username_already_exists() {
         // 注册以抢占用户名
         setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/registry")
                 .body(RegistryUserDTO.builder().username(TEST_USERNAME).password(TEST_PASSWORD).build())
@@ -100,6 +105,7 @@ class UserControllerTest {
     @Transactional
     void should_login() {
         String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+
         UserLoginVO userLoginVO = ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/login")
                 .body(UserLoginDTO.builder().username(TEST_USERNAME).password(TEST_PASSWORD).build())
@@ -116,6 +122,7 @@ class UserControllerTest {
     @Transactional
     void should_fail_to_login_if_password_incorrect() {
         setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/login")
                 .body(UserLoginDTO.builder().username(TEST_USERNAME).password("1234567").build())
@@ -129,6 +136,7 @@ class UserControllerTest {
     @Transactional
     void should_get_user_by_id() {
         SetUpResponse operator = setUpApi.registryWithLogin();
+
         UserVO userVO = ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/id/{userId}", operator.getUserId())
                 .bearerToken(operator.getToken())
@@ -144,6 +152,7 @@ class UserControllerTest {
     @Transactional
     void should_fail_to_get_if_user_id_not_exists() {
         SetUpResponse operator = setUpApi.registryWithLogin();
+
         ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/id/{userId}", newUserId())
                 .bearerToken(operator.getToken())
@@ -157,6 +166,7 @@ class UserControllerTest {
     @Transactional
     void should_get_user_by_username() {
         SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+
         UserVO userVO = ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/username/{userId}", TEST_USERNAME)
                 .bearerToken(operator.getToken())
@@ -172,15 +182,16 @@ class UserControllerTest {
     @Transactional
     void should_update() {
         SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+        UserDTO userDTO = UserDTO.builder()
+                .id(operator.getUserId())
+                .password("1234567")
+                .gender(MALE)
+                .birthday(LocalDate.of(2004, 7, 23))
+                .build();
 
         ApiTest.using(mockMvc)
                 .put(ROOT_URL)
-                .body(UserDTO.builder()
-                        .id(operator.getUserId())
-                        .password("1234567")
-                        .gender(MALE)
-                        .birthday(LocalDate.of(2004, 7, 23))
-                        .build())
+                .body(userDTO)
                 .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
@@ -188,8 +199,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_delete_user_by_id() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
@@ -200,6 +209,8 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectSuccess();
+
+        assertFalse(userRepository.exists(userId));
     }
 
     @Test
@@ -208,6 +219,7 @@ class UserControllerTest {
     void should_fail_to_delete_if_permission_not_admin() {
         SetUpResponse operator = setUpApi.registryWithLogin();
         String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", userId)
                 .bearerToken(operator.getToken())
@@ -220,6 +232,7 @@ class UserControllerTest {
     @Transactional
     void should_fail_to_delete_if_delete_self() {
         UserLoginVO operator = setUpApi.adminLogin();
+
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", operator.getUserId())
                 .bearerToken(operator.getToken())
@@ -229,8 +242,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_delete_by_id_batch() {
         UserLoginVO operator = setUpApi.adminLogin();
         List<String> userIds = List.of(
@@ -258,6 +269,7 @@ class UserControllerTest {
                 setUpApi.registry(TEST_USERNAME + "2"),
                 operator.getUserId()
         );
+
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/batch")
                 .bearerToken(operator.getToken())
@@ -272,6 +284,7 @@ class UserControllerTest {
     @Transactional
     void should_get_true_if_you_are_logged_in() {
         SetUpResponse operator = setUpApi.registryWithLogin();
+
         ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/login/state")
                 .bearerToken(operator.getToken())
@@ -331,6 +344,9 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectSuccess();
+
+        User user = userRepository.cachedById(userId);
+        assertEquals(ADMIN, user.getPermission());
     }
 
     @Test
@@ -362,8 +378,17 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectFail();
+
+        User user = userRepository.cachedById(userId);
+        assertEquals(USER, user.getPermission());
     }
 
+    /*
+    TODO 作为最后一个执行的单测，产生了redis数据与mongo数据不一致的问题，
+    TODO 删除缓存的方法很离奇地被调用了多次
+    2025-03-12 19:52:16.861 [main] [INFO ] o.r.c.u.i.MongoCachedUserRepository:evictUserCache [] [all-docs-backend] Evicted cache for user[USR687613677062691840].
+    2025-03-12 19:52:16.883 [main] [INFO ] o.r.c.u.i.MongoCachedUserRepository:evictUserCache [] [all-docs-backend] Evicted cache for user[USR687613677062691840].
+    */
     @Test
     @Rollback
     @Transactional
@@ -377,6 +402,9 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectSuccess();
+
+        User user = userRepository.cachedById(userId);
+        assertTrue(user.isDeactivate());
     }
 
     @Test
@@ -412,6 +440,9 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectFail();
+
+        User user = userRepository.cachedById(userId);
+        assertTrue(user.isDeactivate());
     }
 
     @Test
@@ -434,6 +465,9 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectSuccess();
+
+        User user = userRepository.cachedById(userId);
+        assertTrue(user.isActivate());
     }
 
     @Test
@@ -464,6 +498,9 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectFail();
+
+        User user = userRepository.cachedById(userId);
+        assertTrue(user.isActivate());
     }
 
     @Test
@@ -472,12 +509,7 @@ class UserControllerTest {
     void should_upload_avatar() throws IOException {
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/avatar.jpg"));
-        MockMultipartFile img = new MockMultipartFile(
-                "img",
-                "avatar.jpg",
-                AVATAR_TYPES[1],
-                content
-        );
+        MockMultipartFile img = new MockMultipartFile("img", "avatar.jpg", AVATAR_TYPES[1], content);
 
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/avatar")
@@ -486,6 +518,10 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(200)
                 .expectSuccess();
+
+        User user = userRepository.cachedById(operator.getUserId());
+        assertNotNull(user.getAvatar());
+        assertNotNull(user.getAvatarList());
     }
 
     @Test
@@ -494,12 +530,7 @@ class UserControllerTest {
     void should_fail_to_upload_avatar_if_content_type_not_support() throws IOException {
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/test.txt"));
-        MockMultipartFile img = new MockMultipartFile(
-                "img",
-                "test.txt",
-                "text/plain",
-                content
-        );
+        MockMultipartFile img = new MockMultipartFile("img", "test.txt", "text/plain", content);
 
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/avatar")
@@ -508,6 +539,30 @@ class UserControllerTest {
                 .execute()
                 .expectStatus(400)
                 .expectUserMessage("不支持的文件类型");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_delete_avatar() throws IOException {
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        byte[] content = readAllBytes(Path.of("src/test/resources/avatar.jpg"));
+        MockMultipartFile img = new MockMultipartFile("img", "avatar.jpg", AVATAR_TYPES[1], content);
+
+        // 先上传一个，备删
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/avatar")
+                .bearerToken(operator.getToken())
+                .file(img)
+                .execute();
+
+        // 删除
+        ApiTest.using(mockMvc)
+                .delete(ROOT_URL + "/avatar")
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
     }
 
 }

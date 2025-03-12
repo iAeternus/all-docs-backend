@@ -138,12 +138,15 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.cachedById(userId);
         userRepository.deleteById(user);
-        // TODO 删除头像
+
+        // 删除头像
+        userRepository.deleteAvatars(user.getAvatarList().stream().collect(toImmutableSet()));
 
         return ApiResult.success();
     }
 
     @Override
+    @Transactional
     public ApiResult<Boolean> deleteByIdBatch(DeleteByIdBatchDTO dto) {
         rateLimiter.applyFor("User:DeleteByIdBatch", MINIMUM_TPS);
 
@@ -155,6 +158,12 @@ public class UserServiceImpl implements UserService {
 
         List<User> users = userRepository.listByIds(ids);
         userRepository.delete(users);
+
+        // 删除头像
+        Set<String> avatars = users.stream()
+                .flatMap(user -> user.getAvatarList().stream())
+                .collect(toImmutableSet());
+        userRepository.deleteAvatars(avatars);
 
         return ApiResult.success();
     }
@@ -257,7 +266,7 @@ public class UserServiceImpl implements UserService {
     public ApiResult<Boolean> uploadAvatar(MultipartFile img) {
         rateLimiter.applyFor("User:UploadAvatar", MINIMUM_TPS);
 
-        if(stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
+        if (stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
             throw new MyException(UNSUPPORTED_FILE_TYPES, "不支持的文件类型",
                     Map.of("contentType", img.getContentType()));
         }
@@ -266,6 +275,20 @@ public class UserServiceImpl implements UserService {
         User user = userRepository.cachedById(userId);
         String gridFsId = userRepository.uploadAvatar(userId, img);
         user.addAvatar(gridFsId);
+        userRepository.save(user);
+
+        return ApiResult.success();
+    }
+
+    @Override
+    @Transactional
+    public ApiResult<Boolean> deleteAvatar() {
+        rateLimiter.applyFor("User:DeleteAvatar", MINIMUM_TPS);
+
+        String userId = ThreadLocalContext.getContext().getUid();
+        User user = userRepository.cachedById(userId);
+        userRepository.deleteAvatar(userId, user.getAvatar());
+        user.removeAvatar();
         userRepository.save(user);
 
         return ApiResult.success();

@@ -133,4 +133,10 @@ public class UserController {
         return userService.uploadAvatar(img);
     }
 
+    @DeleteMapping("/avatar")
+    @Operation(summary = "删除头像")
+    public ApiResult<Boolean> deleteAvatar() {
+        return userService.deleteAvatar();
+    }
+
 }

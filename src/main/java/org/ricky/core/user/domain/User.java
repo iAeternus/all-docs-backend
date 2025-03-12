@@ -199,4 +199,10 @@ public class User extends AggregateRoot {
     public String toString() {
         return JSON.toJSONString(this);
     }
+
+    public void removeAvatar() {
+        this.avatarList.remove(avatar);
+        this.avatar = null;
+        addOpsLog("删除头像");
+    }
 }

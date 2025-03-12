@@ -37,4 +37,8 @@ public interface UserRepository {
     List<User> page(int totalCnt, int pageNum, int pageSize);
 
     String uploadAvatar(String userId, MultipartFile img);
+
+    void deleteAvatar(String userId, String avatar);
+
+    void deleteAvatars(Set<String> avatars);
 }

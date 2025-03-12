@@ -1,8 +1,6 @@
 package org.ricky.core.user.infra;
 
 import lombok.RequiredArgsConstructor;
-import org.ricky.common.constants.ConfigConstant;
-import org.ricky.common.exception.ErrorCodeEnum;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.user.domain.User;
@@ -134,6 +132,19 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
         } catch (IOException ex) {
             throw new MyException(FAILURE_TO_UPLOAD_DFS, "上传dfs失败", Map.of("msg", ex.getLocalizedMessage()));
         }
+    }
+
+    @Override
+    public void deleteAvatar(String userId, String avatar) {
+        gridFsUserRepository.delete(avatar);
+        cachedUserRepository.evictUserCache(userId);
+    }
+
+    // 由于avatars可能分属不同user，故删除所有缓存
+    @Override
+    public void deleteAvatars(Set<String> avatars) {
+        gridFsUserRepository.delete(avatars);
+        cachedUserRepository.evictAll();
     }
 
 }

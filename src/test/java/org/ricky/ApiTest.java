@@ -218,24 +218,6 @@ public class ApiTest {
     }
 
     /**
-     * 添加文件参数（自动设置multipart/form-data）
-     *
-     * @param name             参数名
-     * @param content          文件内容字节数组
-     * @param originalFilename 原始文件名
-     * @return 当前实例（链式调用）
-     */
-    public ApiTest file(String name, byte[] content, String originalFilename) {
-        multipartFiles.put(name, new MockMultipartFile(
-                name,
-                originalFilename,
-                APPLICATION_OCTET_STREAM_VALUE,
-                content
-        ));
-        return this;
-    }
-
-    /**
      * 添加预构建的MultipartFile文件参数
      *
      * @param file MockMultipartFile实例
