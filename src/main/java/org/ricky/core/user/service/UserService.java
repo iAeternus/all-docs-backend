@@ -40,4 +40,8 @@ public interface UserService {
     ApiResult<PageVO<UserVO>> page(PageDTO pageDTO);
 
     ApiResult<Boolean> updateRole(UpdateRoleDTO dto);
+
+    ApiResult<Boolean> deactivate(String userId);
+
+    ApiResult<Boolean> activate(String userId);
 }

@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.auth.Permission;
 import org.ricky.common.domain.PageDTO;
@@ -111,6 +110,20 @@ public class UserController {
     @Operation(summary = "变更用户权限", description = "需要管理员权限")
     public ApiResult<Boolean> updateRole(@RequestBody @Valid UpdateRoleDTO dto) {
         return userService.updateRole(dto);
+    }
+
+    @Permission(ADMIN)
+    @PutMapping("/deactivate/{userId}")
+    @Operation(summary = "封禁用户", description = "需要管理员权限")
+    public ApiResult<Boolean> deactivate(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
+        return userService.deactivate(userId);
+    }
+
+    @Permission(ADMIN)
+    @PutMapping("/activate/{userId}")
+    @Operation(summary = "解封用户", description = "需要管理员权限")
+    public ApiResult<Boolean> active(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId) {
+        return userService.activate(userId);
     }
 
 }

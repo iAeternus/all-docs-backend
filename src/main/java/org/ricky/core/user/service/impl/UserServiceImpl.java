@@ -199,7 +199,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApiResult<Boolean> updateRole(UpdateRoleDTO dto) {
-        rateLimiter.applyFor("User:Page", MINIMUM_TPS);
+        rateLimiter.applyFor("User:UpdateRole", MINIMUM_TPS);
 
         if (ThreadLocalContext.getContext().isSelf(dto.getUserId())) {
             throw new MyException(CANNOT_UPDATE_SELF_ROLE, "不能变更自身权限", Map.of("userId", dto.getUserId()));
@@ -210,6 +210,42 @@ public class UserServiceImpl implements UserService {
             return ApiResult.fail();
         }
         user.updateRole(dto.getNewRole());
+        userRepository.save(user);
+
+        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult<Boolean> deactivate(String userId) {
+        rateLimiter.applyFor("User:Deactivate", MINIMUM_TPS);
+
+        if (ThreadLocalContext.getContext().isSelf(userId)) {
+            throw new MyException(CANNOT_DEACTIVATE_SELF, "不能封禁自己", Map.of("userId", userId));
+        }
+
+        User user = userRepository.cachedById(userId);
+        if (user.isDeactivate()) {
+            return ApiResult.fail();
+        }
+        user.deactivate();
+        userRepository.save(user);
+
+        return ApiResult.success();
+    }
+
+    @Override
+    public ApiResult<Boolean> activate(String userId) {
+        rateLimiter.applyFor("User:Activate", MINIMUM_TPS);
+
+        if (ThreadLocalContext.getContext().isSelf(userId)) {
+            throw new MyException(CANNOT_ACTIVATE_SELF, "不能解封自己", Map.of("userId", userId));
+        }
+
+        User user = userRepository.cachedById(userId);
+        if (user.isActivate()) {
+            return ApiResult.fail();
+        }
+        user.activate();
         userRepository.save(user);
 
         return ApiResult.success();

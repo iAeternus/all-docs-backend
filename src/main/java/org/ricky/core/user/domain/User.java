@@ -147,19 +147,11 @@ public class User extends AggregateRoot {
     }
 
     public void activate() {
-        if (isActivate()) {
-            return;
-        }
-
         status = ENABLE;
         addOpsLog("启用");
     }
 
     public void deactivate() {
-        if (isDeactivate()) {
-            return;
-        }
-
         status = DISABLE;
         addOpsLog("禁用");
     }

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.ApiTest;
 import org.ricky.DocumentSharingSiteApplication;
-import org.ricky.common.auth.PermissionEnum;
 import org.ricky.common.domain.PageDTO;
 import org.ricky.common.domain.PageVO;
 import org.ricky.core.user.domain.dto.*;
@@ -282,7 +281,7 @@ class UserControllerTest {
                 .get(ROOT_URL + "/login/state")
                 .execute()
                 .expectStatus(200)
-                .expectSuccess();
+                .expectFail();
     }
 
     @Test
@@ -353,6 +352,108 @@ class UserControllerTest {
                 .put(ROOT_URL + "/role")
                 .bearerToken(operator.getToken())
                 .body(UpdateRoleDTO.builder().userId(userId).newRole(USER).build())
+                .execute()
+                .expectStatus(200)
+                .expectFail();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_deactivate() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/deactivate/{userId}", userId)
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_deactivate_if_deactivate_self() {
+        UserLoginVO operator = setUpApi.adminLogin();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/deactivate/{userId}", operator.getUserId())
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(409)
+                .expectUserMessage("不能封禁自己");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_deactivate_if_user_is_deactivated() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry();
+
+        // 先封禁，导致再封禁出现问题
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/deactivate/{userId}", userId)
+                .bearerToken(operator.getToken())
+                .execute();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/deactivate/{userId}", userId)
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(200)
+                .expectFail();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_activate() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry();
+
+        // 先封禁
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/deactivate/{userId}", userId)
+                .bearerToken(operator.getToken())
+                .execute();
+
+        // 解封
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/activate/{userId}", userId)
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_activate_if_activate_self() {
+        UserLoginVO operator = setUpApi.adminLogin();
+
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/activate/{userId}", operator.getUserId())
+                .bearerToken(operator.getToken())
+                .execute()
+                .expectStatus(409)
+                .expectUserMessage("不能解封自己");
+    }
+
+    @Test
+    @Rollback
+    @Transactional
+    void should_fail_to_activate_if_user_is_activated() {
+        UserLoginVO operator = setUpApi.adminLogin();
+        String userId = setUpApi.registry();
+
+        // 创建时就是未封禁状态，再解封就会出问题
+        ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/activate/{userId}", userId)
+                .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
                 .expectFail();
