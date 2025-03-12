@@ -18,11 +18,9 @@ import org.ricky.util.SetUpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
@@ -30,7 +28,6 @@ import java.nio.file.Path;
 import java.time.LocalDate;
 import java.util.List;
 
-import static java.nio.charset.Charset.defaultCharset;
 import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.common.auth.PermissionEnum.ADMIN;
@@ -39,8 +36,8 @@ import static org.ricky.common.constants.ConfigConstant.AVATAR_TYPES;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 import static org.ricky.core.user.domain.GenderEnum.MALE;
 import static org.ricky.core.user.domain.User.newUserId;
-import static org.ricky.util.SetUpApi.TEST_PASSWORD;
-import static org.ricky.util.SetUpApi.TEST_USERNAME;
+import static org.ricky.util.RandomTestFixture.rPassword;
+import static org.ricky.util.RandomTestFixture.rUsername;
 
 /**
  * @author Ricky
@@ -75,12 +72,10 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_registry() {
         String userId = ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/registry")
-                .body(RegistryUserDTO.builder().username(TEST_USERNAME).password(TEST_PASSWORD).build())
+                .body(RegistryUserDTO.builder().username(rUsername()).password(rPassword()).build())
                 .execute()
                 .expectStatus(200)
                 .as(String.class);
@@ -89,30 +84,29 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_registry_if_username_already_exists() {
         // 注册以抢占用户名
-        setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+        String username = rUsername();
+        String password = rPassword();
+        setUpApi.registry(username, password);
 
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/registry")
-                .body(RegistryUserDTO.builder().username(TEST_USERNAME).password(TEST_PASSWORD).build())
-                .charset(defaultCharset())
+                .body(RegistryUserDTO.builder().username(username).password(password).build())
                 .execute()
                 .expectStatus(409)
                 .expectUserMessage("注册失败，用户名已存在");
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_login() {
-        String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+        String username = rUsername();
+        String password = rPassword();
+        String userId = setUpApi.registry(username, password);
 
         UserLoginVO userLoginVO = ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/login")
-                .body(UserLoginDTO.builder().username(TEST_USERNAME).password(TEST_PASSWORD).build())
+                .body(UserLoginDTO.builder().username(username).password(password).build())
                 .execute()
                 .expectStatus(200)
                 .as(UserLoginVO.class);
@@ -122,22 +116,19 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_login_if_password_incorrect() {
-        setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+        String username = rUsername();
+        setUpApi.registry(username);
 
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/login")
-                .body(UserLoginDTO.builder().username(TEST_USERNAME).password("1234567").build())
+                .body(UserLoginDTO.builder().username(username).password("1234567").build())
                 .execute()
                 .expectStatus(401)
                 .expectUserMessage("登录失败。");
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_get_user_by_id() {
         SetUpResponse operator = setUpApi.registryWithLogin();
 
@@ -152,8 +143,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_get_if_user_id_not_exists() {
         SetUpResponse operator = setUpApi.registryWithLogin();
 
@@ -166,26 +155,23 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_get_user_by_username() {
-        SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+        String username = rUsername();
+        SetUpResponse operator = setUpApi.registryWithLogin(username);
 
         UserVO userVO = ApiTest.using(mockMvc)
-                .get(ROOT_URL + "/username/{userId}", TEST_USERNAME)
+                .get(ROOT_URL + "/username/{userId}", username)
                 .bearerToken(operator.getToken())
                 .execute()
                 .expectStatus(200)
                 .as(UserVO.class);
 
-        assertEquals(userVO.getUsername(), TEST_USERNAME);
+        assertEquals(userVO.getUsername(), username);
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_update() {
-        SetUpResponse operator = setUpApi.registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+        SetUpResponse operator = setUpApi.registryWithLogin();
         UserDTO userDTO = UserDTO.builder()
                 .id(operator.getUserId())
                 .password("1234567")
@@ -205,7 +191,7 @@ class UserControllerTest {
     @Test
     void should_delete_user_by_id() {
         UserLoginVO operator = setUpApi.adminLogin();
-        String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+        String userId = setUpApi.registry();
 
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", userId)
@@ -218,11 +204,9 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_delete_if_permission_not_admin() {
         SetUpResponse operator = setUpApi.registryWithLogin();
-        String userId = setUpApi.registry(TEST_USERNAME, TEST_PASSWORD);
+        String userId = setUpApi.registry();
 
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/{userId}", userId)
@@ -232,8 +216,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_delete_if_delete_self() {
         UserLoginVO operator = setUpApi.adminLogin();
 
@@ -248,11 +230,7 @@ class UserControllerTest {
     @Test
     void should_delete_by_id_batch() {
         UserLoginVO operator = setUpApi.adminLogin();
-        List<String> userIds = List.of(
-                setUpApi.registry(TEST_USERNAME + "1"),
-                setUpApi.registry(TEST_USERNAME + "2"),
-                setUpApi.registry(TEST_USERNAME + "3")
-        );
+        List<String> userIds = List.of(setUpApi.registry(), setUpApi.registry(), setUpApi.registry());
 
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/batch")
@@ -264,15 +242,9 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_delete_batch_if_contains_self() {
         UserLoginVO operator = setUpApi.adminLogin();
-        List<String> userIds = List.of(
-                setUpApi.registry(TEST_USERNAME + "1"),
-                setUpApi.registry(TEST_USERNAME + "2"),
-                operator.getUserId()
-        );
+        List<String> userIds = List.of(setUpApi.registry(), setUpApi.registry(), operator.getUserId());
 
         ApiTest.using(mockMvc)
                 .delete(ROOT_URL + "/batch")
@@ -284,8 +256,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_get_true_if_you_are_logged_in() {
         SetUpResponse operator = setUpApi.registryWithLogin();
 
@@ -298,8 +268,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_get_false_if_you_are_not_logged_in() {
         ApiTest.using(mockMvc)
                 .get(ROOT_URL + "/login/state")
@@ -309,12 +277,10 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_page() {
         int cnt = 10;
         for (int i = 0; i < cnt; ++i) {
-            setUpApi.registry(TEST_USERNAME + i);
+            setUpApi.registry();
         }
         UserLoginVO operator = setUpApi.adminLogin();
 
@@ -335,8 +301,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_update_role() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry();
@@ -354,8 +318,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_update_if_update_self_role() {
         UserLoginVO operator = setUpApi.adminLogin();
 
@@ -369,8 +331,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_update_if_given_same_role() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry();
@@ -388,14 +348,12 @@ class UserControllerTest {
     }
 
     /*
-    TODO 作为最后一个执行的单测，产生了redis数据与mongo数据不一致的问题，
-    TODO 删除缓存的方法很离奇地被调用了多次
+    TODO 作为最后一个执行的单测，产生了redis数据与mongo数据不一致的问题，(Ok)
+    TODO 删除缓存的方法很离奇地被调用了多次 (Err)
     2025-03-12 19:52:16.861 [main] [INFO ] o.r.c.u.i.MongoCachedUserRepository:evictUserCache [] [all-docs-backend] Evicted cache for user[USR687613677062691840].
     2025-03-12 19:52:16.883 [main] [INFO ] o.r.c.u.i.MongoCachedUserRepository:evictUserCache [] [all-docs-backend] Evicted cache for user[USR687613677062691840].
     */
     @Test
-    @Rollback
-    @Transactional
     void should_deactivate() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry();
@@ -412,8 +370,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_deactivate_if_deactivate_self() {
         UserLoginVO operator = setUpApi.adminLogin();
 
@@ -426,8 +382,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_deactivate_if_user_is_deactivated() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry();
@@ -450,8 +404,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_activate() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry();
@@ -475,8 +427,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_activate_if_activate_self() {
         UserLoginVO operator = setUpApi.adminLogin();
 
@@ -489,8 +439,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_activate_if_user_is_activated() {
         UserLoginVO operator = setUpApi.adminLogin();
         String userId = setUpApi.registry();
@@ -507,10 +455,7 @@ class UserControllerTest {
         assertTrue(user.isActivate());
     }
 
-    // TODO 该事务仅仅回滚了mongodb，没有删除mongodb的gridFs，导致头像数据仍存在数据库中
     @Test
-    @Rollback
-    @Transactional
     void should_upload_avatar() throws IOException {
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/avatar.jpg"));
@@ -530,8 +475,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_upload_avatar_if_content_type_not_support() throws IOException {
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/test.txt"));
@@ -547,8 +490,6 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_delete_avatar() throws IOException {
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/avatar.jpg"));
@@ -571,11 +512,9 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_reset_pwd() {
         UserLoginVO operator = setUpApi.adminLogin();
-        String userId = setUpApi.registry(TEST_USERNAME, "1234567");
+        String userId = setUpApi.registry(rUsername(), "1234567");
 
         ApiTest.using(mockMvc)
                 .put(ROOT_URL + "/reset/pwd")
@@ -590,11 +529,9 @@ class UserControllerTest {
     }
 
     @Test
-    @Rollback
-    @Transactional
     void should_fail_to_reset_if_permission_not_admin() {
         SetUpResponse operator = setUpApi.registryWithLogin();
-        String userId = setUpApi.registry(TEST_USERNAME, "1234567");
+        String userId = setUpApi.registry(rUsername(), "1234567");
 
         ApiTest.using(mockMvc)
                 .put(ROOT_URL + "/reset/pwd")

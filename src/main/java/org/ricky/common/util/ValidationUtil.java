@@ -220,7 +220,7 @@ public class ValidationUtil {
     }
 
     public static void requireTrue(boolean expr, String message) {
-        if(!expr) {
+        if (!expr) {
             throw new IllegalArgumentException(message);
         }
     }

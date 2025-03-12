@@ -96,6 +96,11 @@
             <version>5.9.2</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.apifan.common</groupId>
+            <artifactId>common-random</artifactId>
+            <version>1.0.18</version>
+        </dependency>
 
         <!--Others-->
         <dependency>

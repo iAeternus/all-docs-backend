@@ -1,5 +1,6 @@
 package org.ricky.core.user.domain.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -30,7 +31,7 @@ import static org.ricky.common.exception.ErrorCodeEnum.UNSUPPORTED_FILE_TYPES;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UploadAvatarDTO implements DTO {
 
-    @NotNull
+    @NotBlank
     @Id(pre = USER_ID_PREFIX)
     String userId;
 
@@ -39,7 +40,7 @@ public class UploadAvatarDTO implements DTO {
 
     @Override
     public void correctAndValidate() {
-        if(stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
+        if (stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
             throw new MyException(UNSUPPORTED_FILE_TYPES, "不支持的文件类型",
                     Map.of("contentType", img.getContentType()));
         }

@@ -1,5 +1,6 @@
 package org.ricky.core.user.domain.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,6 @@ import org.ricky.common.domain.DTO;
 import org.ricky.core.common.validation.id.Id;
 
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
-import static org.ricky.common.constants.MessageConstants.PARAMS_IS_NOT_NULL;
 
 /**
  * @author Ricky
@@ -24,11 +24,11 @@ import static org.ricky.common.constants.MessageConstants.PARAMS_IS_NOT_NULL;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UpdateRoleDTO implements DTO {
 
+    @NotBlank
     @Id(pre = USER_ID_PREFIX)
-    @NotNull(message = PARAMS_IS_NOT_NULL)
     String userId;
 
-    @NotNull(message = PARAMS_IS_NOT_NULL)
+    @NotNull
     PermissionEnum newRole;
 
 }

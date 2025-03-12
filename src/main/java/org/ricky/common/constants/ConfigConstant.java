@@ -18,6 +18,7 @@ public interface ConfigConstant {
 
     String EVENT_COLLECTION = "event";
     String USER_COLLECTION = "user";
+    String DOC_COLLECTION = "doc";
 
     String USER_ID_PREFIX = "USR";
 
@@ -28,5 +29,12 @@ public interface ConfigConstant {
     String REDIS_NOTIFICATION_CONSUMER_GROUP = "notification.group";
 
     String[] AVATAR_TYPES = {"image/png", "image/jpeg", "image/gif"};
+
+    int MAX_URL_LENGTH = 1024;
+    int MAX_CASES_SIZE = 64;
+    int MAX_ANSWER_COUNT = 64;
+    int MAX_GENERIC_NAME_LENGTH = 50;
+    int MAX_GENERIC_TEXT_LENGTH = 1024;
+    int MAX_CODE_LENGTH = 65535;
 
 }

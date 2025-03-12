@@ -2,17 +2,13 @@ package org.ricky.common.mongo;
 
 import com.mongodb.client.gridfs.GridFSBucket;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.exception.MyException;
 import org.ricky.common.util.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
-import java.io.IOException;
 import java.io.InputStream;
-import java.util.Map;
 import java.util.Set;
 
-import static org.ricky.common.exception.ErrorCodeEnum.FAILURE_TO_UPLOAD_DFS;
 import static org.ricky.common.util.ValidationUtil.isEmpty;
 import static org.ricky.common.util.ValidationUtil.requireNotBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;

@@ -1,6 +1,6 @@
 package org.ricky.core.user.domain.dto;
 
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,7 +22,7 @@ import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ResetPwdDTO implements DTO {
 
-    @NotNull
+    @NotBlank
     @Id(pre = USER_ID_PREFIX)
     String userId;
 

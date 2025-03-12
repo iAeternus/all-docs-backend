@@ -23,7 +23,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.springframework.http.HttpMethod.*;
-import static org.springframework.util.MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE;
 
 /**
  * REST API 测试工具类，支持链式调用方式构建请求并验证响应

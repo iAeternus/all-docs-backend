@@ -12,6 +12,8 @@ import org.springframework.web.context.WebApplicationContext;
 
 import static org.ricky.management.SystemAdmin.ADMIN_PASSWORD;
 import static org.ricky.management.SystemAdmin.ADMIN_USERNAME;
+import static org.ricky.util.RandomTestFixture.rPassword;
+import static org.ricky.util.RandomTestFixture.rUsername;
 
 /**
  * @author Ricky
@@ -28,15 +30,12 @@ public class SetUpApi {
     @Autowired
     WebApplicationContext webApplicationContext;
 
-    public static final String TEST_USERNAME = "Ricky";
-    public static final String TEST_PASSWORD = "123456";
-
     public String registry() {
-        return registry(TEST_USERNAME, TEST_PASSWORD);
+        return registry(rUsername(), rPassword());
     }
 
     public String registry(String username) {
-        return registry(username, TEST_PASSWORD);
+        return registry(username, rPassword());
     }
 
     public String registry(String username, String password) {
@@ -63,7 +62,11 @@ public class SetUpApi {
     }
 
     public SetUpResponse registryWithLogin() {
-        return registryWithLogin(TEST_USERNAME, TEST_PASSWORD);
+        return registryWithLogin(rUsername(), rPassword());
+    }
+
+    public SetUpResponse registryWithLogin(String username) {
+        return registryWithLogin(username, rPassword());
     }
 
     public SetUpResponse registryWithLogin(String username, String password) {
