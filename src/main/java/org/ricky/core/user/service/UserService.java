@@ -46,5 +46,5 @@ public interface UserService {
 
     ApiResult<Boolean> activate(String userId);
 
-    ApiResult<Boolean> uploadAvatar(String userId, MultipartFile img);
+    ApiResult<Boolean> uploadAvatar(MultipartFile img);
 }

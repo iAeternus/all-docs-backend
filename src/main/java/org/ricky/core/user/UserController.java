@@ -127,11 +127,10 @@ public class UserController {
         return userService.activate(userId);
     }
 
-    @PostMapping("/avatar/{userId}")
+    @PostMapping("/avatar")
     @Operation(summary = "上传头像")
-    public ApiResult<Boolean> uploadAvatar(@PathVariable("userId") @Id(pre = USER_ID_PREFIX) String userId,
-                                           @RequestParam("img") MultipartFile img) {
-        return userService.uploadAvatar(userId, img);
+    public ApiResult<Boolean> uploadAvatar(@RequestParam("img") MultipartFile img) {
+        return userService.uploadAvatar(img);
     }
 
 }

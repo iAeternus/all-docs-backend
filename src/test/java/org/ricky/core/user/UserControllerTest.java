@@ -480,7 +480,7 @@ class UserControllerTest {
         );
 
         ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/avatar/{userId}", operator.getUserId())
+                .post(ROOT_URL + "/avatar")
                 .bearerToken(operator.getToken())
                 .file(img)
                 .execute()
@@ -502,7 +502,7 @@ class UserControllerTest {
         );
 
         ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/avatar/{userId}", operator.getUserId())
+                .post(ROOT_URL + "/avatar")
                 .bearerToken(operator.getToken())
                 .file(img)
                 .execute()

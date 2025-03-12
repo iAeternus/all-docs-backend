@@ -254,7 +254,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ApiResult<Boolean> uploadAvatar(String userId, MultipartFile img) {
+    public ApiResult<Boolean> uploadAvatar(MultipartFile img) {
         rateLimiter.applyFor("User:UploadAvatar", MINIMUM_TPS);
 
         if(stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
@@ -262,6 +262,7 @@ public class UserServiceImpl implements UserService {
                     Map.of("contentType", img.getContentType()));
         }
 
+        String userId = ThreadLocalContext.getContext().getUid();
         User user = userRepository.cachedById(userId);
         String gridFsId = userRepository.uploadAvatar(userId, img);
         user.addAvatar(gridFsId);
