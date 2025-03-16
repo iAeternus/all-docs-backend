@@ -1,9 +1,9 @@
 package org.ricky.core.doc.service.impl;
 
 import lombok.RequiredArgsConstructor;
-import org.ricky.core.common.domain.ApiResult;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
+import org.ricky.core.common.domain.ApiResult;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocDomainService;
 import org.ricky.core.doc.domain.DocRepository;

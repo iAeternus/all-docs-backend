@@ -2,9 +2,9 @@ package org.ricky.management;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.context.UserContext;
-import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
 import org.springframework.stereotype.Component;

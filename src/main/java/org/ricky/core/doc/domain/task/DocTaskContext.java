@@ -2,11 +2,8 @@ package org.ricky.core.doc.domain.task;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.ricky.common.lock.LockedMethod;
 import org.ricky.core.doc.domain.Doc;
-import org.ricky.core.doc.domain.DocTypeEnum;
-import org.springframework.stereotype.Component;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;

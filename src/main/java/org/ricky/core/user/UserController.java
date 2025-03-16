@@ -21,8 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
 
 /**
  * @author Ricky

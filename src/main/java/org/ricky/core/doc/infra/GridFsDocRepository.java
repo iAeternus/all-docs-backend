@@ -14,5 +14,4 @@ import org.springframework.stereotype.Repository;
 public class GridFsDocRepository extends GridFsBaseRepository {
 
 
-
 }

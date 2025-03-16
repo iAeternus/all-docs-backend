@@ -4,14 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocRepository;
-import org.ricky.core.doc.domain.es.EsFile;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Set;
 
 import static org.ricky.common.util.ValidationUtil.requireNotBlank;

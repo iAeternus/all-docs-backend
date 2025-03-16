@@ -3,9 +3,9 @@ package org.ricky.core.doc.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.util.TaskRunner;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventHandler;
-import org.ricky.common.util.TaskRunner;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocRepository;
 import org.ricky.core.doc.domain.event.DocOnProcessEvent;

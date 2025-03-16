@@ -5,8 +5,6 @@ import org.ricky.common.properties.SystemProperties;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import static org.ricky.common.util.ValidationUtil.isFalse;
-
 /**
  * @author Ricky
  * @version 1.0

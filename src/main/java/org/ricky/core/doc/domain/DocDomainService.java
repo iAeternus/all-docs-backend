@@ -2,15 +2,10 @@ package org.ricky.core.doc.domain;
 
 import cn.hutool.crypto.SecureUtil;
 import lombok.RequiredArgsConstructor;
-import org.ricky.common.exception.MyException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.Map;
-
-import static org.ricky.common.exception.ErrorCodeEnum.FILE_ALREADY_EXISTS;
 
 /**
  * @author Ricky

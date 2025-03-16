@@ -24,7 +24,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static java.nio.file.Files.readAllBytes;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 import static org.ricky.core.doc.domain.DocTypeEnum.DOC;
 

@@ -1,6 +1,5 @@
 package org.ricky.common.mongo;
 
-import cn.hutool.core.io.IoUtil;
 import com.mongodb.client.gridfs.GridFSBucket;
 import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;

@@ -2,8 +2,8 @@ package org.ricky.core.doc.domain.task;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.core.common.domain.task.RepeatableTask;
 import org.ricky.common.util.ValidationUtil;
+import org.ricky.core.common.domain.task.RepeatableTask;
 import org.ricky.core.doc.domain.DocRepository;
 import org.springframework.stereotype.Component;
 

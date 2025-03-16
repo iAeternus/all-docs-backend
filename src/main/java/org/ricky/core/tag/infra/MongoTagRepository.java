@@ -2,7 +2,6 @@ package org.ricky.core.tag.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
-import org.ricky.common.util.ValidationUtil;
 import org.ricky.core.tag.domain.Tag;
 import org.ricky.core.tag.domain.TagRepository;
 import org.springframework.data.mongodb.core.query.Query;

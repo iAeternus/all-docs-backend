@@ -1,11 +1,9 @@
 package org.ricky.core.doc.domain;
 
-import org.ricky.core.doc.domain.es.EsFile;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Set;
 
 /**

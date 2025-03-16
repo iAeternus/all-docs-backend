@@ -6,8 +6,8 @@ import org.ricky.core.common.domain.Identified;
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.ricky.core.common.domain.Identified.isDuplicated;
 import static org.ricky.common.util.UUIDGenerator.newShortUUID;
+import static org.ricky.core.common.domain.Identified.isDuplicated;
 
 /**
  * @author Ricky

@@ -2,19 +2,19 @@ package org.ricky.core.doc.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.core.common.domain.event.DomainEvent;
-import org.ricky.core.common.domain.event.DomainEventHandler;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.util.TaskRunner;
+import org.ricky.core.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.event.DomainEventHandler;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
-import org.ricky.core.doc.domain.task.UpdateDocStatusTask;
 import org.ricky.core.doc.domain.task.SyncTagToDocTask;
+import org.ricky.core.doc.domain.task.UpdateDocStatusTask;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 import static org.ricky.common.util.ValidationUtil.isFalse;
+import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 
 /**
  * @author Ricky
