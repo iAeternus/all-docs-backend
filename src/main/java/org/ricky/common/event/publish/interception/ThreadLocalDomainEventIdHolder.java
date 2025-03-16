@@ -1,7 +1,7 @@
 package org.ricky.common.event.publish.interception;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.ricky.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.event.DomainEvent;
 
 import java.util.LinkedList;
 import java.util.List;

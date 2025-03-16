@@ -19,10 +19,17 @@ public interface ConfigConstant {
     String EVENT_COLLECTION = "event";
     String USER_COLLECTION = "user";
     String DOC_COLLECTION = "doc";
+    String TAG_COLLECTION = "tag";
 
     String USER_ID_PREFIX = "USR";
+    String DOC_ID_PREFIX = "DOC";
+    String TAG_ID_PREFIX = "TAG";
 
     String USER_CACHE = "user";
+    String DOC_CACHE = "doc";
+    String TAG_CACHE = "tag";
+
+    String DOC_INDEX_NAME = "doc";
 
     String REDIS_DOMAIN_EVENT_CONSUMER_GROUP = "domain.event.group";
     String REDIS_WEBHOOK_CONSUMER_GROUP = "webhook.group";
@@ -36,5 +43,6 @@ public interface ConfigConstant {
     int MAX_GENERIC_NAME_LENGTH = 50;
     int MAX_GENERIC_TEXT_LENGTH = 1024;
     int MAX_CODE_LENGTH = 65535;
+    int MAX_DESC_LENGTH = 128;
 
 }

@@ -2,9 +2,9 @@ package org.ricky.common.mongo;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.domain.event.DomainEvent;
-import org.ricky.common.domain.event.DomainEventDao;
-import org.ricky.common.domain.event.DomainEventTypeEnum;
+import org.ricky.core.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.event.DomainEventDao;
+import org.ricky.core.common.domain.event.DomainEventTypeEnum;
 import org.ricky.common.exception.MyException;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -18,7 +18,7 @@ import java.util.Objects;
 
 import static com.google.common.collect.ImmutableMap.of;
 import static java.util.Objects.requireNonNull;
-import static org.ricky.common.domain.event.DomainEventStatusEnum.*;
+import static org.ricky.core.common.domain.event.DomainEventStatusEnum.*;
 import static org.ricky.common.exception.ErrorCodeEnum.DOMAIN_EVENT_NOT_FOUND;
 import static org.ricky.common.util.ValidationUtil.isNull;
 import static org.ricky.common.util.ValidationUtil.requireNotBlank;

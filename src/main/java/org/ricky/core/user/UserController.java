@@ -8,9 +8,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.auth.Permission;
-import org.ricky.common.domain.ApiResult;
-import org.ricky.common.domain.PageDTO;
-import org.ricky.common.domain.PageVO;
+import org.ricky.core.common.domain.ApiResult;
+import org.ricky.core.common.domain.PageDTO;
+import org.ricky.core.common.domain.PageVO;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
@@ -18,7 +18,6 @@ import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -129,8 +128,8 @@ public class UserController {
 
     @PostMapping("/avatar")
     @Operation(summary = "上传头像")
-    public ApiResult<Boolean> uploadAvatar(@RequestParam("img") MultipartFile img) {
-        return userService.uploadAvatar(img);
+    public ApiResult<Boolean> uploadAvatar(@ModelAttribute @Valid UploadAvatarDTO dto) {
+        return userService.uploadAvatar(dto);
     }
 
     @DeleteMapping("/avatar")

@@ -2,8 +2,8 @@ package org.ricky.common.event.publish.sender;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.domain.event.DomainEvent;
-import org.ricky.common.domain.event.DomainEventDao;
+import org.ricky.core.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.event.DomainEventDao;
 import org.ricky.common.redis.RedisProperties;
 import org.ricky.common.util.MyObjectMapper;
 import org.springframework.data.redis.connection.stream.ObjectRecord;

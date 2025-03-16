@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "all-docs.config")
 public class SystemProperties {
 
+    /**
+     * 是否允许用户上传文件
+     */
     private Boolean userUpload;
 
     private Boolean adminReview = true;

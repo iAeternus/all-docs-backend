@@ -1,6 +1,6 @@
 package org.ricky.common.event.publish.sender;
 
-import org.ricky.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.event.DomainEvent;
 
 /**
  * @author Ricky

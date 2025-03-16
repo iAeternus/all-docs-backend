@@ -2,9 +2,9 @@ package org.ricky.common.event.publish;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.domain.event.DomainEvent;
-import org.ricky.common.domain.event.DomainEventConsumer;
-import org.ricky.common.domain.event.DomainEventDao;
+import org.ricky.core.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.event.DomainEventConsumer;
+import org.ricky.core.common.domain.event.DomainEventDao;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 

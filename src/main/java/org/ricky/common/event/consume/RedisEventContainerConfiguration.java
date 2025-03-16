@@ -56,7 +56,7 @@ public class RedisEventContainerConfiguration {
                 .batchSize(10)
                 .executor(consumeDomainEventTaskExecutor)
                 .targetType(String.class)
-                .errorHandler(new MryRedisErrorHandler())
+                .errorHandler(new MyRedisErrorHandler())
                 .build();
 
         var container = StreamMessageListenerContainer.create(factory, options);
@@ -79,7 +79,7 @@ public class RedisEventContainerConfiguration {
     }
 
     @Slf4j
-    private static class MryRedisErrorHandler implements ErrorHandler {
+    private static class MyRedisErrorHandler implements ErrorHandler {
         @Override
         public void handleError(Throwable t) {
             log.error(t.getMessage());

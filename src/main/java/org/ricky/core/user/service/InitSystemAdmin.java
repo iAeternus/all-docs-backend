@@ -18,23 +18,23 @@ import static org.ricky.management.SystemAdmin.*;
  * @className InitSystemAdmin
  * @desc 初始化系统管理员
  */
-@Component
-@RequiredArgsConstructor
-public class InitSystemAdmin implements CommandLineRunner {
-
-    private final UserRepository userRepository;
-    private final IPasswordEncoder passwordEncoder;
-
-    @Override
-    public void run(String... args) throws Exception {
-        if (userRepository.exists(ADMIN_UID)) {
-            return;
-        }
-
-        ThreadLocalContext.setContext(UserContext.of(ADMIN_UID, ADMIN_USERNAME));
-        String password = passwordEncoder.encode(ADMIN_PASSWORD);
-        User systemAdmin = new User(ADMIN_UID, ADMIN_USERNAME, password);
-        userRepository.save(systemAdmin);
-        ThreadLocalContext.removeContext();
-    }
-}
+// @Component
+// @RequiredArgsConstructor
+// public class InitSystemAdmin implements CommandLineRunner {
+//
+//     private final UserRepository userRepository;
+//     private final IPasswordEncoder passwordEncoder;
+//
+//     @Override
+//     public void run(String... args) throws Exception {
+//         if (userRepository.exists(ADMIN_UID)) {
+//             return;
+//         }
+//
+//         ThreadLocalContext.setContext(UserContext.of(ADMIN_UID, ADMIN_USERNAME));
+//         String password = passwordEncoder.encode(ADMIN_PASSWORD);
+//         User systemAdmin = new User(ADMIN_UID, ADMIN_USERNAME, password);
+//         userRepository.save(systemAdmin);
+//         ThreadLocalContext.removeContext();
+//     }
+// }

@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.context.ThreadLocalContext;
-import org.ricky.common.domain.ApiResult;
-import org.ricky.common.domain.PageDTO;
-import org.ricky.common.domain.PageVO;
+import org.ricky.core.common.domain.ApiResult;
+import org.ricky.core.common.domain.PageDTO;
+import org.ricky.core.common.domain.PageVO;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
@@ -25,7 +25,6 @@ import org.ricky.core.user.domain.vo.UserVO;
 import org.ricky.core.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 import java.util.Map;
@@ -263,17 +262,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public ApiResult<Boolean> uploadAvatar(MultipartFile img) {
+    public ApiResult<Boolean> uploadAvatar(UploadAvatarDTO dto) {
         rateLimiter.applyFor("User:UploadAvatar", MINIMUM_TPS);
 
-        if (stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
-            throw new MyException(UNSUPPORTED_FILE_TYPES, "不支持的文件类型",
-                    Map.of("contentType", img.getContentType()));
-        }
-
-        String userId = ThreadLocalContext.getContext().getUid();
-        User user = userRepository.cachedById(userId);
-        String gridFsId = userRepository.uploadAvatar(userId, img);
+        User user = userRepository.cachedById(dto.getUserId());
+        String gridFsId = userRepository.uploadAvatar(dto.getUserId(), dto.getImg());
         user.addAvatar(gridFsId);
         userRepository.save(user);
 

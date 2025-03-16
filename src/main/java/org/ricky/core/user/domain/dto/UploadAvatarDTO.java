@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.common.domain.DTO;
+import org.ricky.core.common.domain.DTO;
 import org.ricky.common.exception.MyException;
 import org.ricky.core.common.validation.id.Id;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,6 +16,7 @@ import java.util.Map;
 import static java.util.Arrays.stream;
 import static org.ricky.common.constants.ConfigConstant.AVATAR_TYPES;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.exception.ErrorCodeEnum.FILE_MUST_NOT_BE_EMPTY;
 import static org.ricky.common.exception.ErrorCodeEnum.UNSUPPORTED_FILE_TYPES;
 
 /**
@@ -25,7 +26,6 @@ import static org.ricky.common.exception.ErrorCodeEnum.UNSUPPORTED_FILE_TYPES;
  * @className UploadAvatarDTO
  * @desc
  */
-@Deprecated
 @Value
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -40,9 +40,14 @@ public class UploadAvatarDTO implements DTO {
 
     @Override
     public void correctAndValidate() {
+        if (img.isEmpty()) {
+            throw new MyException(FILE_MUST_NOT_BE_EMPTY, "文件不能为空",
+                    Map.of("filename", img.getName()));
+        }
+
         if (stream(AVATAR_TYPES).noneMatch(type -> type.equals(img.getContentType()))) {
             throw new MyException(UNSUPPORTED_FILE_TYPES, "不支持的文件类型",
-                    Map.of("contentType", img.getContentType()));
+                    Map.of("filename", img.getName(), "contentType", img.getContentType()));
         }
     }
 }

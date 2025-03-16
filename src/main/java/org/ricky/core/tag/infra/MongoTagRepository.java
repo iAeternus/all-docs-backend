@@ -1,0 +1,44 @@
+package org.ricky.core.tag.infra;
+
+import lombok.RequiredArgsConstructor;
+import org.ricky.common.mongo.MongoBaseRepository;
+import org.ricky.common.util.ValidationUtil;
+import org.ricky.core.tag.domain.Tag;
+import org.ricky.core.tag.domain.TagRepository;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.springframework.data.mongodb.core.query.Criteria.where;
+import static org.springframework.data.mongodb.core.query.Query.query;
+
+/**
+ * @author Ricky
+ * @version 1.0
+ * @date 2025/3/15
+ * @className MongoTagRepository
+ * @desc
+ */
+@Repository
+@RequiredArgsConstructor
+public class MongoTagRepository extends MongoBaseRepository<Tag> implements TagRepository {
+
+    private final MongoCachedTagRepository cachedTagRepository;
+
+    @Override
+    public Optional<Tag> byNameOptional(String name) {
+        requireNotBlank(name, "Tag name must not be blank");
+
+        Query query = query(where("name").is(name));
+        Tag tag = mongoTemplate.findOne(query, Tag.class);
+        return Optional.ofNullable(tag);
+    }
+
+    @Override
+    public void save(Tag tag) {
+        super.save(tag);
+        cachedTagRepository.evictTagCache(tag.getId());
+    }
+}

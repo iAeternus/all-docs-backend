@@ -1,16 +1,25 @@
 package org.ricky.common.mongo;
 
+import cn.hutool.core.io.IoUtil;
 import com.mongodb.client.gridfs.GridFSBucket;
+import com.mongodb.client.gridfs.GridFSDownloadStream;
+import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.exception.MyException;
 import org.ricky.common.util.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.query.Query;
+import org.springframework.data.mongodb.gridfs.GridFsResource;
 import org.springframework.data.mongodb.gridfs.GridFsTemplate;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Set;
 
-import static org.ricky.common.util.ValidationUtil.isEmpty;
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static cn.hutool.core.io.IoUtil.readBytes;
+import static org.ricky.common.exception.ErrorCodeEnum.FILE_READ_FAILED;
+import static org.ricky.common.util.ValidationUtil.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -52,6 +61,27 @@ public abstract class GridFsBaseRepository {
 
     public String upload(InputStream content, String contentType) {
         return upload("", content, contentType);
+    }
+
+    public byte[] getFileBytes(String gridFsId) {
+        if (isNotBlank(gridFsId)) {
+            Query gridQuery = query(where(FILE_NAME).is(gridFsId));
+            GridFSFile fsFile = gridFsTemplate.findOne(gridQuery);
+            if (isNull(fsFile)) {
+                return new byte[0];
+            }
+            try (GridFSDownloadStream in = gridFSBucket.openDownloadStream(fsFile.getObjectId())) {
+                if (in.getGridFSFile().getLength() > 0) {
+                    GridFsResource resource = new GridFsResource(fsFile, in);
+                    return readBytes(resource.getInputStream());
+                } else {
+                    return new byte[0];
+                }
+            } catch (IOException ex) {
+                throw new MyException(FILE_READ_FAILED, "读取dfs失败", Map.of("gridFsId", gridFsId));
+            }
+        }
+        return new byte[0];
     }
 
 }

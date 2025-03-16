@@ -9,7 +9,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.common.domain.DTO;
+import org.ricky.core.common.domain.DTO;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.common.validation.mobile.Mobile;
 import org.ricky.core.common.validation.password.Password;

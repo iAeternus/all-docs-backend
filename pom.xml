@@ -132,6 +132,15 @@
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-tracing-bridge-otel</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.10.2</version>
+        </dependency>
 
         <!--Tika-->
         <dependency>
@@ -156,11 +165,11 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-elasticsearch</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.elasticsearch</groupId>
-            <artifactId>elasticsearch</artifactId>
-            <version>8.6.0</version>
-        </dependency>
+        <!--<dependency>-->
+        <!--    <groupId>org.elasticsearch</groupId>-->
+        <!--    <artifactId>elasticsearch</artifactId>-->
+        <!--    <version>8.6.0</version>-->
+        <!--</dependency>-->
         <!-- 使用高级的api -->
         <dependency>
             <groupId>org.elasticsearch.client</groupId>
@@ -202,7 +211,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <mainClass>org.ricky.DocumentSharingSiteApplication</mainClass>
+                    <mainClass>org.ricky.AllDocsApplication</mainClass>
                 </configuration>
             </plugin>
         </plugins>

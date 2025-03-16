@@ -4,9 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.ApiTest;
-import org.ricky.DocumentSharingSiteApplication;
-import org.ricky.common.domain.PageDTO;
-import org.ricky.common.domain.PageVO;
+import org.ricky.AllDocsApplication;
+import org.ricky.core.common.domain.PageDTO;
+import org.ricky.core.common.domain.PageVO;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
@@ -47,7 +47,7 @@ import static org.ricky.util.RandomTestFixture.rUsername;
  * @desc
  */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = DocumentSharingSiteApplication.class)
+@SpringBootTest(classes = AllDocsApplication.class)
 class UserControllerTest {
 
     MockMvc mockMvc;
@@ -464,6 +464,7 @@ class UserControllerTest {
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/avatar")
                 .bearerToken(operator.getToken())
+                .param("userId", operator.getUserId())
                 .file(img)
                 .execute()
                 .expectStatus(200)
@@ -483,6 +484,7 @@ class UserControllerTest {
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/avatar")
                 .bearerToken(operator.getToken())
+                .param("userId", operator.getUserId())
                 .file(img)
                 .execute()
                 .expectStatus(400)
@@ -499,6 +501,7 @@ class UserControllerTest {
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/avatar")
                 .bearerToken(operator.getToken())
+                .param("userId", operator.getUserId())
                 .file(img)
                 .execute();
 
