@@ -1,4 +1,4 @@
-package org.ricky.common.converter.file;
+package org.ricky.core.common.converter.file;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Image;

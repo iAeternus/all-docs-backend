@@ -1,7 +1,7 @@
 package org.ricky.common.mongo;
 
 import com.google.common.collect.Maps;
-import org.ricky.common.context.ThreadLocalContext;
+import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventDao;

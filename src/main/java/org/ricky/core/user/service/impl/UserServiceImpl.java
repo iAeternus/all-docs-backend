@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.context.ThreadLocalContext;
+import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.ApiResult;
 import org.ricky.core.common.domain.PageDTO;
 import org.ricky.core.common.domain.PageVO;

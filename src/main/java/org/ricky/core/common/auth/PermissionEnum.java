@@ -1,4 +1,4 @@
-package org.ricky.common.auth;
+package org.ricky.core.common.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

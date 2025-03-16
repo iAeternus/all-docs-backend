@@ -1,10 +1,10 @@
-package org.ricky.common.auth;
+package org.ricky.core.common.auth;
 
 import com.auth0.jwt.interfaces.Claim;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
-import org.ricky.common.context.ThreadLocalContext;
+import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -17,10 +17,9 @@ import java.util.Map;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.util.Arrays.stream;
-import static org.ricky.common.auth.PermissionEnum.NO;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
-import static org.ricky.common.context.UserContext.of;
+import static org.ricky.core.common.context.UserContext.of;
 import static org.ricky.common.util.JwtUtil.verifyToken;
 import static org.ricky.common.util.ValidationUtil.*;
 
@@ -150,8 +149,8 @@ public class AuthInterceptor implements HandlerInterceptor {
      */
     private boolean noValidationRequired(Permission classAnno, Permission methodAnno) {
         return isNull(classAnno) && isNull(methodAnno) ||
-                nonNull(methodAnno) && stream((methodAnno.name())).anyMatch(permissionEnum -> permissionEnum == NO) ||
-                nonNull(classAnno) && stream((classAnno.name())).anyMatch(permissionEnum -> permissionEnum == NO);
+                nonNull(methodAnno) && stream((methodAnno.name())).anyMatch(permissionEnum -> permissionEnum == PermissionEnum.NO) ||
+                nonNull(classAnno) && stream((classAnno.name())).anyMatch(permissionEnum -> permissionEnum == PermissionEnum.NO);
     }
 
 }

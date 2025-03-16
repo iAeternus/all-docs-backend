@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.auth.Permission;
+import org.ricky.core.common.auth.Permission;
 import org.ricky.core.common.domain.ApiResult;
 import org.ricky.core.common.domain.PageDTO;
 import org.ricky.core.common.domain.PageVO;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static org.ricky.common.auth.PermissionEnum.ADMIN;
+import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 
 /**

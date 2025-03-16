@@ -1,4 +1,4 @@
-package org.ricky.common.context;
+package org.ricky.core.common.context;
 
 import lombok.Data;
 import org.ricky.common.util.ValidationUtil;

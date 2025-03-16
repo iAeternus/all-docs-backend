@@ -1,24 +1,19 @@
-package org.ricky.common.auth;
+package org.ricky.core.common.auth;
 
-import lombok.RequiredArgsConstructor;
 import org.ricky.core.user.domain.UserRepository;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-/**
- * @author Ricky
- * @version 1.0
- * @date 2025/2/26
- * @className AuthConfig
- * @desc
- */
 @Configuration
-@RequiredArgsConstructor
-public class AuthConfig extends WebMvcConfigurationSupport {
+public class AuthConfig implements WebMvcConfigurer {
 
     private final UserRepository userRepository;
+
+    public AuthConfig(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     /**
      * 白名单
@@ -33,8 +28,8 @@ public class AuthConfig extends WebMvcConfigurationSupport {
      * 注册拦截器
      */
     @Override
-    protected void addInterceptors(InterceptorRegistry registry) {
-        // 注册TestInterceptor拦截器
+    public void addInterceptors(InterceptorRegistry registry) {
+        // 注册AuthInterceptor拦截器
         registry.addInterceptor(new AuthInterceptor(userRepository))
                 .addPathPatterns("/**")
                 .excludePathPatterns(EXCLUDE_PATTERNS);
@@ -42,9 +37,6 @@ public class AuthConfig extends WebMvcConfigurationSupport {
 
     /**
      * 解决swagger UI页面 和 拦截器的冲突
-     *
-     * @param registry ResourceHandlerRegistry
-     * @see <a href="https://blog.csdn.net/m0_62943596/article/details/126186521">参考链接</a>
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -52,7 +44,5 @@ public class AuthConfig extends WebMvcConfigurationSupport {
                 "classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations(
                 "classpath:/META-INF/resources/webjars/");
-        super.addResourceHandlers(registry);
     }
-
 }

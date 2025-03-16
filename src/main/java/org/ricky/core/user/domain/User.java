@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.ricky.common.auth.PermissionEnum;
+import org.ricky.core.common.auth.PermissionEnum;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.common.exception.MyException;
 import org.springframework.data.annotation.TypeAlias;
@@ -19,7 +19,7 @@ import java.util.Map;
 
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static java.time.LocalDateTime.now;
-import static org.ricky.common.auth.PermissionEnum.ADMIN;
+import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 import static org.ricky.core.common.domain.OpsLogTypeEnum.*;

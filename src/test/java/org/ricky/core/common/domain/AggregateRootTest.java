@@ -3,15 +3,14 @@ package org.ricky.core.common.domain;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.ricky.common.context.ThreadLocalContext;
-import org.ricky.common.context.UserContext;
-import org.ricky.core.common.domain.AggregateRoot;
+import org.ricky.core.common.context.ThreadLocalContext;
+import org.ricky.core.common.context.UserContext;
 import org.ricky.core.common.domain.event.DomainEvent;
 
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.ricky.common.context.UserContext.of;
+import static org.ricky.core.common.context.UserContext.of;
 import static org.ricky.core.common.domain.AggregateRoot.MAX_OPS_LOG_SIZE;
 import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
 

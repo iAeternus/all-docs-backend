@@ -9,6 +9,7 @@ import org.ricky.core.common.domain.event.DomainEventDao;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocRepository;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
+import org.ricky.core.tag.domain.TagRepository;
 import org.ricky.util.SetUpApi;
 import org.ricky.util.SetUpResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,9 @@ class DocControllerTest {
     DocRepository docRepository;
 
     @Autowired
+    TagRepository tagRepository;
+
+    @Autowired
     DomainEventDao domainEventDao;
 
     private static final String ROOT_URL = "/doc";
@@ -61,6 +65,7 @@ class DocControllerTest {
 
     @Test
     void should_upload_doc_with_review() throws IOException {
+        // Given
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/中央纪委对二十届中央纪委四次全会解读（经李希书记、刘金国书记签批，求是刊发）.doc"));
         MockMultipartFile file = new MockMultipartFile(
@@ -70,6 +75,7 @@ class DocControllerTest {
                 content
         );
 
+        // When
         String docId = ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/upload")
                 .bearerToken(operator.getToken())
@@ -78,6 +84,7 @@ class DocControllerTest {
                 .expectStatus(200)
                 .as(String.class);
 
+        // Then
         assertNotNull(docId);
         Doc doc = docRepository.cachedById(docId);
         assertEquals("中央纪委对二十届中央纪委四次全会解读（经李希书记、刘金国书记签批，求是刊发）.doc", doc.getName());
@@ -85,6 +92,7 @@ class DocControllerTest {
         DocCreatedEvent evt = domainEventDao.latestEventFor(docId, DOC_CREATED, DocCreatedEvent.class);
         assertEquals(docId, evt.getDocId());
         assertEquals(1, evt.getConsumedCount());
+        assertEquals("DOC", tagRepository.byId(doc.getTagIds().get(0)).getName());
     }
 
 }

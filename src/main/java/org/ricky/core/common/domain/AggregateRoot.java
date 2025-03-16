@@ -2,7 +2,7 @@ package org.ricky.core.common.domain;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import org.ricky.common.context.ThreadLocalContext;
+import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.springframework.data.annotation.Version;
 

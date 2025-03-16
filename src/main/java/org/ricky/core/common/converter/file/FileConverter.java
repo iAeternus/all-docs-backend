@@ -1,4 +1,4 @@
-package org.ricky.common.converter.file;
+package org.ricky.core.common.converter.file;
 
 import lombok.extern.slf4j.Slf4j;
 

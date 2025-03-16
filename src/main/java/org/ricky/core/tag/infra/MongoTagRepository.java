@@ -41,4 +41,9 @@ public class MongoTagRepository extends MongoBaseRepository<Tag> implements TagR
         super.save(tag);
         cachedTagRepository.evictTagCache(tag.getId());
     }
+
+    @Override
+    public Tag byId(String id) {
+        return super.byId(id);
+    }
 }

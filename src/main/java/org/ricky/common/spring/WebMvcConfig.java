@@ -1,7 +1,7 @@
 package org.ricky.common.spring;
 
-import org.ricky.common.converter.type.IntegerCodeToEnumConverterFactory;
-import org.ricky.common.converter.type.StringCodeToEnumConverterFactory;
+import org.ricky.core.common.converter.type.IntegerCodeToEnumConverterFactory;
+import org.ricky.core.common.converter.type.StringCodeToEnumConverterFactory;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;

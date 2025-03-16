@@ -5,7 +5,7 @@ import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.user.domain.vo.UserVO;
 import org.springframework.stereotype.Component;
 
-import static org.ricky.common.auth.PermissionEnum.USER;
+import static org.ricky.core.common.auth.PermissionEnum.USER;
 
 /**
  * @author Ricky

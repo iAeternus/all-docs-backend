@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.common.auth.PermissionEnum;
+import org.ricky.core.common.auth.PermissionEnum;
 import org.ricky.core.common.domain.VO;
 import org.ricky.core.user.domain.GenderEnum;
 import org.ricky.core.user.domain.StatusEnum;

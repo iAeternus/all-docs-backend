@@ -1,8 +1,8 @@
 package org.ricky.core.user.domain;
 
 import lombok.RequiredArgsConstructor;
-import org.ricky.common.context.ThreadLocalContext;
-import org.ricky.common.context.UserContext;
+import org.ricky.core.common.context.ThreadLocalContext;
+import org.ricky.core.common.context.UserContext;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.util.JwtUtil;

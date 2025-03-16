@@ -1,4 +1,4 @@
-package org.ricky.common.converter.type;
+package org.ricky.core.common.converter.type;
 
 /**
  * @author Ricky

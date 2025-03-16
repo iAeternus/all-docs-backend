@@ -2,6 +2,8 @@ package org.ricky.common.converter.file;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIf;
+import org.ricky.core.common.converter.file.FileConverter;
+import org.ricky.core.common.converter.file.PptxToPDFConverter;
 
 import java.io.*;
 import java.nio.file.Files;

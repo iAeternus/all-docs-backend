@@ -13,4 +13,6 @@ public interface TagRepository {
     Optional<Tag> byNameOptional(String name);
 
     void save(Tag tag);
+
+    Tag byId(String tagId);
 }

@@ -5,7 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import org.ricky.common.context.UserContext;
+import org.ricky.core.common.context.UserContext;
 
 import java.util.Date;
 import java.util.HashMap;

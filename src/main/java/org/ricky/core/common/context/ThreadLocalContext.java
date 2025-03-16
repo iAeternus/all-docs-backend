@@ -1,4 +1,4 @@
-package org.ricky.common.context;
+package org.ricky.core.common.context;
 
 import static org.ricky.common.util.ValidationUtil.isNull;
 

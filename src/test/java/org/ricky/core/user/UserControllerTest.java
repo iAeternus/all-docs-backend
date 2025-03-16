@@ -30,8 +30,8 @@ import java.util.List;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.ricky.common.auth.PermissionEnum.ADMIN;
-import static org.ricky.common.auth.PermissionEnum.USER;
+import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
+import static org.ricky.core.common.auth.PermissionEnum.USER;
 import static org.ricky.common.constants.ConfigConstant.AVATAR_TYPES;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 import static org.ricky.core.user.domain.GenderEnum.MALE;
