@@ -1,9 +1,9 @@
 package org.ricky.core.common.context;
 
 import lombok.Data;
-import org.ricky.common.util.ValidationUtil;
+import org.ricky.core.common.util.ValidationUtil;
 
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 
 /**
  * @author Ricky

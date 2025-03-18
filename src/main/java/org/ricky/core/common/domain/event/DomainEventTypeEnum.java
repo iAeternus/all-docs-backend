@@ -12,6 +12,6 @@ public enum DomainEventTypeEnum {
     DOC_CREATED,
     DOC_ON_PROCESS,
 
-    // TODO add here...
+    // add here...
 
 }

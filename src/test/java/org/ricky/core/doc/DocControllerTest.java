@@ -27,7 +27,7 @@ import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
-import static org.ricky.core.doc.domain.DocTypeEnum.DOC;
+import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
 
 /**
  * @author Ricky
@@ -68,10 +68,10 @@ class DocControllerTest {
     void should_upload_doc_with_review() throws IOException {
         // Given
         SetUpResponse operator = setUpApi.registryWithLogin();
-        byte[] content = readAllBytes(Path.of("src/test/resources/中央纪委对二十届中央纪委四次全会解读（经李希书记、刘金国书记签批，求是刊发）.doc"));
+        byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
         MockMultipartFile file = new MockMultipartFile(
                 "file",
-                "中央纪委对二十届中央纪委四次全会解读（经李希书记、刘金国书记签批，求是刊发）.doc",
+                "ご注文はうさぎですか165回.pdf",
                 DOC.getContentType(),
                 content
         );
@@ -88,12 +88,20 @@ class DocControllerTest {
         // Then
         assertNotNull(docId);
         Doc doc = docRepository.cachedById(docId);
-        assertEquals("中央纪委对二十届中央纪委四次全会解读（经李希书记、刘金国书记签批，求是刊发）.doc", doc.getName());
+        assertEquals("ご注文はうさぎですか165回.pdf", doc.getName());
+        assertNotNull(doc.getGridFsId());
+        assertNotNull(doc.getTextFileId());
+        assertNotNull(doc.getThumbId());
 
         DocCreatedEvent evt = domainEventDao.latestEventFor(docId, DOC_CREATED, DocCreatedEvent.class);
         assertEquals(docId, evt.getDocId());
         assertEquals(1, evt.getConsumedCount());
-        assertEquals("DOC", tagRepository.byId(doc.getTagIds().get(0)).getName());
+        assertEquals("PDF", tagRepository.byId(doc.getTagIds().get(0)).getName());
+    }
+
+    @Test
+    void should_fail_to_upload_if_doc_is_already_exists() {
+        // TODO
     }
 
 }

@@ -8,7 +8,6 @@ import org.apache.commons.io.FileUtils;
 import org.ricky.common.exception.MyException;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
-import org.ricky.core.doc.domain.event.DocOnProcessEvent;
 import org.ricky.core.doc.domain.file.FileStrategy;
 import org.ricky.core.doc.domain.file.FileStrategyFactory;
 import org.ricky.core.doc.domain.task.DocTaskContext;
@@ -27,12 +26,11 @@ import java.util.Map;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.ricky.common.constants.ConfigConstant.*;
 import static org.ricky.common.exception.ErrorCodeEnum.FILE_READ_FAILED;
-import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
-import static org.ricky.common.util.ValidationUtil.*;
 import static org.ricky.core.common.domain.OpsLogTypeEnum.CREATE;
 import static org.ricky.core.common.domain.OpsLogTypeEnum.UPDATE;
-import static org.ricky.core.doc.domain.DocStatusEnum.ON_PROCESS;
-import static org.ricky.core.doc.domain.DocTypeEnum.getDocType;
+import static org.ricky.core.common.util.SnowflakeIdGenerator.newSnowflakeId;
+import static org.ricky.core.common.util.ValidationUtil.*;
+import static org.ricky.core.doc.domain.FileTypeEnum.getDocType;
 import static org.ricky.core.doc.domain.ReviewStatusEnum.PASSED;
 import static org.ricky.core.doc.domain.ReviewStatusEnum.REVIEWING;
 
@@ -97,6 +95,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
     /**
      * 预览图的GridFS的ID
      */
+    @Setter
     private String thumbId;
 
     /**
@@ -123,6 +122,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
     /**
      * 错误信息
      **/
+    @Setter
     private String errorMsg;
 
     /**
@@ -167,7 +167,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
         this.thumbnailList = new ArrayList<>();
         this.sensitiveWords = new ArrayList<>();
         this.tagIds = new ArrayList<>();
-        raiseEvent(new DocCreatedEvent(getId(), suffix));
+        raiseEvent(new DocCreatedEvent(getId(), suffix, gridFsId, textFileId, previewFileId, thumbId));
     }
 
     public void updateGridFsId(String gripFsId) {
@@ -184,15 +184,14 @@ public class Doc extends AggregateRoot implements FileStrategy {
         return tagIds.contains(tagId);
     }
 
-    public void onProcess() {
-        this.status = ON_PROCESS;
-        raiseEvent(new DocOnProcessEvent(getId(), gridFsId, textFileId, previewFileId, thumbId));
-        addOpsLog(UPDATE, "进行中");
+    public void updateStatus(DocStatusEnum newStatus) {
+        this.status = newStatus;
+        addOpsLog(UPDATE, newStatus.getDesc());
     }
 
     @Override
     public void readText(InputStream is, String textFilePath) throws IOException {
-        DocTypeEnum docType = getDocType(suffix);
+        FileTypeEnum docType = getDocType(suffix);
         try {
             FileStrategyFactory.getInstance().setDocType(docType);
             FileStrategyFactory.getInstance().readText(is, textFilePath);
@@ -203,7 +202,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
 
     @Override
     public void makeThumb(InputStream is, String picPath) throws IOException {
-        DocTypeEnum docType = getDocType(suffix);
+        FileTypeEnum docType = getDocType(suffix);
         try {
             FileStrategyFactory.getInstance().setDocType(docType);
             FileStrategyFactory.getInstance().makeThumb(is, picPath);
@@ -214,7 +213,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
 
     @Override
     public void makePreviewFile(InputStream is, DocTaskContext context) throws IOException {
-        DocTypeEnum docType = getDocType(suffix);
+        FileTypeEnum docType = getDocType(suffix);
         try {
             FileStrategyFactory.getInstance().setDocType(docType);
             FileStrategyFactory.getInstance().makePreviewFile(is, context);

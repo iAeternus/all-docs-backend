@@ -3,7 +3,7 @@ package org.ricky.core.user.domain;
 import lombok.RequiredArgsConstructor;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.password.IPasswordEncoder;
-import org.ricky.common.util.JwtUtil;
+import org.ricky.core.common.util.JwtUtil;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.context.UserContext;
 import org.ricky.core.user.domain.vo.UserLoginVO;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.ricky.common.exception.ErrorCodeEnum.USER_NAME_ALREADY_EXISTS;
 import static org.ricky.common.exception.MyException.authenticationException;
-import static org.ricky.common.util.ValidationUtil.isNotEmpty;
+import static org.ricky.core.common.util.ValidationUtil.isNotEmpty;
 import static org.ricky.management.SystemAdmin.ADMIN_UID;
 import static org.ricky.management.SystemAdmin.ADMIN_USERNAME;
 

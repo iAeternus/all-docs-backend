@@ -28,5 +28,7 @@ public interface DocRepository {
 
     void deleteGridFs(Set<String> filenames);
 
+    void deleteGridFs(String... filenames);
+
     byte[] getFileBytes(String gridFsId);
 }

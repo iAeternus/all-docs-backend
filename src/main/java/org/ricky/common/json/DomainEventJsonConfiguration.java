@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 
-import static org.ricky.common.util.ValidationUtil.isEmpty;
-import static org.ricky.common.util.ValidationUtil.isNull;
+import static org.ricky.core.common.util.ValidationUtil.isEmpty;
+import static org.ricky.core.common.util.ValidationUtil.isNull;
 
 /**
  * @author Ricky

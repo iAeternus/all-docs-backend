@@ -2,7 +2,7 @@ package org.ricky.core.doc.domain.file;
 
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.lock.LockedMethod;
-import org.ricky.core.doc.domain.DocTypeEnum;
+import org.ricky.core.doc.domain.FileTypeEnum;
 import org.ricky.core.doc.domain.file.impl.*;
 import org.ricky.core.doc.domain.task.DocTaskContext;
 
@@ -11,7 +11,7 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static org.ricky.common.util.ValidationUtil.isNull;
+import static org.ricky.core.common.util.ValidationUtil.isNull;
 
 /**
  * @author Ricky
@@ -23,8 +23,8 @@ import static org.ricky.common.util.ValidationUtil.isNull;
 @Slf4j
 public class FileStrategyFactory implements FileStrategy {
 
-    private final Map<DocTypeEnum, FileStrategy> fileStrategies = new ConcurrentHashMap<>();
-    private final ThreadLocal<DocTypeEnum> docTypeThreadLocal = new ThreadLocal<>();
+    private final Map<FileTypeEnum, FileStrategy> fileStrategies = new ConcurrentHashMap<>();
+    private final ThreadLocal<FileTypeEnum> docTypeThreadLocal = new ThreadLocal<>();
     private static volatile FileStrategyFactory instance;
 
     private FileStrategyFactory() {
@@ -42,7 +42,7 @@ public class FileStrategyFactory implements FileStrategy {
     }
 
     @LockedMethod(key = "set_doc_type")
-    public void setDocType(DocTypeEnum docType) {
+    public void setDocType(FileTypeEnum docType) {
         docTypeThreadLocal.set(docType);
         log.debug("DocType set to: {}", docType);
     }
@@ -71,7 +71,7 @@ public class FileStrategyFactory implements FileStrategy {
         });
     }
 
-    public DocTypeEnum getDocType() {
+    public FileTypeEnum getDocType() {
         return docTypeThreadLocal.get();
     }
 
@@ -81,7 +81,7 @@ public class FileStrategyFactory implements FileStrategy {
     }
 
     private void executeWithDocType(DocTypeConsumer consumer) throws IOException {
-        DocTypeEnum docType = docTypeThreadLocal.get();
+        FileTypeEnum docType = docTypeThreadLocal.get();
         log.debug("Current DocType: {}", docType);
 
         if (docType == null) {
@@ -91,12 +91,12 @@ public class FileStrategyFactory implements FileStrategy {
         consumer.accept(docType);
     }
 
-    private FileStrategy getStrategy(DocTypeEnum docType) {
+    private FileStrategy getStrategy(FileTypeEnum docType) {
         return fileStrategies.computeIfAbsent(docType, this::createStrategy);
     }
 
     @LockedMethod(key = "create_strategy")
-    private FileStrategy createStrategy(DocTypeEnum docType) {
+    private FileStrategy createStrategy(FileTypeEnum docType) {
         return switch (docType) {
             case PDF -> new PdfFileStrategy();
             case DOCX, XLSX -> new DocxFileStrategy();
@@ -109,6 +109,6 @@ public class FileStrategyFactory implements FileStrategy {
 
     @FunctionalInterface
     private interface DocTypeConsumer {
-        void accept(DocTypeEnum docType) throws IOException;
+        void accept(FileTypeEnum docType) throws IOException;
     }
 }

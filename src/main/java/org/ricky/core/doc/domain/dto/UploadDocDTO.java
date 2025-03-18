@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static org.ricky.common.exception.ErrorCodeEnum.FILE_MUST_NOT_BE_EMPTY;
 import static org.ricky.common.exception.ErrorCodeEnum.FILE_ORIGINAL_NAME_MUST_NOT_BE_BLANK;
-import static org.ricky.common.util.ValidationUtil.isBlank;
+import static org.ricky.core.common.util.ValidationUtil.isBlank;
 
 /**
  * @author Ricky

@@ -18,11 +18,10 @@ import java.util.concurrent.locks.ReentrantLock;
 @Getter
 public class DocTaskContext {
 
-    private Doc doc; // TODO get后写很危险！
+    private Doc doc;
     private String txtFilePath;
     private String thumbFilePath;
     private String previewFilePath;
-    // private DocTypeEnum docType;
 
     @Getter(AccessLevel.NONE)
     private final Lock lock = new ReentrantLock();
@@ -32,7 +31,6 @@ public class DocTaskContext {
         this.txtFilePath = "";
         this.thumbFilePath = "";
         this.previewFilePath = "";
-        // this.docType = DocTypeEnum.getDocType(doc.getSuffix());
     }
 
     public static DocTaskContext newInstance(Doc doc) {
@@ -57,15 +55,6 @@ public class DocTaskContext {
     @LockedMethod
     public void setPreviewFilePath(String previewFilePath) {
         this.previewFilePath = previewFilePath;
-    }
-
-    // @LockedMethod
-    // public void setDocType(DocTypeEnum docType) {
-    //     this.docType = docType;
-    // }
-
-    public static String buildPath(String filename, String suffix) {
-        return "./" + filename + suffix;
     }
 
 }

@@ -1,6 +1,6 @@
 package org.ricky.common.spring;
 
-import org.ricky.common.util.MyObjectMapper;
+import org.ricky.core.common.util.MyObjectMapper;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;

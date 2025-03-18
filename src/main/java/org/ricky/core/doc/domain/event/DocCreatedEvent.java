@@ -22,9 +22,17 @@ import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED
 public class DocCreatedEvent extends DocAwareDomainEvent {
 
     private String suffix;
+    private String gridFsId;
+    private String textFileId;
+    private String previewFileId;
+    private String thumbId;
 
-    public DocCreatedEvent(String docId, String suffix) {
+    public DocCreatedEvent(String docId, String suffix, String gridFsId, String textFileId, String previewFileId, String thumbId) {
         super(DOC_CREATED, docId);
         this.suffix = suffix;
+        this.gridFsId = gridFsId;
+        this.textFileId = textFileId;
+        this.previewFileId = previewFileId;
+        this.thumbId = thumbId;
     }
 }

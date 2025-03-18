@@ -3,7 +3,7 @@ package org.ricky.core.common.auth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import static org.ricky.common.util.ValidationUtil.isBlank;
+import static org.ricky.core.common.util.ValidationUtil.isBlank;
 
 /**
  * @author Ricky

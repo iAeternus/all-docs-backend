@@ -7,7 +7,7 @@ import org.springframework.core.convert.converter.ConverterFactory;
 
 import java.util.Map;
 
-import static org.ricky.common.util.ValidationUtil.isNull;
+import static org.ricky.core.common.util.ValidationUtil.isNull;
 
 /**
  * @author Ricky

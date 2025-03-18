@@ -17,7 +17,7 @@ import static com.google.common.collect.ImmutableList.toImmutableList;
 import static org.apache.commons.lang3.RandomStringUtils.*;
 import static org.apache.commons.lang3.RandomUtils.*;
 import static org.apache.commons.lang3.StringUtils.isBlank;
-import static org.ricky.common.util.UUIDGenerator.newShortUUID;
+import static org.ricky.core.common.util.UUIDGenerator.newShortUUID;
 
 public class RandomTestFixture {
 

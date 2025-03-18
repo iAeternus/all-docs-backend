@@ -1,6 +1,6 @@
 package org.ricky.core.common.context;
 
-import static org.ricky.common.util.ValidationUtil.isNull;
+import static org.ricky.core.common.util.ValidationUtil.isNull;
 
 /**
  * 线程上下文管理类，通过 {@link ThreadLocal} 提供线程隔离的上下文存储。

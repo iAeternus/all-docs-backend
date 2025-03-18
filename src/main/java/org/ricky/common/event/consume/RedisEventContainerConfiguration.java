@@ -39,7 +39,7 @@ public class RedisEventContainerConfiguration {
 
     private final RedisProperties redisProperties;
 
-    @Qualifier("redisDomainEventListener") // TODO
+    @Qualifier("redisDomainEventListener")
     private final DomainEventListener domainEventListener;
 
     @Qualifier("consumeDomainEventTaskExecutor")

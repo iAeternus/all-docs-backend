@@ -1,6 +1,6 @@
 package org.ricky.common.redis;
 
-import org.ricky.common.util.MyObjectMapper;
+import org.ricky.core.common.util.MyObjectMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;

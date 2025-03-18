@@ -17,10 +17,8 @@ import java.io.InputStream;
 import java.util.Map;
 
 import static org.ricky.common.exception.ErrorCodeEnum.*;
-import static org.ricky.common.util.FileUtil.deleteFile;
-import static org.ricky.common.util.FileUtil.isNotExists;
-import static org.ricky.core.doc.domain.DocTypeEnum.TXT;
-import static org.ricky.core.doc.domain.task.DocTaskContext.buildPath;
+import static org.ricky.core.common.util.FileUtil.*;
+import static org.ricky.core.doc.domain.FileTypeEnum.TXT;
 
 /**
  * @author Ricky

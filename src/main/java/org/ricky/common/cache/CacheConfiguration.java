@@ -1,6 +1,6 @@
 package org.ricky.common.cache;
 
-import org.ricky.common.util.MyObjectMapper;
+import org.ricky.core.common.util.MyObjectMapper;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.tag.domain.Tag;
 import org.ricky.core.user.domain.User;

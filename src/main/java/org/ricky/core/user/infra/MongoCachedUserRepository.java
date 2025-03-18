@@ -9,7 +9,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Repository;
 
 import static org.ricky.common.constants.ConfigConstant.USER_CACHE;
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 
 /**
  * @author Ricky

@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import static org.ricky.common.constants.ConfigConstant.TAG_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.TAG_ID_PREFIX;
-import static org.ricky.common.util.SnowflakeIdGenerator.newSnowflakeId;
+import static org.ricky.core.common.util.SnowflakeIdGenerator.newSnowflakeId;
 
 /**
  * @author Ricky

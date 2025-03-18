@@ -3,7 +3,7 @@ package org.ricky.core.common.domain.event;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.ricky.common.util.SnowflakeIdGenerator;
+import org.ricky.core.common.util.SnowflakeIdGenerator;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,8 +12,8 @@ import java.time.Instant;
 
 import static lombok.AccessLevel.PROTECTED;
 import static org.ricky.common.constants.ConfigConstant.EVENT_COLLECTION;
-import static org.ricky.common.util.ValidationUtil.isNotBlank;
-import static org.ricky.common.util.ValidationUtil.requireNonNull;
+import static org.ricky.core.common.util.ValidationUtil.isNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireNonNull;
 
 /**
  * @author Ricky
@@ -24,7 +24,6 @@ import static org.ricky.common.util.ValidationUtil.requireNonNull;
  * 这里ar代指AggregateRoot
  * DomainEvent既要保证能支持MongoDB的序列化/反序列化，有要能够通过Jackson序列化/反序列化（因为要发送到Redis）<br>
  * @see org.ricky.common.json.JsonTypeDefine 其子类必须加@JsonTypeDefine注解才可正常序列化<br>
- * TODO
  */
 @Getter
 @Document(EVENT_COLLECTION)

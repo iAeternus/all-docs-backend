@@ -4,7 +4,7 @@ import io.micrometer.tracing.ScopedSpan;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.tracing.TracingService;
-import org.ricky.common.util.MyObjectMapper;
+import org.ricky.core.common.util.MyObjectMapper;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventConsumer;
 import org.springframework.data.redis.connection.stream.ObjectRecord;

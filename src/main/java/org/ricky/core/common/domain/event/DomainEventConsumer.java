@@ -1,7 +1,7 @@
 package org.ricky.core.common.domain.event;
 
 import lombok.extern.slf4j.Slf4j;
-import org.ricky.common.util.TaskRunner;
+import org.ricky.core.common.util.TaskRunner;
 import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
@@ -48,9 +48,12 @@ public class DomainEventConsumer {
                 }
             } catch (Throwable t) {
                 hasError = true;
-                handler.onFailure(domainEvent, taskRunner);
+                handler.onFailure(t);
+                handler.fallback();
                 log.error("Error while handle domain event[{}:{}] by [{}].",
                         domainEvent.getType(), domainEvent.getId(), handler.getClass().getSimpleName(), t);
+            } finally {
+                handler.afterHandle();
             }
         }
 

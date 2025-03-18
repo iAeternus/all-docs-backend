@@ -12,8 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static java.time.Instant.now;
-import static org.ricky.common.util.ValidationUtil.isNull;
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.isNull;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 
 /**
  * @author Ricky

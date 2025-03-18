@@ -9,8 +9,8 @@ import org.ricky.common.exception.MyException;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
-import org.ricky.common.util.JwtUtil;
-import org.ricky.common.util.ValidationUtil;
+import org.ricky.core.common.util.JwtUtil;
+import org.ricky.core.common.util.ValidationUtil;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.ApiResult;
 import org.ricky.core.common.domain.PageDTO;
@@ -36,7 +36,7 @@ import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.ricky.common.exception.ErrorCodeEnum.*;
 import static org.ricky.common.ratelimit.TPSConstants.*;
-import static org.ricky.common.util.ValidationUtil.*;
+import static org.ricky.core.common.util.ValidationUtil.*;
 
 /**
  * @author Ricky

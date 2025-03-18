@@ -6,7 +6,7 @@ import io.micrometer.tracing.Tracer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import static org.ricky.common.util.ValidationUtil.nonNull;
+import static org.ricky.core.common.util.ValidationUtil.nonNull;
 
 /**
  * @author Ricky

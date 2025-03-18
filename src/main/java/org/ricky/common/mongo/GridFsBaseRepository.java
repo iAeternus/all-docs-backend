@@ -5,7 +5,7 @@ import com.mongodb.client.gridfs.GridFSDownloadStream;
 import com.mongodb.client.gridfs.model.GridFSFile;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.exception.MyException;
-import org.ricky.common.util.UUIDGenerator;
+import org.ricky.core.common.util.UUIDGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.gridfs.GridFsResource;
@@ -15,10 +15,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static cn.hutool.core.io.IoUtil.readBytes;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static org.ricky.common.exception.ErrorCodeEnum.FILE_READ_FAILED;
-import static org.ricky.common.util.ValidationUtil.*;
+import static org.ricky.core.common.util.ValidationUtil.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -50,6 +52,10 @@ public abstract class GridFsBaseRepository {
             return;
         }
         gridFsTemplate.delete(query(where(FILE_NAME).in(filenames)));
+    }
+
+    public void delete(String... filenames) {
+        delete(Stream.of(filenames).collect(toImmutableSet()));
     }
 
     public String upload(String prefix, InputStream content, String contentType) {

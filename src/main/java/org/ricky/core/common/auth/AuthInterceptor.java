@@ -19,8 +19,8 @@ import static jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED;
 import static java.util.Arrays.stream;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
-import static org.ricky.common.util.JwtUtil.verifyToken;
-import static org.ricky.common.util.ValidationUtil.*;
+import static org.ricky.core.common.util.JwtUtil.verifyToken;
+import static org.ricky.core.common.util.ValidationUtil.*;
 import static org.ricky.core.common.context.UserContext.of;
 
 /**

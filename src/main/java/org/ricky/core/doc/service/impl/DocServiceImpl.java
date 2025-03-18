@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import static org.ricky.common.exception.MyException.accessDeniedException;
 import static org.ricky.common.ratelimit.TPSConstants.MINIMUM_TPS;
-import static org.ricky.common.util.ValidationUtil.isFalse;
+import static org.ricky.core.common.util.ValidationUtil.isFalse;
 
 /**
  * @author Ricky

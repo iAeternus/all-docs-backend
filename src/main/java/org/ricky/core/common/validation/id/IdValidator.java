@@ -3,7 +3,7 @@ package org.ricky.core.common.validation.id;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-import static org.ricky.common.util.ValidationUtil.isBlank;
+import static org.ricky.core.common.util.ValidationUtil.isBlank;
 
 /**
  * @author Ricky

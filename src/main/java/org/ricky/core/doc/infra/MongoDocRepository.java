@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -70,6 +70,12 @@ public class MongoDocRepository extends MongoBaseRepository<Doc> implements DocR
 
     @Override
     public void deleteGridFs(Set<String> filenames) {
+        gridFsDocRepository.delete(filenames);
+        cachedDocRepository.evictAll();
+    }
+
+    @Override
+    public void deleteGridFs(String... filenames) {
         gridFsDocRepository.delete(filenames);
         cachedDocRepository.evictAll();
     }

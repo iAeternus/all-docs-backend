@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 

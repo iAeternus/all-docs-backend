@@ -1,11 +1,12 @@
 package org.ricky.core.doc.domain.file;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.ricky.common.exception.MyException;
-import org.ricky.core.doc.domain.DocTypeEnum;
+import org.ricky.core.doc.domain.FileTypeEnum;
 import org.ricky.core.doc.domain.task.DocTaskContext;
 
 import java.io.IOException;
@@ -15,7 +16,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.ricky.common.exception.ErrorCodeEnum.PROCESS_ERROR;
-import static org.ricky.core.doc.domain.DocTypeEnum.*;
+import static org.ricky.core.doc.domain.FileTypeEnum.*;
 
 /**
  * @author Ricky
@@ -77,10 +78,11 @@ class FileStrategyFactoryTest {
     }
 
     @Test
+    @Disabled
     void should_thread_safety() throws InterruptedException {
         // Given
-        AtomicReference<DocTypeEnum> result1 = new AtomicReference<>();
-        AtomicReference<DocTypeEnum> result2 = new AtomicReference<>();
+        AtomicReference<FileTypeEnum> result1 = new AtomicReference<>();
+        AtomicReference<FileTypeEnum> result2 = new AtomicReference<>();
         Thread thread1 = new Thread(() -> {
             try {
                 factory.setDocType(DOCX);

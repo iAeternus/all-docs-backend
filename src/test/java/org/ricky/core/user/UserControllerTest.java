@@ -348,7 +348,7 @@ class UserControllerTest {
     }
 
     /*
-    TODO 作为最后一个执行的单测，产生了redis数据与mongo数据不一致的问题，(Ok)
+    作为最后一个执行的单测，产生了redis数据与mongo数据不一致的问题，(Ok)
     TODO 删除缓存的方法很离奇地被调用了多次 (Err)
     2025-03-12 19:52:16.861 [main] [INFO ] o.r.c.u.i.MongoCachedUserRepository:evictUserCache [] [all-docs-backend] Evicted cache for user[USR687613677062691840].
     2025-03-12 19:52:16.883 [main] [INFO ] o.r.c.u.i.MongoCachedUserRepository:evictUserCache [] [all-docs-backend] Evicted cache for user[USR687613677062691840].

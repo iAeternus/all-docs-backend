@@ -3,9 +3,9 @@ package org.ricky.core.doc.domain.task;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.core.common.domain.task.RepeatableTask;
-import org.ricky.core.doc.domain.Doc;
-import org.ricky.core.doc.domain.DocRepository;
 import org.springframework.stereotype.Component;
+
+import static org.ricky.core.doc.domain.DocStatusEnum.ON_PROCESS;
 
 /**
  * @author Ricky
@@ -14,17 +14,14 @@ import org.springframework.stereotype.Component;
  * @className UpdateDocStatusTask
  * @desc
  */
+@Deprecated
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class UpdateDocStatusTask implements RepeatableTask {
 
-    private final DocRepository docRepository;
-
-    public void run(String docId) {
-        Doc doc = docRepository.cachedById(docId);
-        doc.onProcess();
-        docRepository.save(doc);
+    public void run(DocTaskContext context) {
+        context.getDoc().updateStatus(ON_PROCESS);
     }
 
 }

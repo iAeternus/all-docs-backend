@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static org.ricky.common.exception.ErrorCodeEnum.TOO_MANY_REQUEST;
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 
 /**
  * @author Ricky

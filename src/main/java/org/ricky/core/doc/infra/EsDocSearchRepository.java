@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.xcontent.XContentType;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocSearchRepository;
 import org.ricky.core.doc.domain.es.EsFile;

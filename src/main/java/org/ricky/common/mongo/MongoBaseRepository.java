@@ -3,7 +3,7 @@ package org.ricky.common.mongo;
 import com.google.common.collect.Maps;
 import org.ricky.common.event.publish.interception.ThreadLocalDomainEventIdHolder;
 import org.ricky.common.exception.MyException;
-import org.ricky.common.util.ValidationUtil;
+import org.ricky.core.common.util.ValidationUtil;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.core.common.domain.event.DomainEvent;
@@ -20,7 +20,7 @@ import java.util.*;
 import static com.google.common.collect.ImmutableMap.of;
 import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static org.ricky.common.exception.ErrorCodeEnum.*;
-import static org.ricky.common.util.ValidationUtil.*;
+import static org.ricky.core.common.util.ValidationUtil.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 

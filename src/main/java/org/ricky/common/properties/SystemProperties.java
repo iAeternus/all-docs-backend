@@ -21,6 +21,9 @@ public class SystemProperties {
      */
     private Boolean userUpload;
 
+    /**
+     * 是否允许管理员审核文档
+     */
     private Boolean adminReview = true;
 
     private Boolean prohibitedWord;

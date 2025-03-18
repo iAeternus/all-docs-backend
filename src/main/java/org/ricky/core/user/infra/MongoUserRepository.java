@@ -23,8 +23,8 @@ import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.exception.ErrorCodeEnum.AR_NOT_FOUND;
 import static org.ricky.common.exception.ErrorCodeEnum.FAILURE_TO_UPLOAD_DFS;
-import static org.ricky.common.util.ValidationUtil.requireNotBlank;
-import static org.ricky.common.util.ValidationUtil.requireTrue;
+import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
+import static org.ricky.core.common.util.ValidationUtil.requireTrue;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 

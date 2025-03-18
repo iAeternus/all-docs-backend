@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.toRootUpperCase;
-import static org.ricky.common.util.ValidationUtil.isBlank;
+import static org.ricky.core.common.util.ValidationUtil.isBlank;
 
 /**
  * @author Ricky
@@ -28,7 +28,6 @@ public class SyncTagToDocTask implements RepeatableTask {
     private final DocRepository docRepository;
     private final TagRepository tagRepository;
 
-    @Transactional
     public void run(String docId, String suffix) {
         String tagName = toRootUpperCase(suffix.substring(suffix.lastIndexOf(".") + 1));
         if (isBlank(tagName)) {

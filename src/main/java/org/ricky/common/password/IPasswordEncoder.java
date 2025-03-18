@@ -1,6 +1,6 @@
 package org.ricky.common.password;
 
-import org.ricky.common.util.ValidationUtil;
+import org.ricky.core.common.util.ValidationUtil;
 
 /**
  * @author Ricky
