@@ -54,10 +54,6 @@ public abstract class GridFsBaseRepository {
         gridFsTemplate.delete(query(where(FILE_NAME).in(filenames)));
     }
 
-    public void delete(String... filenames) {
-        delete(Stream.of(filenames).collect(toImmutableSet()));
-    }
-
     public String upload(String prefix, InputStream content, String contentType) {
         String filename = prefix + UUIDGenerator.newShortUUID();
         gridFsTemplate.store(content, filename, contentType);

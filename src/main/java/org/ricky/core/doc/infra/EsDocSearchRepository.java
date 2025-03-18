@@ -9,10 +9,13 @@ import org.elasticsearch.common.xcontent.XContentType;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocSearchRepository;
 import org.ricky.core.doc.domain.es.EsFile;
+import org.ricky.core.doc.domain.es.EsPage;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.ricky.common.constants.ConfigConstant.DOC_INDEX_NAME;
 
@@ -40,6 +43,11 @@ public class EsDocSearchRepository implements DocSearchRepository {
 
     @Override
     public List<Doc> search(String keyword) throws IOException {
+        return null;
+    }
+
+    @Override
+    public Map<String, List<EsPage>> search(String keyword, Set<String> docIdSet) throws IOException {
         return null;
     }
 }

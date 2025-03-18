@@ -6,7 +6,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.core.common.domain.DTO;
+import org.ricky.core.common.domain.marker.DTO;
 import org.ricky.core.common.validation.password.Password;
 
 import static org.ricky.common.constants.ConfigConstant.MAX_GENERIC_NAME_LENGTH;

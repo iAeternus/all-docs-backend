@@ -8,6 +8,7 @@ import org.apache.commons.io.FileUtils;
 import org.ricky.common.exception.MyException;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
+import org.ricky.core.doc.domain.event.DocDeletedEvent;
 import org.ricky.core.doc.domain.file.FileStrategy;
 import org.ricky.core.doc.domain.file.FileStrategyFactory;
 import org.ricky.core.doc.domain.task.DocTaskContext;
@@ -247,4 +248,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
         }
     }
 
+    public void onDelete() {
+        raiseEvent(new DocDeletedEvent(getId()));
+    }
 }

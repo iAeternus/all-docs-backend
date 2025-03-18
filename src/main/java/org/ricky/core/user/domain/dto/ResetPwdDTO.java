@@ -5,7 +5,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.core.common.domain.DTO;
+import org.ricky.core.common.domain.marker.DTO;
 import org.ricky.core.common.validation.id.Id;
 
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;

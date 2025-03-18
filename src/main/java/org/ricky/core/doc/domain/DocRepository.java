@@ -26,9 +26,11 @@ public interface DocRepository {
 
     Doc cachedById(String docId);
 
-    void deleteGridFs(Set<String> filenames);
-
-    void deleteGridFs(String... filenames);
+    void deleteGridFs(String docId, Set<String> filenames);
 
     byte[] getFileBytes(String gridFsId);
+
+    void delete(Doc doc);
+
+    boolean exists(String docId);
 }

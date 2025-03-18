@@ -4,7 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.core.common.domain.VO;
+import org.ricky.core.common.domain.marker.VO;
 
 /**
  * @author Ricky

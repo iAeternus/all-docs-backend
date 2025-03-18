@@ -7,6 +7,7 @@ import org.ricky.core.common.domain.ApiResult;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocDomainService;
 import org.ricky.core.doc.domain.DocRepository;
+import org.ricky.core.doc.domain.dto.RemoveDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.service.DocService;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Set;
 
 import static org.ricky.common.exception.MyException.accessDeniedException;
 import static org.ricky.common.ratelimit.TPSConstants.MINIMUM_TPS;
@@ -53,5 +55,19 @@ public class DocServiceImpl implements DocService {
         docRepository.save(doc);
 
         return ApiResult.success(doc.getId());
+    }
+
+    @Override
+    public ApiResult<Boolean> remove(RemoveDocDTO dto) {
+        rateLimiter.applyFor("Doc:Remove", MINIMUM_TPS);
+
+        Doc doc = docRepository.cachedById(dto.getDocId());
+        doc.onDelete();
+        docRepository.delete(doc);
+        if(dto.isDeleteFile()) {
+            docRepository.deleteGridFs(doc.getId(), Set.of(doc.getGridFsId(), doc.getThumbId(), doc.getTextFileId()));
+        }
+
+        return ApiResult.success();
     }
 }

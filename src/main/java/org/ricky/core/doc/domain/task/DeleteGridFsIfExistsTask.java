@@ -26,11 +26,11 @@ public class DeleteGridFsIfExistsTask implements RepeatableTask {
 
     private final DocRepository docRepository;
 
-    public void run(String textFileId, String previewFileId, String thumbId) {
+    public void run(String docId, String textFileId, String previewFileId, String thumbId) {
         Set<String> ids = Stream.of(textFileId, previewFileId, thumbId)
                 .filter(ValidationUtil::isNotBlank)
                 .collect(toImmutableSet());
-        docRepository.deleteGridFs(ids);
+        docRepository.deleteGridFs(docId, ids);
     }
 
 }

@@ -8,10 +8,12 @@ import org.ricky.ApiTest;
 import org.ricky.core.common.domain.event.DomainEventDao;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocRepository;
+import org.ricky.core.doc.domain.dto.RemoveDocDTO;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
 import org.ricky.core.tag.domain.TagRepository;
 import org.ricky.util.SetUpApi;
 import org.ricky.util.SetUpResponse;
+import org.ricky.util.TearDownApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
@@ -24,8 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 import static java.nio.file.Files.readAllBytes;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
 
@@ -49,6 +50,9 @@ class DocControllerTest {
     SetUpApi setUpApi;
 
     @Autowired
+    TearDownApi tearDownApi;
+
+    @Autowired
     DocRepository docRepository;
 
     @Autowired
@@ -69,12 +73,7 @@ class DocControllerTest {
         // Given
         SetUpResponse operator = setUpApi.registryWithLogin();
         byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "ご注文はうさぎですか165回.pdf",
-                DOC.getContentType(),
-                content
-        );
+        MockMultipartFile file = new MockMultipartFile("file", "ご注文はうさぎですか165回.pdf", DOC.getContentType(), content);
 
         // When
         String docId = ApiTest.using(mockMvc)
@@ -97,11 +96,69 @@ class DocControllerTest {
         assertEquals(docId, evt.getDocId());
         assertEquals(1, evt.getConsumedCount());
         assertEquals("PDF", tagRepository.byId(doc.getTagIds().get(0)).getName());
+
+        // Finally
+        tearDownApi.removeDoc(operator.getToken(), docId);
     }
 
     @Test
-    void should_fail_to_upload_if_doc_is_already_exists() {
-        // TODO
+    void should_fail_to_upload_if_doc_is_already_exists() throws IOException {
+        // Given
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
+        MockMultipartFile file = new MockMultipartFile("file", "ご注文はうさぎですか165回.pdf", DOC.getContentType(), content);
+        String docId = ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/upload")
+                .bearerToken(operator.getToken())
+                .file(file)
+                .execute()
+                .as(String.class);
+
+        // When & Then
+        ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/upload")
+                .bearerToken(operator.getToken())
+                .file(file)
+                .execute()
+                .expectStatus(409)
+                .expectUserMessage("文档已存在");
+
+        // Finally
+        tearDownApi.removeDoc(operator.getToken(), docId);
+    }
+
+    @Test
+    void should_remove_doc() throws IOException {
+        // Given
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
+        MockMultipartFile file = new MockMultipartFile("file", "ご注文はうさぎですか165回.pdf", DOC.getContentType(), content);
+        String docId = ApiTest.using(mockMvc)
+                .post(ROOT_URL + "/upload")
+                .bearerToken(operator.getToken())
+                .file(file)
+                .execute()
+                .as(String.class);
+        String gridFsId = docRepository.cachedById(docId).getGridFsId();
+
+        // When
+        ApiTest.using(mockMvc)
+                .delete(ROOT_URL)
+                .bearerToken(operator.getToken())
+                .body(RemoveDocDTO.builder()
+                        .docId(docId)
+                        .isDeleteFile(true)
+                        .build())
+                .execute()
+                .expectStatus(200)
+                .expectSuccess();
+
+        // Then
+        assertFalse(docRepository.exists(docId));
+        assertEquals(0, docRepository.getFileBytes(gridFsId).length);
+
+        // Finally
+        tearDownApi.removeDoc(operator.getToken(), docId);
     }
 
 }

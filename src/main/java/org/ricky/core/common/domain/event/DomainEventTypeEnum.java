@@ -10,7 +10,7 @@ package org.ricky.core.common.domain.event;
 public enum DomainEventTypeEnum {
 
     DOC_CREATED,
-    DOC_ON_PROCESS,
+    DOC_DELETED,
 
     // add here...
 

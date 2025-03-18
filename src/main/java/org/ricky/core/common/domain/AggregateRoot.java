@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.event.DomainEvent;
+import org.ricky.core.common.domain.marker.Identified;
 import org.springframework.data.annotation.Version;
 
 import java.time.Instant;

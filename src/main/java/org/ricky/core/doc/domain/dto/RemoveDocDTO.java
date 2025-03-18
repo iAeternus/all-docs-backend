@@ -1,4 +1,4 @@
-package org.ricky.core.user.domain.dto;
+package org.ricky.core.doc.domain.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -6,29 +6,32 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
-import org.ricky.core.common.auth.PermissionEnum;
 import org.ricky.core.common.domain.marker.DTO;
 import org.ricky.core.common.validation.id.Id;
 
-import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.constants.ConfigConstant.DOC_ID_PREFIX;
 
 /**
  * @author Ricky
  * @version 1.0
- * @date 2025/3/12
- * @className UpdateRoleDTO
+ * @date 2025/3/18
+ * @className RemoveDocDTO
  * @desc
  */
 @Value
 @Builder
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class UpdateRoleDTO implements DTO {
+public class RemoveDocDTO implements DTO {
 
     @NotBlank
-    @Id(pre = USER_ID_PREFIX)
-    String userId;
+    @Id(pre = DOC_ID_PREFIX)
+    String docId;
 
     @NotNull
-    PermissionEnum newRole;
+    Boolean isDeleteFile;
+
+    public Boolean isDeleteFile() {
+        return isDeleteFile;
+    }
 
 }

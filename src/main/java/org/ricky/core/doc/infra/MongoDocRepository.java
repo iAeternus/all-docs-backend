@@ -69,15 +69,9 @@ public class MongoDocRepository extends MongoBaseRepository<Doc> implements DocR
     }
 
     @Override
-    public void deleteGridFs(Set<String> filenames) {
+    public void deleteGridFs(String docId, Set<String> filenames) {
         gridFsDocRepository.delete(filenames);
-        cachedDocRepository.evictAll();
-    }
-
-    @Override
-    public void deleteGridFs(String... filenames) {
-        gridFsDocRepository.delete(filenames);
-        cachedDocRepository.evictAll();
+        cachedDocRepository.evictDocCache(docId);
     }
 
     @Override
@@ -85,4 +79,14 @@ public class MongoDocRepository extends MongoBaseRepository<Doc> implements DocR
         return gridFsDocRepository.getFileBytes(gridFsId);
     }
 
+    @Override
+    public void delete(Doc doc) {
+        super.delete(doc);
+        cachedDocRepository.evictDocCache(doc.getId());
+    }
+
+    @Override
+    public boolean exists(String docId) {
+        return super.exists(docId);
+    }
 }

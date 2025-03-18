@@ -1,4 +1,4 @@
-package org.ricky.core.common.domain;
+package org.ricky.core.common.domain.marker;
 
 import org.apache.commons.collections4.CollectionUtils;
 

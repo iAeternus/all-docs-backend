@@ -1,6 +1,7 @@
 package org.ricky.core.doc.service;
 
 import org.ricky.core.common.domain.ApiResult;
+import org.ricky.core.doc.domain.dto.RemoveDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 
 import java.io.IOException;
@@ -14,4 +15,6 @@ import java.io.IOException;
  */
 public interface DocService {
     ApiResult<String> upload(UploadDocDTO dto) throws IOException;
+
+    ApiResult<Boolean> remove(RemoveDocDTO dto);
 }

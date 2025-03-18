@@ -14,7 +14,10 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Stream;
 
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 import static org.ricky.core.common.util.FileUtil.deleteFileIfExists;
 import static org.ricky.core.common.util.ValidationUtil.isTrue;
@@ -61,7 +64,7 @@ public class DocCreatedEventHandler implements DomainEventHandler {
             return;
         }
 
-        taskRunner.run(() -> deleteGridFsIfExistsTask.run(evt.getTextFileId(), evt.getPreviewFileId(), evt.getThumbId()));
+        taskRunner.run(() -> deleteGridFsIfExistsTask.run(evt.getDocId(), evt.getTextFileId(), evt.getPreviewFileId(), evt.getThumbId()));
 
         Doc doc = docRepository.cachedById(evt.getDocId());
         setContext(DocTaskContext.newInstance(doc));
@@ -103,7 +106,9 @@ public class DocCreatedEventHandler implements DomainEventHandler {
         deleteFileIfExists(previewFilePath);
 
         // 删除相关的文件
-        docRepository.deleteGridFs(txtFilePath, picFilePath, previewFilePath);
+        Set<String> gridFsIds = Stream.of(txtFilePath, picFilePath, previewFilePath)
+                .collect(toImmutableSet());
+        docRepository.deleteGridFs(context.getDoc().getId(), gridFsIds);
 
         // TODO 删除es中的数据
     }

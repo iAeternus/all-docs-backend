@@ -4,6 +4,7 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;
+import org.ricky.core.common.domain.marker.VO;
 
 import java.util.List;
 
