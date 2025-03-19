@@ -17,7 +17,6 @@ import org.ricky.core.common.domain.idtree.exception.IdNodeNotFoundException;
 import org.ricky.core.common.domain.idtree.exception.NodeIdFormatException;
 import org.ricky.core.common.domain.idtree.validation.NodeId;
 import org.ricky.core.common.domain.marker.ValueObject;
-import org.ricky.core.common.util.ValidationUtil;
 import org.ricky.core.common.validation.collection.NoNullElement;
 
 import java.util.*;

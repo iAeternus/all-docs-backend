@@ -25,12 +25,12 @@ public class SyncCategoryTask implements RepeatableTask {
 
     public void run(String categoryId, Integer dCnt) {
         Optional<Category> categoryOptional = categoryRepository.byIdOptional(categoryId);
-        if(categoryOptional.isEmpty()) {
+        if (categoryOptional.isEmpty()) {
             return;
         }
         Category category = categoryOptional.get();
         category.incSize(dCnt);
-        if(category.isEmpty()) {
+        if (category.isEmpty()) {
             categoryRepository.delete(category);
             return;
         }

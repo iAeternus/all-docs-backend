@@ -67,6 +67,7 @@ redis-server --service-uninstall
 ## Kibana
 
 -
+
 下载Kibana，作为访问Elasticsearch的客户端，请下载7.17.3版本的zip包，并解压到指定目录，下载地址：https://www.elastic.co/cn/downloads/past-releases/kibana-7-17-3
 
 ![image.png](https://cdn.nlark.com/yuque/0/2023/png/2413981/1676024105389-b567332b-23e8-438f-b335-eec3b6c553d8.png#averageHue=%23fcfbfa&clientId=u4c71546f-fd35-4&from=paste&id=ud730add8&name=image.png&originHeight=388&originWidth=755&originalType=url&ratio=1&rotation=0&showTitle=false&size=36864&status=done&style=none&taskId=u20207e8a-6904-4f72-a9e3-010524b49d3&title=)

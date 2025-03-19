@@ -11,8 +11,6 @@ import java.nio.file.Path;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.ricky.core.common.util.FileUtil.getLastPart;
-import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
-import static org.ricky.core.doc.domain.FileTypeEnum.PDF;
 
 /**
  * @author Ricky

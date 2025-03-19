@@ -3,9 +3,9 @@ package org.ricky.core.common.domain.event;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.ricky.core.common.util.SnowflakeIdGenerator;
 import org.ricky.core.common.context.ThreadLocalContext;
 import org.ricky.core.common.domain.AggregateRoot;
+import org.ricky.core.common.util.SnowflakeIdGenerator;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.Instant;

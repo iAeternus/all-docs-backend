@@ -95,9 +95,9 @@ public class PdfUtil {
     /**
      * 生成PDF缩略图（第一页）
      *
-     * @param is PDF输入流
-     * @param outputPath  缩略图输出路径
-     * @param zoomScale   缩放比例
+     * @param is         PDF输入流
+     * @param outputPath 缩略图输出路径
+     * @param zoomScale  缩放比例
      */
     public static void generateThumbnail(InputStream is, String outputPath, float zoomScale) throws IOException {
         try (PDDocument document = PDDocument.load(is)) {

@@ -6,7 +6,6 @@ import org.ricky.core.category.domain.event.CategoryDisconnectedEvent;
 import org.ricky.core.category.domain.task.SyncCategoryTask;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventHandler;
-import org.ricky.core.common.domain.event.DomainEventTypeEnum;
 import org.ricky.core.common.util.TaskRunner;
 import org.springframework.stereotype.Component;
 

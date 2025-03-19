@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.ricky.common.constants.ConfigConstant;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.category.domain.dto.DisConnectDTO;

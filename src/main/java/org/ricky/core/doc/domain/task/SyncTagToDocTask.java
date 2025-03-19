@@ -8,7 +8,6 @@ import org.ricky.core.doc.domain.DocRepository;
 import org.ricky.core.tag.domain.Tag;
 import org.ricky.core.tag.domain.TagRepository;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import static org.apache.commons.lang3.StringUtils.toRootUpperCase;
 import static org.ricky.core.common.util.ValidationUtil.isBlank;

@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.ricky.core.common.auth.Permission;
 import org.ricky.core.common.domain.ApiResult;
 import org.ricky.core.common.domain.PageDTO;

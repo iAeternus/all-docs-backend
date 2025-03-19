@@ -10,9 +10,9 @@ import org.ricky.core.common.domain.event.DomainEvent;
 import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.ricky.core.common.util.SnowflakeIdGenerator.newSnowflakeId;
 import static org.ricky.core.common.context.UserContext.of;
 import static org.ricky.core.common.domain.AggregateRoot.MAX_OPS_LOG_SIZE;
+import static org.ricky.core.common.util.SnowflakeIdGenerator.newSnowflakeId;
 
 /**
  * @author Ricky

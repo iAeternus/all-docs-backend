@@ -2,11 +2,11 @@ package org.ricky.core.doc.handler;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.core.category.domain.task.SyncCategoryTask;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventHandler;
 import org.ricky.core.common.util.TaskRunner;
 import org.ricky.core.doc.domain.event.DocDeletedEvent;
-import org.ricky.core.category.domain.task.SyncCategoryTask;
 import org.springframework.stereotype.Component;
 
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_DELETED;

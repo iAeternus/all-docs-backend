@@ -1,10 +1,10 @@
 spring:
-#  elasticsearch:
-##    username: elastic
-##    password: 123456
-#    uris: http://${ES_HOST:192.168.137.128}:${ES_PORT:9200}
-#    connection-timeout: 1s
-#    read-timeout: 30s
+  #  elasticsearch:
+  ##    username: elastic
+  ##    password: 123456
+  #    uris: http://${ES_HOST:192.168.137.128}:${ES_PORT:9200}
+  #    connection-timeout: 1s
+  #    read-timeout: 30s
   data:
     mongodb:
       database: ${MONGO_DATABASE:test}

@@ -16,7 +16,7 @@ import static org.ricky.core.common.util.ValidationUtil.isNull;
 public class CategoryFactory {
 
     public CategoryVO category2vo(Category category) {
-        if(isNull(category)) {
+        if (isNull(category)) {
             return null;
         }
         return CategoryVO.builder()

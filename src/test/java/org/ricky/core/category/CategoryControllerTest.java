@@ -10,21 +10,16 @@ import org.ricky.core.category.domain.dto.RemoveCategoryDTO;
 import org.ricky.core.category.domain.event.CategoryDeletedEvent;
 import org.ricky.core.category.domain.event.CategoryDisconnectedEvent;
 import org.ricky.core.category.domain.vo.CategoryVO;
-import org.ricky.core.common.domain.event.DomainEventTypeEnum;
 import org.ricky.core.doc.DocApi;
 import org.ricky.core.doc.domain.Doc;
-import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.util.SetUpResponse;
-import org.springframework.mock.web.MockMultipartFile;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
-import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.CATEGORY_DELETED;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.CATEGORY_DISCONNECTED;
-import static org.ricky.core.doc.domain.FileTypeEnum.*;
+import static org.ricky.core.doc.domain.FileTypeEnum.PDF;
 import static org.ricky.util.RandomTestFixture.rSentence;
 
 /**

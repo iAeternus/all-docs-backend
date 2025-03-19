@@ -1,7 +1,6 @@
 package org.ricky.core.doc;
 
 import org.junit.jupiter.api.Test;
-import org.ricky.ApiTest;
 import org.ricky.BaseApiTest;
 import org.ricky.core.category.CategoryApi;
 import org.ricky.core.category.domain.dto.CategoryDTO;

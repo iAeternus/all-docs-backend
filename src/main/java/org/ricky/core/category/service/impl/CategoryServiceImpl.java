@@ -68,7 +68,7 @@ public class CategoryServiceImpl implements CategoryService {
         rateLimiter.applyFor("Category:Connect", NORMAL_TPS);
 
         Optional<Category> categoryOptional = categoryRepository.byIdOptional(dto.getCategoryId());
-        if(categoryOptional.isEmpty()) {
+        if (categoryOptional.isEmpty()) {
             throw new MyException(CATEGORY_NOT_FOUND, "分类未找到", Map.of("categoryId", dto.getCategoryId()));
         }
 
@@ -87,7 +87,7 @@ public class CategoryServiceImpl implements CategoryService {
     public Boolean disconnect(DisConnectDTO dto) {
         rateLimiter.applyFor("Category:Connect", NORMAL_TPS);
 
-        if(!categoryRepository.exists(dto.getCategoryId())) {
+        if (!categoryRepository.exists(dto.getCategoryId())) {
             throw new MyException(CATEGORY_NOT_FOUND, "分类未找到", Map.of("categoryId", dto.getCategoryId()));
         }
 

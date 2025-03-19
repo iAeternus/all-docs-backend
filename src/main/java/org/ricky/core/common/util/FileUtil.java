@@ -2,7 +2,6 @@ package org.ricky.core.common.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.ricky.common.exception.MyException;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,6 +58,7 @@ public class FileUtil {
 
     /**
      * 若文件存在则删除，否则什么都不做
+     *
      * @param filepath 文件路径
      */
     public static void deleteFileIfExists(String filepath) {
@@ -69,8 +69,9 @@ public class FileUtil {
 
     /**
      * 构建文件路径
+     *
      * @param filename 文件名
-     * @param suffix 扩展名
+     * @param suffix   扩展名
      * @return 构建好的文件路径
      */
     public static String buildPath(String filename, String suffix) {
@@ -79,7 +80,7 @@ public class FileUtil {
 
     public static String getLastPart(String filepath) {
         String[] split = filepath.split("/");
-        if(split.length == 0) {
+        if (split.length == 0) {
             return "";
         }
         return split[split.length - 1];
