@@ -19,35 +19,35 @@ import java.util.List;
  * @desc
  */
 public interface UserService {
-    ApiResult<String> registry(RegistryUserDTO userDTO);
+    String registry(RegistryUserDTO userDTO);
 
-    ApiResult<Boolean> registryBatch(List<RegistryUserDTO> userDTOS);
+    Boolean registryBatch(List<RegistryUserDTO> userDTOS);
 
-    ApiResult<UserLoginVO> login(UserLoginDTO userDTO);
+    UserLoginVO login(UserLoginDTO userDTO);
 
-    ApiResult<UserVO> getById(String userId);
+    UserVO getById(String userId);
 
-    ApiResult<UserVO> getByUsername(String username);
+    UserVO getByUsername(String username);
 
-    ApiResult<Boolean> updateById(UserDTO userDTO);
+    Boolean updateById(UserDTO userDTO);
 
-    ApiResult<Boolean> deleteById(String userId);
+    Boolean deleteById(String userId);
 
-    ApiResult<Boolean> deleteByIdBatch(DeleteByIdBatchDTO dto);
+    Boolean deleteByIdBatch(DeleteByIdBatchDTO dto);
 
-    ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response);
+    Boolean checkLoginState(HttpServletRequest request, HttpServletResponse response);
 
-    ApiResult<PageVO<UserVO>> page(PageDTO pageDTO);
+    PageVO<UserVO> page(PageDTO pageDTO);
 
-    ApiResult<Boolean> updateRole(UpdateRoleDTO dto);
+    Boolean updateRole(UpdateRoleDTO dto);
 
-    ApiResult<Boolean> deactivate(String userId);
+    Boolean deactivate(String userId);
 
-    ApiResult<Boolean> activate(String userId);
+    Boolean activate(String userId);
 
-    ApiResult<Boolean> uploadAvatar(UploadAvatarDTO dto);
+    Boolean uploadAvatar(UploadAvatarDTO dto);
 
-    ApiResult<Boolean> deleteAvatar();
+    Boolean deleteAvatar();
 
-    ApiResult<Boolean> resetPwd(ResetPwdDTO dto);
+    Boolean resetPwd(ResetPwdDTO dto);
 }

@@ -1,27 +1,16 @@
 package org.ricky.core.user;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.ricky.AllDocsApplication;
 import org.ricky.ApiTest;
-import org.ricky.common.password.IPasswordEncoder;
+import org.ricky.BaseApiTest;
 import org.ricky.core.common.domain.PageDTO;
 import org.ricky.core.common.domain.PageVO;
 import org.ricky.core.user.domain.User;
-import org.ricky.core.user.domain.UserRepository;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;
-import org.ricky.util.SetUpApi;
 import org.ricky.util.SetUpResponse;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -46,30 +35,9 @@ import static org.ricky.util.RandomTestFixture.rUsername;
  * @className UserControllerTest
  * @desc
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = AllDocsApplication.class)
-class UserControllerTest {
-
-    MockMvc mockMvc;
-
-    @Autowired
-    WebApplicationContext webApplicationContext;
-
-    @Autowired
-    SetUpApi setUpApi;
-
-    @Autowired
-    UserRepository userRepository;
-
-    @Autowired
-    IPasswordEncoder passwordEncoder;
+class UserControllerTest extends BaseApiTest {
 
     static final String ROOT_URL = "/user";
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
 
     @Test
     void should_registry() {
@@ -478,8 +446,8 @@ class UserControllerTest {
     @Test
     void should_fail_to_upload_avatar_if_content_type_not_support() throws IOException {
         SetUpResponse operator = setUpApi.registryWithLogin();
-        byte[] content = readAllBytes(Path.of("src/test/resources/test.txt"));
-        MockMultipartFile img = new MockMultipartFile("img", "test.txt", "text/plain", content);
+        byte[] content = readAllBytes(Path.of("src/test/resources/TXT测试.txt"));
+        MockMultipartFile img = new MockMultipartFile("img", "TXT测试.txt", "text/plain", content);
 
         ApiTest.using(mockMvc)
                 .post(ROOT_URL + "/avatar")

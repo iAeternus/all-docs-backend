@@ -74,7 +74,7 @@ public class SyncDocToEsTask implements RepeatableTask {
     private void uploadFileToGridFs(Doc doc, String txtFilePath) {
         try (FileInputStream is = new FileInputStream(txtFilePath)) {
             String txtObjId = docRepository.upload(doc.getId(), TXT.getFilePrefix(), is, TXT.getContentType());
-            doc.setTextFileId(txtObjId);
+            doc.setTxtId(txtObjId);
         } catch (IOException e) {
             log.error("存储文本文件出错，请核对", e);
             throw new MyException(STORE_TXT_FAILED, "存储文本文件出错，请核对");

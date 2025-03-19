@@ -46,26 +46,6 @@ public class ApiResult<T> implements Serializable {
     }
 
     /**
-     * 创建成功返回体
-     * 包含true，表示操作成功
-     *
-     * @return ApiResult
-     */
-    public static ApiResult<Boolean> success() {
-        return success(true);
-    }
-
-    /**
-     * 创建操作失败返回体，在不需要抛出异常的场景下使用
-     * 包含false，表示操作失败
-     *
-     * @return ApiResult
-     */
-    public static ApiResult<Boolean> fail() {
-        return success(false);
-    }
-
-    /**
      * 创建成功返回体，包含数据
      *
      * @param data 数据体

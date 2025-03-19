@@ -6,7 +6,6 @@ import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Repository;
@@ -50,7 +49,7 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
 
     @Override
     public List<User> listByUsername(String username) {
-        Query query = new Query().addCriteria(where("username").is(username));
+        Query query = query(where("username").is(username));
         return mongoTemplate.find(query, User.class, USER_COLLECTION);
     }
 
@@ -64,13 +63,13 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
     public Optional<User> getByUsernameAndPasswordOptional(String username) {
         requireNotBlank(username, "Username must not be blank");
 
-        Criteria criteria = new Criteria("username").is(username);
-        return ofNullable(mongoTemplate.findOne(query(criteria), User.class));
+        Query query = query(where("username").is(username));
+        return ofNullable(mongoTemplate.findOne(query, User.class));
     }
 
     @Override
     public void updateLastLogin(String userId) {
-        Query query = new Query(where("_id").is(userId));
+        Query query = query(where("_id").is(userId));
         Update update = new Update().set("lastLogin", LocalDateTime.now());
         mongoTemplate.updateFirst(query, update, User.class, USER_COLLECTION);
         cachedUserRepository.evictUserCache(userId);

@@ -58,7 +58,7 @@ public class UserServiceImpl implements UserService {
     private final IPasswordEncoder passwordEncoder;
 
     @Override
-    public ApiResult<String> registry(RegistryUserDTO userDTO) {
+    public String registry(RegistryUserDTO userDTO) {
         rateLimiter.applyFor("User:Registry", EXTREMELY_LOW_TPS);
 
         if (isFalse(systemProperties.getUserRegistry())) {
@@ -68,11 +68,11 @@ public class UserServiceImpl implements UserService {
         User user = userDomainService.registry(userDTO.getUsername(), userDTO.getPassword());
         userRepository.save(user);
 
-        return ApiResult.success(user.getId());
+        return user.getId();
     }
 
     @Override
-    public ApiResult<Boolean> registryBatch(List<RegistryUserDTO> userDTOS) {
+    public Boolean registryBatch(List<RegistryUserDTO> userDTOS) {
         rateLimiter.applyFor("User:RegistryBatch", EXTREMELY_LOW_TPS);
 
         for (RegistryUserDTO userDTO : userDTOS) {
@@ -80,42 +80,40 @@ public class UserServiceImpl implements UserService {
         }
 
         ThreadLocalContext.removeContext();
-        return ApiResult.success();
+        return true;
     }
 
     @Override
     @Transactional
-    public ApiResult<UserLoginVO> login(UserLoginDTO userDTO) {
+    public UserLoginVO login(UserLoginDTO userDTO) {
         rateLimiter.applyFor("User:Login", NORMAL_TPS);
 
         UserLoginVO userVO = userDomainService.login(userDTO.getUsername(), userDTO.getPassword());
         userRepository.updateLastLogin(userVO.getUserId());
-        return ApiResult.success(userVO);
+        return userVO;
     }
 
     @Override
-    public ApiResult<UserVO> getById(String userId) {
+    public UserVO getById(String userId) {
         rateLimiter.applyFor("User:GetById", NORMAL_TPS);
 
         User user = userRepository.cachedById(userId);
-        UserVO userVO = userFactory.user2vo(user);
-        return ApiResult.success(userVO);
+        return userFactory.user2vo(user);
     }
 
     @Override
-    public ApiResult<UserVO> getByUsername(String username) {
+    public UserVO getByUsername(String username) {
         rateLimiter.applyFor("User:GetByUsername", NORMAL_TPS);
 
         List<User> users = userRepository.listByUsername(username);
         if (isEmpty(users)) {
             throw new MyException(AR_NOT_FOUND, "user not found", Map.of("username", username));
         }
-        UserVO userVO = userFactory.user2vo(users.get(0));
-        return ApiResult.success(userVO);
+        return userFactory.user2vo(users.get(0));
     }
 
     @Override
-    public ApiResult<Boolean> updateById(UserDTO userDTO) {
+    public Boolean updateById(UserDTO userDTO) {
         rateLimiter.applyFor("User:Update", MINIMUM_TPS);
 
         User user = userRepository.cachedById(userDTO.getId());
@@ -123,12 +121,12 @@ public class UserServiceImpl implements UserService {
         user.update(encodePassword, userDTO.getMobile(), userDTO.getEmail(), userDTO.getGender(), userDTO.getDescription(), userDTO.getBirthday());
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
     @Transactional
-    public ApiResult<Boolean> deleteById(String userId) {
+    public Boolean deleteById(String userId) {
         rateLimiter.applyFor("User:DeleteById", MINIMUM_TPS);
 
         if (ThreadLocalContext.getContext().isSelf(userId)) {
@@ -141,12 +139,12 @@ public class UserServiceImpl implements UserService {
         // 删除头像
         userRepository.deleteAvatars(user.getAvatarList().stream().collect(toImmutableSet()));
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
     @Transactional
-    public ApiResult<Boolean> deleteByIdBatch(DeleteByIdBatchDTO dto) {
+    public Boolean deleteByIdBatch(DeleteByIdBatchDTO dto) {
         rateLimiter.applyFor("User:DeleteByIdBatch", MINIMUM_TPS);
 
         Set<String> ids = dto.getIds().stream().collect(toImmutableSet());
@@ -164,11 +162,11 @@ public class UserServiceImpl implements UserService {
                 .collect(toImmutableSet());
         userRepository.deleteAvatars(avatars);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
-    public ApiResult<Boolean> checkLoginState(HttpServletRequest request, HttpServletResponse response) {
+    public Boolean checkLoginState(HttpServletRequest request, HttpServletResponse response) {
         rateLimiter.applyFor("User:CheckLoginState", EXTREMELY_HIGH_TPS);
 
         // 缓存2s，避免前端频繁刷新
@@ -177,37 +175,31 @@ public class UserServiceImpl implements UserService {
         // 获取token
         final String token = request.getHeader(AUTHORIZATION);
         if (isBlank(token)) {
-            return ApiResult.fail();
+            return false;
         }
 
         // 解析token
         Map<String, Claim> claim = JwtUtil.verifyToken(token.substring(BEARER.length()));
-        if (isEmpty(claim)) {
-            return ApiResult.fail();
-        }
-
-        return ApiResult.success();
+        return isNotEmpty(claim);
     }
 
     @Override
-    public ApiResult<PageVO<UserVO>> page(PageDTO pageDTO) {
+    public PageVO<UserVO> page(PageDTO pageDTO) {
         rateLimiter.applyFor("User:Page", NORMAL_TPS);
 
         long cnt = userRepository.count();
         List<User> users = userRepository.page((int) cnt, pageDTO.getPageNum(), pageDTO.getPageSize());
 
-        PageVO<UserVO> pageVO = PageVO.<UserVO>builder()
+        return PageVO.<UserVO>builder()
                 .totalCnt((int) cnt)
                 .pageNum(pageDTO.getPageNum())
                 .pageSize(pageDTO.getPageSize())
                 .data(users.stream().map(userFactory::user2vo).collect(toImmutableList()))
                 .build();
-
-        return ApiResult.success(pageVO);
     }
 
     @Override
-    public ApiResult<Boolean> updateRole(UpdateRoleDTO dto) {
+    public Boolean updateRole(UpdateRoleDTO dto) {
         rateLimiter.applyFor("User:UpdateRole", MINIMUM_TPS);
 
         if (ThreadLocalContext.getContext().isSelf(dto.getUserId())) {
@@ -216,16 +208,16 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.cachedById(dto.getUserId());
         if (user.getPermission() == dto.getNewRole()) {
-            return ApiResult.fail();
+            return false;
         }
         user.updateRole(dto.getNewRole());
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
-    public ApiResult<Boolean> deactivate(String userId) {
+    public Boolean deactivate(String userId) {
         rateLimiter.applyFor("User:Deactivate", MINIMUM_TPS);
 
         if (ThreadLocalContext.getContext().isSelf(userId)) {
@@ -234,16 +226,16 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.cachedById(userId);
         if (user.isDeactivate()) {
-            return ApiResult.fail();
+            return false;
         }
         user.deactivate();
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
-    public ApiResult<Boolean> activate(String userId) {
+    public Boolean activate(String userId) {
         rateLimiter.applyFor("User:Activate", MINIMUM_TPS);
 
         if (ThreadLocalContext.getContext().isSelf(userId)) {
@@ -252,17 +244,17 @@ public class UserServiceImpl implements UserService {
 
         User user = userRepository.cachedById(userId);
         if (user.isActivate()) {
-            return ApiResult.fail();
+            return false;
         }
         user.activate();
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
     @Transactional
-    public ApiResult<Boolean> uploadAvatar(UploadAvatarDTO dto) {
+    public Boolean uploadAvatar(UploadAvatarDTO dto) {
         rateLimiter.applyFor("User:UploadAvatar", MINIMUM_TPS);
 
         User user = userRepository.cachedById(dto.getUserId());
@@ -270,12 +262,12 @@ public class UserServiceImpl implements UserService {
         user.addAvatar(gridFsId);
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
     @Transactional
-    public ApiResult<Boolean> deleteAvatar() {
+    public Boolean deleteAvatar() {
         rateLimiter.applyFor("User:DeleteAvatar", MINIMUM_TPS);
 
         String userId = ThreadLocalContext.getContext().getUid();
@@ -284,18 +276,18 @@ public class UserServiceImpl implements UserService {
         user.removeAvatar();
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
     @Override
-    public ApiResult<Boolean> resetPwd(ResetPwdDTO dto) {
+    public Boolean resetPwd(ResetPwdDTO dto) {
         rateLimiter.applyFor("User:ResetPwd", MINIMUM_TPS);
 
         User user = userRepository.cachedById(dto.getUserId());
         userDomainService.resetPwd(user);
         userRepository.save(user);
 
-        return ApiResult.success();
+        return true;
     }
 
 }

@@ -1,6 +1,8 @@
 package org.ricky.core.tag.domain;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * @author Ricky
@@ -15,4 +17,6 @@ public interface TagRepository {
     void save(Tag tag);
 
     Tag byId(String tagId);
+
+    List<Tag> byIds(Set<String> tagIds);
 }

@@ -20,10 +20,12 @@ public interface ConfigConstant {
     String USER_COLLECTION = "user";
     String DOC_COLLECTION = "doc";
     String TAG_COLLECTION = "tag";
+    String CATEGORY_COLLECTION = "cat";
 
     String USER_ID_PREFIX = "USR";
     String DOC_ID_PREFIX = "DOC";
     String TAG_ID_PREFIX = "TAG";
+    String CATEGORY_ID_PREFIX = "CAT";
 
     String USER_CACHE = "user";
     String DOC_CACHE = "doc";

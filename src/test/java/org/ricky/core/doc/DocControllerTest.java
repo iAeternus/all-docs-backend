@@ -1,26 +1,17 @@
 package org.ricky.core.doc;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.ricky.AllDocsApplication;
 import org.ricky.ApiTest;
-import org.ricky.core.common.domain.event.DomainEventDao;
+import org.ricky.BaseApiTest;
+import org.ricky.core.category.CategoryApi;
+import org.ricky.core.category.domain.dto.CategoryDTO;
+import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.doc.domain.Doc;
-import org.ricky.core.doc.domain.DocRepository;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
+import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
-import org.ricky.core.tag.domain.TagRepository;
-import org.ricky.util.SetUpApi;
 import org.ricky.util.SetUpResponse;
-import org.ricky.util.TearDownApi;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -29,6 +20,8 @@ import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
+import static org.ricky.core.doc.domain.FileTypeEnum.PDF;
+import static org.ricky.util.RandomTestFixture.rSentence;
 
 /**
  * @author Ricky
@@ -37,59 +30,27 @@ import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
  * @className DocControllerTest
  * @desc
  */
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(classes = AllDocsApplication.class)
-class DocControllerTest {
-
-    MockMvc mockMvc;
-
-    @Autowired
-    WebApplicationContext webApplicationContext;
-
-    @Autowired
-    SetUpApi setUpApi;
-
-    @Autowired
-    TearDownApi tearDownApi;
-
-    @Autowired
-    DocRepository docRepository;
-
-    @Autowired
-    TagRepository tagRepository;
-
-    @Autowired
-    DomainEventDao domainEventDao;
+class DocControllerTest extends BaseApiTest {
 
     private static final String ROOT_URL = "/doc";
-
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
-    }
 
     @Test
     void should_upload_doc_with_review() throws IOException {
         // Given
         SetUpResponse operator = setUpApi.registryWithLogin();
-        byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
-        MockMultipartFile file = new MockMultipartFile("file", "ご注文はうさぎですか165回.pdf", DOC.getContentType(), content);
+        byte[] content = readAllBytes(Path.of("src/test/resources/PDF测试.pdf"));
+        MockMultipartFile file = new MockMultipartFile("file", "PDF测试.pdf", DOC.getContentType(), content);
+        UploadDocDTO dto = UploadDocDTO.builder().file(file).build();
 
         // When
-        String docId = ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/upload")
-                .bearerToken(operator.getToken())
-                .file(file)
-                .execute()
-                .expectStatus(200)
-                .as(String.class);
+        String docId = DocApi.upload(mockMvc, operator.getToken(), dto);
 
         // Then
         assertNotNull(docId);
         Doc doc = docRepository.cachedById(docId);
-        assertEquals("ご注文はうさぎですか165回.pdf", doc.getName());
+        assertEquals("PDF测试.pdf", doc.getName());
         assertNotNull(doc.getGridFsId());
-        assertNotNull(doc.getTextFileId());
+        assertNotNull(doc.getTxtId());
         assertNotNull(doc.getThumbId());
 
         DocCreatedEvent evt = domainEventDao.latestEventFor(docId, DOC_CREATED, DocCreatedEvent.class);
@@ -105,21 +66,13 @@ class DocControllerTest {
     void should_fail_to_upload_if_doc_is_already_exists() throws IOException {
         // Given
         SetUpResponse operator = setUpApi.registryWithLogin();
-        byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
-        MockMultipartFile file = new MockMultipartFile("file", "ご注文はうさぎですか165回.pdf", DOC.getContentType(), content);
-        String docId = ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/upload")
-                .bearerToken(operator.getToken())
-                .file(file)
-                .execute()
-                .as(String.class);
+        byte[] content = readAllBytes(Path.of("src/test/resources/PDF测试.pdf"));
+        MockMultipartFile file = new MockMultipartFile("file", "PDF测试.pdf", DOC.getContentType(), content);
+        UploadDocDTO dto = UploadDocDTO.builder().file(file).build();
+        String docId = DocApi.upload(mockMvc, operator.getToken(), dto);
 
         // When & Then
-        ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/upload")
-                .bearerToken(operator.getToken())
-                .file(file)
-                .execute()
+        DocApi.uploadRaw(mockMvc, operator.getToken(), dto)
                 .expectStatus(409)
                 .expectUserMessage("文档已存在");
 
@@ -131,34 +84,41 @@ class DocControllerTest {
     void should_remove_doc() throws IOException {
         // Given
         SetUpResponse operator = setUpApi.registryWithLogin();
-        byte[] content = readAllBytes(Path.of("src/test/resources/ご注文はうさぎですか165回.pdf"));
-        MockMultipartFile file = new MockMultipartFile("file", "ご注文はうさぎですか165回.pdf", DOC.getContentType(), content);
-        String docId = ApiTest.using(mockMvc)
-                .post(ROOT_URL + "/upload")
-                .bearerToken(operator.getToken())
-                .file(file)
-                .execute()
-                .as(String.class);
-        String gridFsId = docRepository.cachedById(docId).getGridFsId();
+        String docId = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/PDF测试.pdf", PDF.getContentType());
+        Doc doc = docRepository.cachedById(docId);
+
+        RemoveDocDTO removeDocDTO = RemoveDocDTO.builder()
+                .docId(docId)
+                .isDeleteFile(false)
+                .build();
 
         // When
-        ApiTest.using(mockMvc)
-                .delete(ROOT_URL)
-                .bearerToken(operator.getToken())
-                .body(RemoveDocDTO.builder()
-                        .docId(docId)
-                        .isDeleteFile(true)
-                        .build())
-                .execute()
-                .expectStatus(200)
-                .expectSuccess();
+        Boolean res = DocApi.remove(mockMvc, operator.getToken(), removeDocDTO);
 
         // Then
+        assertTrue(res);
         assertFalse(docRepository.exists(docId));
-        assertEquals(0, docRepository.getFileBytes(gridFsId).length);
+        assertEquals(0, docRepository.getFileBytes(doc.getGridFsId()).length);
+    }
 
-        // Finally
-        tearDownApi.removeDoc(operator.getToken(), docId);
+    @Test
+    void should_remove_doc_with_category() throws IOException {
+        // Given
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        String docId = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/PDF测试.pdf", PDF.getContentType());
+        String categoryId = CategoryApi.create(mockMvc, operator.getToken(), CategoryDTO.builder().name(rSentence(5)).build());
+        CategoryApi.connect(mockMvc, operator.getToken(), ConnectDTO.builder().docId(docId).categoryId(categoryId).build());
+
+        RemoveDocDTO removeDocDTO = RemoveDocDTO.builder()
+                .docId(docId)
+                .isDeleteFile(false)
+                .build();
+
+        // When
+        DocApi.remove(mockMvc, operator.getToken(), removeDocDTO);
+
+        // Then
+        assertFalse(categoryRepository.exists(categoryId));
     }
 
 }

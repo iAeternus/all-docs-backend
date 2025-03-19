@@ -47,6 +47,7 @@ public class AllDocsSystemInitializer implements ApplicationListener<Application
         createCollection(USER_COLLECTION);
         createCollection(DOC_COLLECTION);
         createCollection(TAG_COLLECTION);
+        createCollection(CATEGORY_COLLECTION);
     }
 
     private void createCollection(String collectionName) {

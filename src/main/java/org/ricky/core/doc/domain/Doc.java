@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.apache.commons.io.FileUtils;
 import org.ricky.common.exception.MyException;
+import org.ricky.core.category.domain.event.CategoryDisconnectedEvent;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
 import org.ricky.core.doc.domain.event.DocDeletedEvent;
+import org.ricky.core.doc.domain.event.DocSearchedEvent;
 import org.ricky.core.doc.domain.file.FileStrategy;
 import org.ricky.core.doc.domain.file.FileStrategyFactory;
 import org.ricky.core.doc.domain.task.DocTaskContext;
@@ -59,11 +61,6 @@ public class Doc extends AggregateRoot implements FileStrategy {
     private long size;
 
     /**
-     * 上传时间
-     */
-    private LocalDateTime uploadAt;
-
-    /**
      * MD5值
      */
     private String md5;
@@ -89,6 +86,11 @@ public class Doc extends AggregateRoot implements FileStrategy {
     private byte[] content;
 
     /**
+     * 分类ID
+     */
+    private String categoryId;
+
+    /**
      * 大文件管理GridFS的ID
      */
     private String gridFsId;
@@ -103,7 +105,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
      * 文本文件的ID
      */
     @Setter
-    private String textFileId;
+    private String txtId;
 
     /**
      * 预览文本文件的ID
@@ -142,6 +144,11 @@ public class Doc extends AggregateRoot implements FileStrategy {
      */
     private List<String> tagIds;
 
+    /**
+     * 上传时间
+     */
+    private LocalDateTime uploadAt;
+
     public Doc(String name, long size, String md5, String contentType, String desc, Boolean adminReview) {
         super(newDocId());
         initDoc(name, size, md5, contentType, desc, adminReview);
@@ -168,7 +175,7 @@ public class Doc extends AggregateRoot implements FileStrategy {
         this.thumbnailList = new ArrayList<>();
         this.sensitiveWords = new ArrayList<>();
         this.tagIds = new ArrayList<>();
-        raiseEvent(new DocCreatedEvent(getId(), suffix, gridFsId, textFileId, previewFileId, thumbId));
+        raiseEvent(new DocCreatedEvent(getId(), suffix, gridFsId, txtId, previewFileId, thumbId));
     }
 
     public void updateGridFsId(String gripFsId) {
@@ -249,6 +256,22 @@ public class Doc extends AggregateRoot implements FileStrategy {
     }
 
     public void onDelete() {
-        raiseEvent(new DocDeletedEvent(getId()));
+        raiseEvent(new DocDeletedEvent(getId(), categoryId));
+    }
+
+    public void onSearch() {
+        raiseEvent(new DocSearchedEvent(getId()));
+    }
+
+    public void connectWithCategory(String categoryId) {
+        this.categoryId = categoryId;
+        addOpsLog(UPDATE, "关联分类");
+    }
+
+    public void disconnectWithCategory() {
+        String tmp = this.categoryId;
+        this.categoryId = null;
+        raiseEvent(new CategoryDisconnectedEvent(tmp, -1));
+        addOpsLog(UPDATE, "解除关联分类");
     }
 }

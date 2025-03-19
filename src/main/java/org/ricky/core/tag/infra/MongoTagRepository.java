@@ -7,7 +7,9 @@ import org.ricky.core.tag.domain.TagRepository;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
@@ -45,4 +47,11 @@ public class MongoTagRepository extends MongoBaseRepository<Tag> implements TagR
     public Tag byId(String id) {
         return super.byId(id);
     }
+
+    @Override
+    public List<Tag> byIds(Set<String> tagIds) {
+        return super.byIds(tagIds);
+    }
+
+
 }

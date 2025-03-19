@@ -39,7 +39,7 @@ import static org.springframework.http.HttpMethod.*;
  * <pre>{@code
  * ApiTest.using(mockMvc)
  *     .post("/api/upload")
- *     .file("file", content, "test.txt")
+ *     .file("file", content, "TXT测试.txt")
  *     .param("description", "示例文件")
  *     .execute()
  *     .expectStatus(200)

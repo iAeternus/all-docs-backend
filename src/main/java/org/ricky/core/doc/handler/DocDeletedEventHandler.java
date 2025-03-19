@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventHandler;
 import org.ricky.core.common.util.TaskRunner;
+import org.ricky.core.doc.domain.event.DocDeletedEvent;
+import org.ricky.core.category.domain.task.SyncCategoryTask;
 import org.springframework.stereotype.Component;
 
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_DELETED;
@@ -21,6 +23,8 @@ import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_DELETED
 @RequiredArgsConstructor
 public class DocDeletedEventHandler implements DomainEventHandler {
 
+    private final SyncCategoryTask syncCategoryTask;
+
     @Override
     public boolean canHandle(DomainEvent domainEvent) {
         return domainEvent.getType() == DOC_DELETED;
@@ -28,6 +32,7 @@ public class DocDeletedEventHandler implements DomainEventHandler {
 
     @Override
     public void handle(DomainEvent domainEvent, TaskRunner taskRunner) {
+        // TODO 删除关联表
         /*
         评论
         分类
@@ -37,6 +42,8 @@ public class DocDeletedEventHandler implements DomainEventHandler {
         文档es索引
         统计信息
         */
-        // TODO 删除关联表
+
+        DocDeletedEvent evt = (DocDeletedEvent) domainEvent;
+        taskRunner.run(() -> syncCategoryTask.run(evt.getCategoryId(), -1));
     }
 }

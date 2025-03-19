@@ -30,7 +30,7 @@ public class TearDownApi {
                 .bearerToken(token)
                 .body(RemoveDocDTO.builder()
                         .docId(docId)
-                        .isDeleteFile(true)
+                        .isDeleteFile(false)
                         .build())
                 .execute();
     }

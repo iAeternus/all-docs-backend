@@ -11,6 +11,8 @@ public enum DomainEventTypeEnum {
 
     DOC_CREATED,
     DOC_DELETED,
+    DOC_SEARCHED,
+    CATEGORY_DISCONNECTED,
 
     // add here...
 

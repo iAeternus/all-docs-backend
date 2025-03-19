@@ -21,8 +21,11 @@ import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_DELETED
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class DocDeletedEvent extends DocAwareDomainEvent {
 
-    public DocDeletedEvent(String docId) {
+    private String categoryId;
+
+    public DocDeletedEvent(String docId, String categoryId) {
         super(DOC_DELETED, docId);
+        this.categoryId = categoryId;
     }
 
 }

@@ -77,4 +77,12 @@ public class FileUtil {
         return "./" + filename + suffix;
     }
 
+    public static String getLastPart(String filepath) {
+        String[] split = filepath.split("/");
+        if(split.length == 0) {
+            return "";
+        }
+        return split[split.length - 1];
+    }
+
 }
