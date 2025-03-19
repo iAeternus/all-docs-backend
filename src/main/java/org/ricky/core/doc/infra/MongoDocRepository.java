@@ -10,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Set;
 
 import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
@@ -75,6 +76,12 @@ public class MongoDocRepository extends MongoBaseRepository<Doc> implements DocR
     }
 
     @Override
+    public void deleteGridFss(Set<String> filenames) {
+        gridFsDocRepository.delete(filenames);
+        cachedDocRepository.evictAll();
+    }
+
+    @Override
     public byte[] getFileBytes(String gridFsId) {
         return gridFsDocRepository.getFileBytes(gridFsId);
     }
@@ -86,7 +93,21 @@ public class MongoDocRepository extends MongoBaseRepository<Doc> implements DocR
     }
 
     @Override
+    public void delete(List<Doc> docs) {
+        super.delete(docs);
+        cachedDocRepository.evictAll();
+    }
+
+    @Override
     public boolean exists(String docId) {
         return super.exists(docId);
+    }
+
+    @Override
+    public List<Doc> listByCategoryId(String categoryId) {
+        requireNotBlank(categoryId, "Category ID must not be blank.");
+
+        Query query = query(where("categoryId").is(categoryId));
+        return mongoTemplate.find(query, Doc.class);
     }
 }

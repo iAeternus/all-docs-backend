@@ -3,6 +3,7 @@ package org.ricky.core.category.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.ricky.core.category.domain.event.CategoryDeletedEvent;
 import org.ricky.core.common.domain.AggregateRoot;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -54,4 +55,7 @@ public class Category extends AggregateRoot {
         return this.size == 0;
     }
 
+    public void onDelete(Boolean isDeleteFile) {
+        raiseEvent(new CategoryDeletedEvent(getId(), isDeleteFile));
+    }
 }

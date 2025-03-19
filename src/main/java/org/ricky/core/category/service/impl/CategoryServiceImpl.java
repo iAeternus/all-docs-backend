@@ -9,11 +9,13 @@ import org.ricky.core.category.domain.CategoryRepository;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.category.domain.dto.DisConnectDTO;
+import org.ricky.core.category.domain.dto.RemoveCategoryDTO;
 import org.ricky.core.category.domain.vo.CategoryVO;
 import org.ricky.core.category.service.CategoryService;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
 import java.util.Optional;
@@ -61,6 +63,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Transactional
     public Boolean connect(ConnectDTO dto) {
         rateLimiter.applyFor("Category:Connect", NORMAL_TPS);
 
@@ -91,6 +94,17 @@ public class CategoryServiceImpl implements CategoryService {
         Doc doc = docRepository.cachedById(dto.getDocId());
         doc.disconnectWithCategory();
         docRepository.save(doc);
+
+        return true;
+    }
+
+    @Override
+    public Boolean remove(RemoveCategoryDTO dto) {
+        rateLimiter.applyFor("Category:Remove", MINIMUM_TPS);
+
+        Category category = categoryRepository.byId(dto.getCategoryId());
+        category.onDelete(dto.getIsDeleteFile());
+        categoryRepository.delete(category);
 
         return true;
     }

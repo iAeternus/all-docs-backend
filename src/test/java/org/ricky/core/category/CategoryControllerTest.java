@@ -6,7 +6,11 @@ import org.ricky.core.category.domain.Category;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.category.domain.dto.DisConnectDTO;
+import org.ricky.core.category.domain.dto.RemoveCategoryDTO;
+import org.ricky.core.category.domain.event.CategoryDeletedEvent;
+import org.ricky.core.category.domain.event.CategoryDisconnectedEvent;
 import org.ricky.core.category.domain.vo.CategoryVO;
+import org.ricky.core.common.domain.event.DomainEventTypeEnum;
 import org.ricky.core.doc.DocApi;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
@@ -18,8 +22,9 @@ import java.nio.file.Path;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
-import static org.ricky.core.doc.domain.FileTypeEnum.PDF;
+import static org.ricky.core.common.domain.event.DomainEventTypeEnum.CATEGORY_DELETED;
+import static org.ricky.core.common.domain.event.DomainEventTypeEnum.CATEGORY_DISCONNECTED;
+import static org.ricky.core.doc.domain.FileTypeEnum.*;
 import static org.ricky.util.RandomTestFixture.rSentence;
 
 /**
@@ -105,10 +110,40 @@ class CategoryControllerTest extends BaseApiTest {
 
         // Then
         assertTrue(res);
+
+        CategoryDisconnectedEvent evt = domainEventDao.latestEventFor(docId, CATEGORY_DISCONNECTED, CategoryDisconnectedEvent.class);
+        assertEquals(1, evt.getConsumedCount());
+        assertEquals(categoryId, evt.getCategoryId());
         assertFalse(categoryRepository.exists(categoryId));
 
         // Finally
         tearDownApi.removeDoc(operator.getToken(), docId);
+    }
+
+    @Test
+    void should_remove_category() throws IOException {
+        // Given
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        String categoryId = CategoryApi.create(mockMvc, operator.getToken(), CategoryDTO.builder().name(rSentence(5)).build());
+        String docId = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/PDF测试.pdf", PDF.getContentType());
+        CategoryApi.connect(mockMvc, operator.getToken(), ConnectDTO.builder().docId(docId).categoryId(categoryId).build());
+
+        RemoveCategoryDTO removeCategoryDTO = RemoveCategoryDTO.builder()
+                .categoryId(categoryId)
+                .isDeleteFile(false)
+                .build();
+
+        // When
+        Boolean res = CategoryApi.remove(mockMvc, operator.getToken(), removeCategoryDTO);
+
+        // Then
+        assertTrue(res);
+
+        CategoryDeletedEvent evt = domainEventDao.latestEventFor(categoryId, CATEGORY_DELETED, CategoryDeletedEvent.class);
+        assertEquals(1, evt.getConsumedCount());
+        assertEquals(categoryId, evt.getCategoryId());
+        assertFalse(evt.getIsDeleteFile());
+        assertFalse(docRepository.exists(docId));
     }
 
 }

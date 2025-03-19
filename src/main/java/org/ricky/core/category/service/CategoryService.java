@@ -3,6 +3,7 @@ package org.ricky.core.category.service;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.category.domain.dto.DisConnectDTO;
+import org.ricky.core.category.domain.dto.RemoveCategoryDTO;
 import org.ricky.core.category.domain.vo.CategoryVO;
 
 /**
@@ -20,4 +21,6 @@ public interface CategoryService {
     Boolean connect(ConnectDTO dto);
 
     Boolean disconnect(DisConnectDTO dto);
+
+    Boolean remove(RemoveCategoryDTO dto);
 }

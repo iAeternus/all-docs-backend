@@ -32,8 +32,6 @@ import static org.ricky.util.RandomTestFixture.rSentence;
  */
 class DocControllerTest extends BaseApiTest {
 
-    private static final String ROOT_URL = "/doc";
-
     @Test
     void should_upload_doc_with_review() throws IOException {
         // Given

@@ -1,10 +1,10 @@
 package org.ricky.core.category;
 
 import org.ricky.ApiTest;
-import org.ricky.core.category.domain.Category;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.category.domain.dto.DisConnectDTO;
+import org.ricky.core.category.domain.dto.RemoveCategoryDTO;
 import org.ricky.core.category.domain.vo.CategoryVO;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -70,6 +70,20 @@ public class CategoryApi {
 
     public static Boolean disconnect(MockMvc mockMvc, String token, DisConnectDTO dto) {
         return disconnectRaw(mockMvc, token, dto)
+                .expectStatus(200)
+                .as(Boolean.class);
+    }
+
+    public static ApiTest.ResponseExecutor removeRaw(MockMvc mockMvc, String token, RemoveCategoryDTO dto) {
+        return ApiTest.using(mockMvc)
+                .delete(ROOT_URL)
+                .bearerToken(token)
+                .body(dto)
+                .execute();
+    }
+
+    public static Boolean remove(MockMvc mockMvc, String token, RemoveCategoryDTO dto) {
+        return removeRaw(mockMvc, token, dto)
                 .expectStatus(200)
                 .as(Boolean.class);
     }
