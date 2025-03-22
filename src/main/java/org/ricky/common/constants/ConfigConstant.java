@@ -21,15 +21,18 @@ public interface ConfigConstant {
     String DOC_COLLECTION = "doc";
     String TAG_COLLECTION = "tag";
     String CATEGORY_COLLECTION = "cat";
+    String SENSITIVE_WORD_COLLECTION = "sensitive_word";
 
     String USER_ID_PREFIX = "USR";
     String DOC_ID_PREFIX = "DOC";
     String TAG_ID_PREFIX = "TAG";
     String CATEGORY_ID_PREFIX = "CAT";
+    String SENSITIVE_WORD_ID_PREFIX = "SST";
 
     String USER_CACHE = "user";
     String DOC_CACHE = "doc";
     String TAG_CACHE = "tag";
+    String SENSITIVE_WORD_CACHE = "sst";
 
     String DOC_INDEX_NAME = "doc";
 
