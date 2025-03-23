@@ -42,7 +42,7 @@ class FileStrategyFactoryTest {
         InputStream mockInputStream = mock(InputStream.class);
 
         // When
-        factory.readText(mockInputStream, "testPath");
+        factory.readText(mockInputStream, "src/test/resources/testPath");
 
         // Then
         assertNotNull(factory.getDocType());
@@ -55,7 +55,7 @@ class FileStrategyFactoryTest {
         InputStream mockInputStream = mock(InputStream.class);
 
         // When
-        factory.makeThumb(mockInputStream, "testPath");
+        factory.makeThumb(mockInputStream, "src/test/resources/testPath");
 
         // Then
         verify(mockInputStream, never()).close(); // 确保 InputStream 没有被关闭
@@ -87,7 +87,7 @@ class FileStrategyFactoryTest {
             try {
                 factory.setDocType(DOCX);
                 Thread.sleep(1000);
-                factory.readText(null, "path1");
+                factory.readText(null, "src/test/resources/testPath");
                 result1.set(factory.getDocType());
             } catch (IOException e) {
                 throw new MyException(PROCESS_ERROR, "Exception in thread1");
@@ -100,7 +100,7 @@ class FileStrategyFactoryTest {
         Thread thread2 = new Thread(() -> {
             try {
                 factory.setDocType(PDF);
-                factory.readText(null, "path2");
+                factory.readText(null, "src/test/resources/testPath2");
                 result2.set(factory.getDocType());
             } catch (IOException e) {
                 throw new MyException(PROCESS_ERROR, "Exception in thread2");
@@ -134,7 +134,7 @@ class FileStrategyFactoryTest {
         factory.setDocType(UNKNOWN);
         InputStream mockInputStream = mock(InputStream.class);
 
-        assertThrows(IllegalArgumentException.class, () -> factory.readText(mockInputStream, "testPath"));
+        assertThrows(IllegalArgumentException.class, () -> factory.readText(mockInputStream, "src/test/resources/testPath"));
         factory.removeDocType();
     }
 
