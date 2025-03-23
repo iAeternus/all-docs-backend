@@ -10,8 +10,8 @@ import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.common.properties.SystemProperties;
 import org.ricky.common.ratelimit.RateLimiter;
 import org.ricky.core.common.context.ThreadLocalContext;
-import org.ricky.core.common.domain.PageDTO;
-import org.ricky.core.common.domain.PageVO;
+import org.ricky.core.common.domain.page.PageDTO;
+import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.common.util.JwtUtil;
 import org.ricky.core.common.util.ValidationUtil;
 import org.ricky.core.user.domain.User;
@@ -186,12 +186,11 @@ public class UserServiceImpl implements UserService {
     public PageVO<UserVO> page(PageDTO pageDTO) {
         rateLimiter.applyFor("User:Page", NORMAL_TPS);
 
-        long cnt = userRepository.count();
-        List<User> users = userRepository.page((int) cnt, pageDTO.getPageNum(), pageDTO.getPageSize());
+        List<User> users = userRepository.page(pageDTO.getPageIndex(), pageDTO.getPageSize());
 
         return PageVO.<UserVO>builder()
-                .totalCnt((int) cnt)
-                .pageNum(pageDTO.getPageNum())
+                .totalCnt(users.size())
+                .pageIndex(pageDTO.getPageIndex())
                 .pageSize(pageDTO.getPageSize())
                 .data(users.stream().map(userFactory::user2vo).collect(toImmutableList()))
                 .build();

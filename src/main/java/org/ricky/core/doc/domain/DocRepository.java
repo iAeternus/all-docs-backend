@@ -4,6 +4,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -46,4 +47,8 @@ public interface DocRepository {
     boolean exists(String docId);
 
     List<Doc> listByCategoryId(String categoryId);
+
+    List<Doc> page(Set<String> docIds, Set<String> categoryIds, Set<String> tagIds, int pageIndex, int pageSize);
+
+    Set<String> fuzzyByKeyword(String keyword);
 }

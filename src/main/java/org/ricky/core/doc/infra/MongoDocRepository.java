@@ -2,8 +2,11 @@ package org.ricky.core.doc.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
+import org.ricky.core.common.domain.page.Pagination;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.DocRepository;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,8 +15,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 
-import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static org.ricky.core.common.domain.page.Pagination.pagination;
+import static org.ricky.core.common.util.RegexUtil.fuzzySearchKeyword;
+import static org.ricky.core.common.util.ValidationUtil.*;
+import static org.springframework.data.domain.Sort.Direction.DESC;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -109,5 +117,35 @@ public class MongoDocRepository extends MongoBaseRepository<Doc> implements DocR
 
         Query query = query(where("categoryId").is(categoryId));
         return mongoTemplate.find(query, Doc.class);
+    }
+
+    @Override
+    public List<Doc> page(Set<String> docIds, Set<String> categoryIds, Set<String> tagIds, int pageIndex, int pageSize) {
+        requireTrue(pageIndex > 0, "PageNum must be greater than 0.");
+        requireTrue(pageSize > 0, "PageSize must be greater than 0.");
+
+        Pagination pagination = pagination(pageIndex, pageSize);
+
+        Query query = query(new Criteria().orOperator(where("_id").in(docIds), where("categoryId").in(categoryIds), where("tagIds").all(tagIds)))
+                .skip(pagination.skip())
+                .limit(pagination.limit())
+                .with(Sort.by(DESC, "updatedAt"));
+
+        List<Doc> docs = mongoTemplate.find(query, Doc.class);
+        return isEmpty(docs) ? List.of() : docs;
+    }
+
+    @Override
+    public Set<String> fuzzyByKeyword(String keyword) {
+        requireNotBlank(keyword, "Keyword must not be blank.");
+
+        // 标题模糊查询 TODO 调用es查询
+        Pattern pattern = fuzzySearchKeyword(keyword);
+        Query query = query(where("name").regex(pattern));
+        List<Doc> docs = mongoTemplate.find(query, Doc.class);
+
+        return docs.stream()
+                .map(Doc::getId)
+                .collect(toImmutableSet());
     }
 }

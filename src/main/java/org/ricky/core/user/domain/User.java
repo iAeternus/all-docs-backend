@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.ricky.common.exception.MyException;
 import org.ricky.core.common.auth.PermissionEnum;
 import org.ricky.core.common.domain.AggregateRoot;
+import org.ricky.core.user.domain.event.UserPageDocsEvent;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -210,5 +211,9 @@ public class User extends AggregateRoot {
     public void resetPwd(String newPwd) {
         this.password = newPwd;
         addOpsLog(UPDATE, "重置密码");
+    }
+
+    public void pageDocs(String keyword) {
+        raiseEvent(new UserPageDocsEvent(getId(), keyword));
     }
 }

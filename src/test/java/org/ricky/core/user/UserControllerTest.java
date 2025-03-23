@@ -3,8 +3,8 @@ package org.ricky.core.user;
 import org.junit.jupiter.api.Test;
 import org.ricky.ApiTest;
 import org.ricky.BaseApiTest;
-import org.ricky.core.common.domain.PageDTO;
-import org.ricky.core.common.domain.PageVO;
+import org.ricky.core.common.domain.page.PageDTO;
+import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
@@ -256,14 +256,14 @@ class UserControllerTest extends BaseApiTest {
                 .bearerToken(operator.getToken())
                 .get(ROOT_URL + "/page")
                 .body(PageDTO.builder()
-                        .pageNum(1)
+                        .pageIndex(1)
                         .pageSize(3)
                         .build())
                 .execute()
                 .expectStatus(200)
                 .as(PageVO.class);
 
-        assertEquals(1, pageVO.getPageNum());
+        assertEquals(1, pageVO.getPageIndex());
         assertEquals(3, pageVO.getPageSize());
         assertEquals(3, pageVO.getData().size());
     }

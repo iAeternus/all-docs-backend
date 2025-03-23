@@ -55,6 +55,10 @@ public class Category extends AggregateRoot {
         return this.size == 0;
     }
 
+    public boolean isNotEmpty() {
+        return this.size > 0;
+    }
+
     public void onDelete(Boolean isDeleteFile) {
         raiseEvent(new CategoryDeletedEvent(getId(), isDeleteFile));
     }

@@ -1,8 +1,6 @@
 package org.ricky.core.tag.domain;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /**
  * @author Ricky
@@ -19,4 +17,6 @@ public interface TagRepository {
     Tag byId(String tagId);
 
     List<Tag> byIds(Set<String> tagIds);
+
+    Set<String> fuzzyByKeyword(String keyword);
 }

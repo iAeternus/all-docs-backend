@@ -50,4 +50,9 @@ public interface ConfigConstant {
     int MAX_CODE_LENGTH = 65535;
     int MAX_DESC_LENGTH = 128;
 
+    int MIN_PAGE_INDEX = 1;
+    int MAX_PAGE_INDEX = 10000;
+    int MIN_PAGE_SIZE = 10;
+    int MAX_PAGE_SIZE = 500;
+
 }

@@ -274,4 +274,8 @@ public class Doc extends AggregateRoot implements FileStrategy {
         raiseEvent(new CategoryDisconnectedEvent(tmp, -1));
         addOpsLog(UPDATE, "解除关联分类");
     }
+
+    public boolean hasCategory() {
+        return isNotBlank(categoryId);
+    }
 }

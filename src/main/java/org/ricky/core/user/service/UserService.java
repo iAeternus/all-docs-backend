@@ -2,8 +2,8 @@ package org.ricky.core.user.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.ricky.core.common.domain.PageDTO;
-import org.ricky.core.common.domain.PageVO;
+import org.ricky.core.common.domain.page.PageDTO;
+import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.user.domain.dto.*;
 import org.ricky.core.user.domain.vo.UserLoginVO;
 import org.ricky.core.user.domain.vo.UserVO;

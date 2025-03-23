@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.ricky.core.common.domain.ApiResult;
+import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.common.validation.id.Id;
+import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.vo.DocVO;
@@ -51,6 +53,12 @@ public class DocController {
     @Operation(summary = "根据ID查询文档信息")
     public ApiResult<DocVO> getById(@PathVariable("docId") @Id(pre = DOC_ID_PREFIX) String docId) {
         return success(docService.getById(docId));
+    }
+
+    @PostMapping("/page")
+    @Operation(summary = "分页查询文档")
+    public ApiResult<PageVO<DocVO>> page(@RequestBody @Valid DocPageDTO dto) {
+        return success(docService.page(dto));
     }
 
 }

@@ -5,21 +5,26 @@ import org.ricky.BaseApiTest;
 import org.ricky.core.category.CategoryApi;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
+import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.doc.domain.Doc;
+import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
+import org.ricky.core.doc.domain.vo.DocVO;
 import org.ricky.util.SetUpResponse;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
-import static org.ricky.core.doc.domain.FileTypeEnum.DOC;
-import static org.ricky.core.doc.domain.FileTypeEnum.PDF;
+import static org.ricky.core.doc.domain.FileTypeEnum.*;
 import static org.ricky.util.RandomTestFixture.rSentence;
 
 /**
@@ -116,6 +121,38 @@ class DocControllerTest extends BaseApiTest {
 
         // Then
         assertFalse(categoryRepository.exists(categoryId));
+    }
+
+    @Test
+    void should_page_docs() throws IOException {
+        // Given
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        String docId = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/DOCX测试.docx", DOCX.getContentType());
+        String docId2 = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/PDF测试.pdf", PDF.getContentType());
+        String docId3 = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/TXT测试.txt", TXT.getContentType());
+
+        DocPageDTO dto = DocPageDTO.builder()
+                .pageIndex(1)
+                .pageSize(10)
+                .userId(operator.getUserId())
+                .keyword("测试")
+                .build();
+
+        // When
+        PageVO<DocVO> vo = DocApi.page(mockMvc, operator.getToken(), dto);
+
+        // Then
+        assertEquals(3, vo.getTotalCnt());
+        assertEquals(1, vo.getPageIndex());
+        assertEquals(10, vo.getPageSize());
+
+        List<DocVO> docVOS = vo.getData();
+        assertEquals(3, docVOS.size());
+
+        // Finally
+        tearDownApi.removeDoc(operator.getToken(), docId);
+        tearDownApi.removeDoc(operator.getToken(), docId2);
+        tearDownApi.removeDoc(operator.getToken(), docId3);
     }
 
 }

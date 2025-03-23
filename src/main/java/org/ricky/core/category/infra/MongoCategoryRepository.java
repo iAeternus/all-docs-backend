@@ -1,15 +1,26 @@
 package org.ricky.core.category.infra;
 
+import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.category.domain.Category;
 import org.ricky.core.category.domain.CategoryRepository;
+import org.ricky.core.common.util.RegexUtil;
+import org.ricky.core.common.util.ValidationUtil;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
+import static com.google.common.collect.ImmutableList.toImmutableList;
+import static com.google.common.collect.ImmutableSet.toImmutableSet;
+import static org.ricky.core.common.util.RegexUtil.fuzzySearchKeyword;
+import static org.ricky.core.common.util.ValidationUtil.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -42,6 +53,9 @@ public class MongoCategoryRepository extends MongoBaseRepository<Category> imple
 
     @Override
     public Optional<Category> byIdOptional(String id) {
+        if(isBlank(id)) {
+            return Optional.empty();
+        }
         return super.byIdOptional(id);
     }
 
@@ -53,5 +67,19 @@ public class MongoCategoryRepository extends MongoBaseRepository<Category> imple
     @Override
     public void delete(Category category) {
         super.delete(category);
+    }
+
+    @Override
+    public Set<String> fuzzyByKeyword(String keyword) {
+        requireNotBlank(keyword, "Keyword must not be blank.");
+
+        Pattern pattern = fuzzySearchKeyword(keyword);
+        Query query = query(where("name").regex(pattern));
+        List<Category> categories = mongoTemplate.find(query, Category.class);
+
+        return categories.stream()
+                .filter(Category::isNotEmpty)
+                .map(Category::getId)
+                .collect(toImmutableSet());
     }
 }

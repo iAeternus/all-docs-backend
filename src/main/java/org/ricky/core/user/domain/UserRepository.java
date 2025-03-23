@@ -34,7 +34,7 @@ public interface UserRepository {
 
     long count();
 
-    List<User> page(int totalCnt, int pageNum, int pageSize);
+    List<User> page(int pageIndex, int pageSize);
 
     String uploadAvatar(String userId, MultipartFile img);
 

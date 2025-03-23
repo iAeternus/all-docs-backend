@@ -1,4 +1,4 @@
-package org.ricky.core.common.domain;
+package org.ricky.core.common.domain.page;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class PageVO<T> implements VO {
     /**
      * 页号
      */
-    Integer pageNum;
+    Integer pageIndex;
 
     /**
      * 每页条数

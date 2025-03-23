@@ -1,7 +1,6 @@
 package org.ricky.core.category.domain;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /**
  * @author Ricky
@@ -22,4 +21,6 @@ public interface CategoryRepository {
     boolean exists(String categoryId);
 
     void delete(Category category);
+
+    Set<String> fuzzyByKeyword(String keyword);
 }

@@ -3,6 +3,7 @@ package org.ricky.core.user.infra;
 import lombok.RequiredArgsConstructor;
 import org.ricky.common.exception.MyException;
 import org.ricky.common.mongo.MongoBaseRepository;
+import org.ricky.core.common.domain.page.Pagination;
 import org.ricky.core.user.domain.User;
 import org.ricky.core.user.domain.UserRepository;
 import org.springframework.data.domain.Sort;
@@ -22,8 +23,8 @@ import static java.util.Optional.ofNullable;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.exception.ErrorCodeEnum.AR_NOT_FOUND;
 import static org.ricky.common.exception.ErrorCodeEnum.FAILURE_TO_UPLOAD_DFS;
-import static org.ricky.core.common.util.ValidationUtil.requireNotBlank;
-import static org.ricky.core.common.util.ValidationUtil.requireTrue;
+import static org.ricky.core.common.domain.page.Pagination.pagination;
+import static org.ricky.core.common.util.ValidationUtil.*;
 import static org.springframework.data.mongodb.core.query.Criteria.where;
 import static org.springframework.data.mongodb.core.query.Query.query;
 
@@ -107,19 +108,18 @@ public class MongoUserRepository extends MongoBaseRepository<User> implements Us
     }
 
     @Override
-    public List<User> page(int totalCnt, int pageNum, int pageSize) {
-        requireTrue(pageNum > 0, "PageNum must be greater than 0.");
+    public List<User> page(int pageIndex, int pageSize) {
+        requireTrue(pageIndex > 0, "PageNum must be greater than 0.");
         requireTrue(pageSize > 0, "PageSize must be greater than 0.");
 
-        if ((long) (pageNum - 1) * pageSize > totalCnt) {
-            pageNum = 1;
-        }
+        Pagination pagination = pagination(pageIndex, pageSize);
 
         Query query = new Query()
-                .skip((long) (pageNum - 1) * pageSize)
-                .limit(pageSize)
+                .skip(pagination.skip())
+                .limit(pagination.limit())
                 .with(Sort.by(Sort.Direction.DESC, "updatedAt"));
-        return mongoTemplate.find(query, User.class);
+        List<User> users = mongoTemplate.find(query, User.class);
+        return isEmpty(users) ? List.of() : users;
     }
 
     @Override
