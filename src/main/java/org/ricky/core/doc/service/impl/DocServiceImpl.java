@@ -15,6 +15,7 @@ import org.ricky.core.doc.domain.DocFactory;
 import org.ricky.core.doc.domain.DocRepository;
 import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
+import org.ricky.core.doc.domain.dto.UpdateDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.vo.DocVO;
 import org.ricky.core.doc.service.DocService;
@@ -89,6 +90,17 @@ public class DocServiceImpl implements DocService {
         if (dto.isDeleteFile()) {
             docRepository.deleteGridFs(doc.getId(), Set.of(doc.getGridFsId(), doc.getThumbId(), doc.getTxtId()));
         }
+
+        return true;
+    }
+
+    @Override
+    public Boolean update(UpdateDocDTO dto) {
+        rateLimiter.applyFor("Doc:Update", MINIMUM_TPS);
+
+        Doc doc = docRepository.cachedById(dto.getDocId());
+        doc.updateInfo(dto.getName(), dto.getCategoryId(), dto.getTagIds(), dto.getDesc());
+        docRepository.save(doc);
 
         return true;
     }

@@ -9,6 +9,7 @@ import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.common.validation.id.Id;
 import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
+import org.ricky.core.doc.domain.dto.UpdateDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.vo.DocVO;
 import org.ricky.core.doc.service.DocService;
@@ -48,6 +49,13 @@ public class DocController {
     public ApiResult<Boolean> remove(@RequestBody @Valid RemoveDocDTO dto) {
         return success(docService.remove(dto));
     }
+
+    @PutMapping("/info")
+    @Operation(summary = "修改文档基本信息")
+    public ApiResult<Boolean> update(@RequestBody @Valid UpdateDocDTO dto) {
+        return success(docService.update(dto));
+    }
+
 
     @GetMapping("/{docId}")
     @Operation(summary = "根据ID查询文档信息")

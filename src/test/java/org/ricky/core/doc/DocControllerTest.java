@@ -3,19 +3,19 @@ package org.ricky.core.doc;
 import org.junit.jupiter.api.Test;
 import org.ricky.BaseApiTest;
 import org.ricky.core.category.CategoryApi;
+import org.ricky.core.category.domain.Category;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
+import org.ricky.core.doc.domain.dto.UpdateDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
 import org.ricky.core.doc.domain.vo.DocVO;
 import org.ricky.util.SetUpResponse;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.annotation.Rollback;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -23,6 +23,7 @@ import java.util.List;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.ricky.common.constants.ConfigConstant.MIN_PAGE_SIZE;
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_CREATED;
 import static org.ricky.core.doc.domain.FileTypeEnum.*;
 import static org.ricky.util.RandomTestFixture.rSentence;
@@ -133,7 +134,7 @@ class DocControllerTest extends BaseApiTest {
 
         DocPageDTO dto = DocPageDTO.builder()
                 .pageIndex(1)
-                .pageSize(10)
+                .pageSize(MIN_PAGE_SIZE)
                 .userId(operator.getUserId())
                 .keyword("测试")
                 .build();
@@ -144,7 +145,7 @@ class DocControllerTest extends BaseApiTest {
         // Then
         assertEquals(3, vo.getTotalCnt());
         assertEquals(1, vo.getPageIndex());
-        assertEquals(10, vo.getPageSize());
+        assertEquals(MIN_PAGE_SIZE, vo.getPageSize());
 
         List<DocVO> docVOS = vo.getData();
         assertEquals(3, docVOS.size());
@@ -153,6 +154,35 @@ class DocControllerTest extends BaseApiTest {
         tearDownApi.removeDoc(operator.getToken(), docId);
         tearDownApi.removeDoc(operator.getToken(), docId2);
         tearDownApi.removeDoc(operator.getToken(), docId3);
+    }
+
+    @Test
+    void update_doc_info() throws IOException {
+        // Given
+        SetUpResponse operator = setUpApi.registryWithLogin();
+        String docId = DocApi.upload(mockMvc, operator.getToken(), "src/test/resources/DOCX测试.docx", DOCX.getContentType());
+        String categoryId = CategoryApi.create(mockMvc, operator.getToken(), CategoryDTO.builder().name(rSentence(5)).build());
+        CategoryApi.connect(mockMvc, operator.getToken(), ConnectDTO.builder().docId(docId).categoryId(categoryId).build());
+
+        UpdateDocDTO dto = UpdateDocDTO.builder()
+                .docId(docId)
+                .name("DOCX测试111")
+                .categoryId(categoryId)
+                .build();
+
+        // When
+        Boolean res = DocApi.update(mockMvc, operator.getToken(), dto);
+
+        // Then
+        assertTrue(res);
+
+        Doc doc = docRepository.byId(docId);
+        assertEquals("DOCX测试111", doc.getName());
+
+        assertFalse(categoryRepository.exists(categoryId));
+
+        // Finally
+        tearDownApi.removeDoc(operator.getToken(), docId);
     }
 
 }

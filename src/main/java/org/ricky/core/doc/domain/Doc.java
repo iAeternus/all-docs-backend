@@ -11,6 +11,7 @@ import org.ricky.core.common.domain.AggregateRoot;
 import org.ricky.core.doc.domain.event.DocCreatedEvent;
 import org.ricky.core.doc.domain.event.DocDeletedEvent;
 import org.ricky.core.doc.domain.event.DocSearchedEvent;
+import org.ricky.core.doc.domain.event.DocUpdatedEvent;
 import org.ricky.core.doc.domain.file.FileStrategy;
 import org.ricky.core.doc.domain.file.FileStrategyFactory;
 import org.ricky.core.doc.domain.task.DocTaskContext;
@@ -277,5 +278,13 @@ public class Doc extends AggregateRoot implements FileStrategy {
 
     public boolean hasCategory() {
         return isNotBlank(categoryId);
+    }
+
+    public void updateInfo(String name, String categoryId, List<String> tagIds, String desc) {
+        this.name = isNotBlank(name) ? name : this.name;
+        this.categoryId = isNotBlank(categoryId) ? categoryId : this.categoryId;
+        this.tagIds = isNotEmpty(tagIds) ? tagIds : this.tagIds;
+        this.desc = isNotBlank(desc) ? desc : this.desc;
+        raiseEvent(new DocUpdatedEvent(getId(), categoryId, tagIds));
     }
 }

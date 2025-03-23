@@ -19,8 +19,7 @@ import java.util.List;
 
 import static java.nio.file.Files.readAllBytes;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.ricky.common.constants.ConfigConstant.AVATAR_TYPES;
-import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
+import static org.ricky.common.constants.ConfigConstant.*;
 import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.core.common.auth.PermissionEnum.USER;
 import static org.ricky.core.user.domain.GenderEnum.MALE;
@@ -257,15 +256,15 @@ class UserControllerTest extends BaseApiTest {
                 .get(ROOT_URL + "/page")
                 .body(PageDTO.builder()
                         .pageIndex(1)
-                        .pageSize(3)
+                        .pageSize(MIN_PAGE_SIZE)
                         .build())
                 .execute()
                 .expectStatus(200)
                 .as(PageVO.class);
 
         assertEquals(1, pageVO.getPageIndex());
-        assertEquals(3, pageVO.getPageSize());
-        assertEquals(3, pageVO.getData().size());
+        assertEquals(MIN_PAGE_SIZE, pageVO.getPageSize());
+        assertEquals(MIN_PAGE_SIZE, pageVO.getData().size());
     }
 
     @Test

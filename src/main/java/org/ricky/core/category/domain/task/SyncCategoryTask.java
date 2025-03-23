@@ -30,6 +30,7 @@ public class SyncCategoryTask implements RepeatableTask {
         }
         Category category = categoryOptional.get();
         category.incSize(dCnt);
+        // TODO 将移除分类空就删分类的逻辑
         if (category.isEmpty()) {
             categoryRepository.delete(category);
             return;

@@ -4,6 +4,7 @@ import org.ricky.ApiTest;
 import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
+import org.ricky.core.doc.domain.dto.UpdateDocDTO;
 import org.ricky.core.doc.domain.dto.UploadDocDTO;
 import org.ricky.core.doc.domain.vo.DocVO;
 import org.springframework.mock.web.MockMultipartFile;
@@ -74,6 +75,20 @@ public class DocApi {
         return pageRaw(mockMvc, token, dto)
                 .expectStatus(200)
                 .as(PageVO.class);
+    }
+
+    public static ApiTest.ResponseExecutor updateRaw(MockMvc mockMvc, String token, UpdateDocDTO dto) {
+        return ApiTest.using(mockMvc)
+                .put(ROOT_URL + "/info")
+                .bearerToken(token)
+                .body(dto)
+                .execute();
+    }
+
+    public static Boolean update(MockMvc mockMvc, String token, UpdateDocDTO dto) {
+        return updateRaw(mockMvc, token, dto)
+                .expectStatus(200)
+                .as(Boolean.class);
     }
 
 }
