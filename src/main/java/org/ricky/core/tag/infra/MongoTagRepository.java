@@ -2,14 +2,12 @@ package org.ricky.core.tag.infra;
 
 import lombok.RequiredArgsConstructor;
 import org.ricky.common.mongo.MongoBaseRepository;
-import org.ricky.core.category.domain.Category;
 import org.ricky.core.tag.domain.Tag;
 import org.ricky.core.tag.domain.TagRepository;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;

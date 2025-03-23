@@ -7,7 +7,6 @@ import org.ricky.core.common.domain.event.DomainEvent;
 import org.ricky.core.common.domain.event.DomainEventHandler;
 import org.ricky.core.common.util.TaskRunner;
 import org.ricky.core.doc.domain.event.DocUpdatedEvent;
-import org.ricky.core.doc.domain.task.SyncTagToDocTask;
 import org.springframework.stereotype.Component;
 
 import static org.ricky.core.common.domain.event.DomainEventTypeEnum.DOC_UPDATED;

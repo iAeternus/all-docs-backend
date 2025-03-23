@@ -2,6 +2,8 @@ package org.ricky.core.common.domain.page;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import static org.ricky.common.constants.ConfigConstant.*;
 import static org.ricky.common.exception.MyException.requestValidationException;
@@ -44,6 +46,10 @@ public class Pagination {
 
     public int limit() {
         return this.pageSize;
+    }
+
+    public Pageable toPageable() {
+        return PageRequest.of(pageIndex, pageSize);
     }
 
 }

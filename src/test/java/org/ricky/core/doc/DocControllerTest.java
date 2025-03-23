@@ -3,7 +3,6 @@ package org.ricky.core.doc;
 import org.junit.jupiter.api.Test;
 import org.ricky.BaseApiTest;
 import org.ricky.core.category.CategoryApi;
-import org.ricky.core.category.domain.Category;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
 import org.ricky.core.common.domain.page.PageVO;
