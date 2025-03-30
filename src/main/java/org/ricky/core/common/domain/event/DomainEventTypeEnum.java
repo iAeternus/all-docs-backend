@@ -16,6 +16,7 @@ public enum DomainEventTypeEnum {
     CATEGORY_DISCONNECTED,
     CATEGORY_DELETED,
     USER_PAGE_DOCS,
+    COMMENT_CREATED,
 
     // add here...
 

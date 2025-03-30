@@ -11,4 +11,8 @@ import java.util.Set;
  */
 public interface CommentRepository {
     Set<String> fuzzyByKeyword(String keyword);
+
+    void save(Comment comment);
+
+    Comment byId(String commentId);
 }

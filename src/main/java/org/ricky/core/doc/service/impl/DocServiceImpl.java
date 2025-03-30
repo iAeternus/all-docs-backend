@@ -8,11 +8,10 @@ import org.ricky.common.ratelimit.RateLimiter;
 import org.ricky.common.sensitiveword.service.SensitiveWordService;
 import org.ricky.core.category.domain.CategoryRepository;
 import org.ricky.core.comment.domain.CommentRepository;
+import org.ricky.core.commenthierarchy.domain.CommentHierarchy;
+import org.ricky.core.commenthierarchy.domain.CommentHierarchyRepository;
 import org.ricky.core.common.domain.page.PageVO;
-import org.ricky.core.doc.domain.Doc;
-import org.ricky.core.doc.domain.DocDomainService;
-import org.ricky.core.doc.domain.DocFactory;
-import org.ricky.core.doc.domain.DocRepository;
+import org.ricky.core.doc.domain.*;
 import org.ricky.core.doc.domain.dto.DocPageDTO;
 import org.ricky.core.doc.domain.dto.RemoveDocDTO;
 import org.ricky.core.doc.domain.dto.UpdateDocDTO;
@@ -58,6 +57,7 @@ public class DocServiceImpl implements DocService {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
     private final CommentRepository commentRepository;
+    private final CommentHierarchyRepository commentHierarchyRepository;
 
     @Override
     @Transactional
@@ -69,13 +69,18 @@ public class DocServiceImpl implements DocService {
 
         // 构建文档
         MultipartFile file = dto.getFile();
-        Doc doc = docDomainService.upload(file);
+        CreateDocResult result = docDomainService.upload(file);
 
         // 落库
+        Doc doc = result.getDoc();
         String gripFsId = docRepository.upload(doc.getId(), file);
-        doc.updateGridFsId(gripFsId);
+        result.getDoc().updateGridFsId(gripFsId);
         docRepository.save(doc);
 
+        CommentHierarchy commentHierarchy = result.getCommentHierarchy();
+        commentHierarchyRepository.save(commentHierarchy);
+
+        log.info("Upload doc[{}]", doc.getId());
         return doc.getId();
     }
 

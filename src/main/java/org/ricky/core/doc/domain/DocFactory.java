@@ -6,6 +6,7 @@ import org.ricky.common.properties.SystemProperties;
 import org.ricky.core.category.domain.Category;
 import org.ricky.core.category.domain.CategoryFactory;
 import org.ricky.core.category.domain.CategoryRepository;
+import org.ricky.core.commenthierarchy.domain.CommentHierarchy;
 import org.ricky.core.doc.domain.es.EsPage;
 import org.ricky.core.doc.domain.vo.DocVO;
 import org.ricky.core.tag.domain.Tag;
@@ -37,10 +38,15 @@ public class DocFactory {
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
 
-    public Doc file2doc(MultipartFile file, String md5, String desc) {
+    public CreateDocResult upload(MultipartFile file, String md5, String desc) {
         String name = handlePath(file.getOriginalFilename());
         Boolean adminReview = systemProperties.getAdminReview();
-        return new Doc(name, file.getSize(), md5, file.getContentType(), desc, adminReview);
+        Doc doc = new Doc(name, file.getSize(), md5, file.getContentType(), desc, adminReview);
+        CommentHierarchy commentHierarchy = new CommentHierarchy(doc);
+        return CreateDocResult.builder()
+                .doc(doc)
+                .commentHierarchy(commentHierarchy)
+                .build();
     }
 
     private String handlePath(String originalFilename) {

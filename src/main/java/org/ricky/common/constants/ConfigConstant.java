@@ -22,12 +22,16 @@ public interface ConfigConstant {
     String TAG_COLLECTION = "tag";
     String CATEGORY_COLLECTION = "cat";
     String SENSITIVE_WORD_COLLECTION = "sensitive_word";
+    String COMMENT_COLLECTION = "comment";
+    String COMMENT_HIERARCHY_COLLECTION = "comment_hierarchy";
 
     String USER_ID_PREFIX = "USR";
     String DOC_ID_PREFIX = "DOC";
     String TAG_ID_PREFIX = "TAG";
     String CATEGORY_ID_PREFIX = "CAT";
     String SENSITIVE_WORD_ID_PREFIX = "SST";
+    String COMMENT_ID_PREFIX = "CMT";
+    String COMMENT_HIERARCHY_ID_PREFIX = "CHC";
 
     String USER_CACHE = "user";
     String DOC_CACHE = "doc";
@@ -49,10 +53,11 @@ public interface ConfigConstant {
     int MAX_GENERIC_TEXT_LENGTH = 1024;
     int MAX_CODE_LENGTH = 65535;
     int MAX_DESC_LENGTH = 128;
+    int MAX_PAGE_SIZE = 500;
+    int MAX_COMMENT_HIERARCHY_LEVEL = 6;
 
     int MIN_PAGE_INDEX = 1;
     int MAX_PAGE_INDEX = 10000;
     int MIN_PAGE_SIZE = 10;
-    int MAX_PAGE_SIZE = 500;
 
 }

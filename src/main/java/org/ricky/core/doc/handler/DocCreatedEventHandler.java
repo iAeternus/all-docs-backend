@@ -71,8 +71,6 @@ public class DocCreatedEventHandler implements DomainEventHandler {
         DocTaskContext context = getContext();
         context.getDoc().updateStatus(ON_PROCESS);
 
-        taskRunner.join();
-
         taskRunner.run(() -> syncDocToEsTask.run(context));
         taskRunner.run(() -> updateFileThumbTask.run(context));
         taskRunner.run(() -> updatePreviewFile.run(context));

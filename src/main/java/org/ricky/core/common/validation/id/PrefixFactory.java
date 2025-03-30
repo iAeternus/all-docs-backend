@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
+import static java.util.Arrays.stream;
 import static org.ricky.core.common.util.ValidationUtil.isNull;
 
 /**
@@ -36,8 +37,9 @@ public class PrefixFactory {
         return patternMap.computeIfAbsent(prefix, key -> Pattern.compile("^" + key + "[0-9]{17,19}$"));
     }
 
-    public boolean matches(String id, String prefix) {
-        return getPattern(prefix).matcher(id).matches();
+    public boolean matches(String id, String[] prefixes) {
+        return stream(prefixes)
+                .anyMatch(prefix -> getPattern(prefix).matcher(id).matches());
     }
 
 }

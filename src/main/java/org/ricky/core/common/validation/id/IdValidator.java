@@ -3,6 +3,8 @@ package org.ricky.core.common.validation.id;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
+import java.util.Arrays;
+
 import static org.ricky.core.common.util.ValidationUtil.isBlank;
 
 /**
@@ -16,12 +18,12 @@ public class IdValidator implements ConstraintValidator<Id, String> {
 
     static final String DEFAULT_MESSAGE = "ID format is incorrect.";
 
-    private String prefix;
+    private String[] prefixes;
     private String message;
 
     @Override
     public void initialize(Id id) {
-        this.prefix = id.pre();
+        this.prefixes = id.pre();
         this.message = id.message();
     }
 
@@ -31,10 +33,10 @@ public class IdValidator implements ConstraintValidator<Id, String> {
             return true;
         }
 
-        boolean isValid = isId(id, prefix);
+        boolean isValid = isId(id, prefixes);
         if (!isValid) {
             String customMessage = isBlank(message) ? DEFAULT_MESSAGE : message;
-            String finalMessage = prefix + " " + customMessage;
+            String finalMessage = Arrays.toString(prefixes) + " " + customMessage;
             context.disableDefaultConstraintViolation();
             context.buildConstraintViolationWithTemplate(finalMessage).addConstraintViolation();
         }
@@ -42,8 +44,12 @@ public class IdValidator implements ConstraintValidator<Id, String> {
         return isValid;
     }
 
+    public static boolean isId(String id, String[] prefixes) {
+        return PrefixFactory.getInstance().matches(id, prefixes);
+    }
+
     public static boolean isId(String id, String prefix) {
-        return PrefixFactory.getInstance().matches(id, prefix);
+        return PrefixFactory.getInstance().matches(id, new String[]{prefix});
     }
 
 }

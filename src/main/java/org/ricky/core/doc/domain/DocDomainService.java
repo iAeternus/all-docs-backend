@@ -25,7 +25,7 @@ public class DocDomainService {
     private final DocRepository docRepository;
     private final DocFactory docFactory;
 
-    public Doc upload(MultipartFile file) throws IOException {
+    public CreateDocResult upload(MultipartFile file) throws IOException {
         String fileMd5 = SecureUtil.md5(file.getInputStream());
         // 若md5已存在，拒接保存
         if (docRepository.existsByMd5(fileMd5)) {
@@ -33,6 +33,6 @@ public class DocDomainService {
                     Map.of("originalFilename", file.getOriginalFilename()));
         }
 
-        return docFactory.file2doc(file, fileMd5, null);
+        return docFactory.upload(file, fileMd5, null);
     }
 }

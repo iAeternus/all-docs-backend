@@ -49,6 +49,8 @@ public class AllDocsSystemInitializer implements ApplicationListener<Application
         createCollection(TAG_COLLECTION);
         createCollection(CATEGORY_COLLECTION);
         createCollection(SENSITIVE_WORD_COLLECTION);
+        createCollection(COMMENT_COLLECTION);
+        createCollection(COMMENT_HIERARCHY_COLLECTION);
     }
 
     private void createCollection(String collectionName) {

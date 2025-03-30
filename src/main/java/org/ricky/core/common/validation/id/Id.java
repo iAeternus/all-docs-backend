@@ -24,7 +24,7 @@ import static org.ricky.core.common.validation.id.IdValidator.DEFAULT_MESSAGE;
 @Documented
 public @interface Id {
 
-    String pre();
+    String[] pre();
 
     String message() default DEFAULT_MESSAGE;
 

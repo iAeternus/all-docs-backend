@@ -4,6 +4,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.ricky.common.password.IPasswordEncoder;
 import org.ricky.core.category.domain.CategoryRepository;
+import org.ricky.core.comment.domain.CommentRepository;
+import org.ricky.core.commenthierarchy.domain.CommentHierarchyRepository;
 import org.ricky.core.common.domain.event.DomainEventDao;
 import org.ricky.core.doc.domain.DocRepository;
 import org.ricky.core.tag.domain.TagRepository;
@@ -56,6 +58,12 @@ public class BaseApiTest {
 
     @Autowired
     protected CategoryRepository categoryRepository;
+
+    @Autowired
+    protected CommentRepository commentRepository;
+
+    @Autowired
+    protected CommentHierarchyRepository commentHierarchyRepository;
 
     @BeforeEach
     protected void init() {

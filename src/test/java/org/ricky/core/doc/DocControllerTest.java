@@ -5,6 +5,7 @@ import org.ricky.BaseApiTest;
 import org.ricky.core.category.CategoryApi;
 import org.ricky.core.category.domain.dto.CategoryDTO;
 import org.ricky.core.category.domain.dto.ConnectDTO;
+import org.ricky.core.commenthierarchy.domain.CommentHierarchy;
 import org.ricky.core.common.domain.page.PageVO;
 import org.ricky.core.doc.domain.Doc;
 import org.ricky.core.doc.domain.dto.DocPageDTO;
@@ -59,6 +60,10 @@ class DocControllerTest extends BaseApiTest {
         assertEquals(docId, evt.getDocId());
         assertEquals(1, evt.getConsumedCount());
         assertEquals("PDF", tagRepository.byId(doc.getTagIds().get(0)).getName());
+
+        CommentHierarchy commentHierarchy = commentHierarchyRepository.byDocId(docId);
+        assertEquals(docId, commentHierarchy.getDocId());
+        assertEquals(0, commentHierarchy.getAllCommentIds().size());
 
         // Finally
         tearDownApi.removeDoc(operator.getToken(), docId);

@@ -24,15 +24,11 @@ public class TaskRunner {
 
     public void run(Runnable runnable) {
         try {
-            runnable.run(); // TODO 优化为异步
+            runnable.run();
         } catch (Throwable t) {
             log.error("Failed to run task: ", t);
             hasError = true;
         }
-    }
-
-    public void join() {
-        // TODO
     }
 
     public boolean hasError() {
