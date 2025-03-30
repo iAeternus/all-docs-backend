@@ -1,5 +1,6 @@
 package org.ricky.core.comment.domain;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,4 +16,6 @@ public interface CommentRepository {
     void save(Comment comment);
 
     Comment byId(String commentId);
+
+    List<DocCachedComment> cachedDocAllComments(String docId);
 }

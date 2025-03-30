@@ -2,6 +2,8 @@ package org.ricky;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -46,6 +48,7 @@ import static org.springframework.http.HttpMethod.*;
  *     .expectUserMessage("上传成功");
  * }</pre>
  */
+@Slf4j
 public class ApiTest {
     private final MockMvc mockMvc;
     private HttpMethod httpMethod;
@@ -386,9 +389,25 @@ public class ApiTest {
          */
         public <T> T as(Class<T> clazz) {
             try {
-                return JSON.parseObject(JSON.toJSONString(getDataField()), clazz);
+                Object data = getDataField();
+                String jsonString = JSON.toJSONString(data);
+                log.info("反序列化原始JSON: {}", jsonString);
+                return JSON.parseObject(jsonString, clazz);
             } catch (Exception e) {
-                throw new RuntimeException("data字段反序列化失败: " + clazz.getSimpleName(), e);
+                log.error("data字段反序列化失败，目标类型: {}", clazz.getName());
+                throw new RuntimeException("data字段反序列化失败: " + clazz.getName(), e);
+            }
+        }
+
+        public <T> T as(TypeReference<T> typeRef) {
+            try {
+                Object data = getDataField();
+                String jsonString = JSON.toJSONString(data);
+                log.info("反序列化原始JSON: {}", jsonString);
+                return JSON.parseObject(jsonString, typeRef);
+            } catch (Exception e) {
+                log.error("data字段反序列化失败，目标类型: {}", typeRef.getType());
+                throw new RuntimeException("data字段反序列化失败: " + typeRef.getType(), e);
             }
         }
 

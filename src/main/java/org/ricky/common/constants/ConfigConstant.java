@@ -37,6 +37,7 @@ public interface ConfigConstant {
     String DOC_CACHE = "doc";
     String TAG_CACHE = "tag";
     String SENSITIVE_WORD_CACHE = "sst";
+    String DOC_COMMENT_CACHE = "cmt";
 
     String DOC_INDEX_NAME = "doc";
 

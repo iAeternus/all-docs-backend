@@ -27,12 +27,18 @@ import static org.ricky.core.common.util.SnowflakeIdGenerator.newSnowflakeId;
 public class Comment extends AggregateRoot {
 
     /**
+     * 所在的文档ID
+     */
+    private String docId;
+
+    /**
      * 评论内容
      */
     private String content;
 
-    public Comment(String content) {
+    public Comment(String docId, String content) {
         super(newCommentId());
+        this.docId = docId;
         this.content = content;
         raiseEvent(new CommentCreatedEvent(getId()));
         addOpsLog(CREATE, "新建");

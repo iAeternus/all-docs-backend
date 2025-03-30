@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class CommentFactory {
 
-    public Comment create(String content) {
-        return new Comment(content);
+    public Comment create(String docId, String content) {
+        return new Comment(docId, content);
     }
 
 }

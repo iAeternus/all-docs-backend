@@ -42,7 +42,7 @@ public class CommentServiceImpl implements CommentService {
         String content = sensitiveWordService.filter(dto.getContent());
 
         CommentHierarchy commentHierarchy = commentHierarchyRepository.byDocId(dto.getDocId());
-        Comment comment = commentFactory.create(content);
+        Comment comment = commentFactory.create(dto.getDocId(), content);
         commentHierarchy.addComment(dto.getParentCommentId(), comment.getId());
 
         commentRepository.save(comment);

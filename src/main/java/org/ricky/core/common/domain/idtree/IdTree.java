@@ -1,5 +1,7 @@
 package org.ricky.core.common.domain.idtree;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.alibaba.fastjson.annotation.JSONType;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import jakarta.validation.Valid;

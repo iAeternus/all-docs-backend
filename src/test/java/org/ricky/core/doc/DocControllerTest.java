@@ -96,7 +96,7 @@ class DocControllerTest extends BaseApiTest {
 
         RemoveDocDTO removeDocDTO = RemoveDocDTO.builder()
                 .docId(docId)
-                .isDeleteFile(false)
+                .isDeleteFile(true)
                 .build();
 
         // When
