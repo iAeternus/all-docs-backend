@@ -53,7 +53,7 @@ public class CommentHierarchy extends AggregateRoot {
     }
 
     public void addComment(String parentCommentId, String commentId) {
-        if(isNotBlank(parentCommentId)) {
+        if (isNotBlank(parentCommentId)) {
             if (!containsCommentId(parentCommentId)) {
                 throw new MyException(COMMENT_NOT_FOUND, "未找到评论", "parentCommentId", parentCommentId);
             }

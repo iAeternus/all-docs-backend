@@ -3,6 +3,7 @@ package org.ricky.core.commenthierarchy;
 import org.junit.jupiter.api.Test;
 import org.ricky.BaseApiTest;
 import org.ricky.core.comment.CommentApi;
+import org.ricky.core.commenthierarchy.domain.CommentHierarchy;
 import org.ricky.core.commenthierarchy.domain.vo.CommentHierarchyVO;
 import org.ricky.core.doc.DocApi;
 import org.ricky.util.SetUpResponse;
@@ -41,9 +42,8 @@ class CommentHierarchyControllerTest extends BaseApiTest {
         assertEquals(3, commentIds.size());
         assertTrue(commentIds.containsAll(List.of(commentId, commentId2, commentId3)));
 
-        // TODO 这里服务器实现正确，但是由于ApiTest的as反序列化存在问题导致断言失败
-        // CommentHierarchy commentHierarchy = commentHierarchyRepository.byDocId(docId);
-        // assertEquals(commentHierarchy.getIdTree(), hierarchy.getIdTree());
+        CommentHierarchy commentHierarchy = commentHierarchyRepository.byDocId(docId);
+        assertEquals(commentHierarchy.getIdTree(), hierarchy.getIdTree());
 
         // Finally
         tearDownApi.removeDoc(operator.getToken(), docId);

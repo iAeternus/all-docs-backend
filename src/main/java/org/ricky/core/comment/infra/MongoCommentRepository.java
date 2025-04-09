@@ -5,7 +5,6 @@ import org.ricky.common.mongo.MongoBaseRepository;
 import org.ricky.core.comment.domain.Comment;
 import org.ricky.core.comment.domain.CommentRepository;
 import org.ricky.core.comment.domain.DocCachedComment;
-import org.ricky.core.common.util.ValidationUtil;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

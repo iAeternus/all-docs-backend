@@ -1,12 +1,12 @@
 package org.ricky.core.user.domain;
 
-import com.alibaba.fastjson.JSON;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.ricky.common.exception.MyException;
 import org.ricky.core.common.auth.PermissionEnum;
 import org.ricky.core.common.domain.AggregateRoot;
+import org.ricky.core.common.util.MyObjectMapper;
 import org.ricky.core.user.domain.event.UserPageDocsEvent;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,6 +23,7 @@ import static java.time.LocalDateTime.now;
 import static org.ricky.common.constants.ConfigConstant.USER_COLLECTION;
 import static org.ricky.common.constants.ConfigConstant.USER_ID_PREFIX;
 import static org.ricky.common.exception.ErrorCodeEnum.USER_ALREADY_DEACTIVATED;
+import static org.ricky.common.spring.SpringApplicationContext.getBean;
 import static org.ricky.core.common.auth.PermissionEnum.ADMIN;
 import static org.ricky.core.common.domain.OpsLogTypeEnum.*;
 import static org.ricky.core.common.util.SnowflakeIdGenerator.newSnowflakeId;
@@ -199,7 +200,7 @@ public class User extends AggregateRoot {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this);
+        return getBean(MyObjectMapper.class).writeValueAsString(this);
     }
 
     public void removeAvatar() {

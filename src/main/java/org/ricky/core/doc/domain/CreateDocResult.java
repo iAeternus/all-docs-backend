@@ -2,7 +2,6 @@ package org.ricky.core.doc.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Value;
 import org.ricky.core.commenthierarchy.domain.CommentHierarchy;
 

@@ -1,7 +1,6 @@
 package org.ricky.core.comment;
 
 import org.ricky.ApiTest;
-import org.ricky.BaseApiTest;
 import org.ricky.core.comment.domain.dto.CreateCommentDTO;
 import org.springframework.test.web.servlet.MockMvc;
 

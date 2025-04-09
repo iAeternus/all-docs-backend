@@ -31,7 +31,7 @@ public class MongoCommentHierarchyRepository extends MongoBaseRepository<Comment
         Query query = query(where("docId").is(docId));
         CommentHierarchy commentHierarchy = mongoTemplate.findOne(query, CommentHierarchy.class);
 
-        if(isNull(commentHierarchy)) {
+        if (isNull(commentHierarchy)) {
             throw new MyException(COMMENT_HIERARCHY_NOT_FOUND, "未找到评论层级", "docId", docId);
         }
 

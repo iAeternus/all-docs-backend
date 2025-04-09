@@ -52,7 +52,7 @@ public class UserDTO implements DTO {
     @Size(max = MAX_GENERIC_TEXT_LENGTH)
     String description;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate birthday;
 
 }

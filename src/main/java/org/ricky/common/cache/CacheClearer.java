@@ -24,6 +24,8 @@ public class CacheClearer {
             @CacheEvict(value = USER_CACHE, allEntries = true),
             @CacheEvict(value = DOC_CACHE, allEntries = true),
             @CacheEvict(value = TAG_CACHE, allEntries = true),
+            @CacheEvict(value = SENSITIVE_WORD_CACHE, allEntries = true),
+            @CacheEvict(value = DOC_COMMENT_CACHE, allEntries = true),
     })
     public void evictAllCache() {
         log.info("Evicted all cache.");

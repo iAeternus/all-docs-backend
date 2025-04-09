@@ -1,7 +1,5 @@
 package org.ricky.core.commenthierarchy.domain.vo;
 
-import com.alibaba.fastjson.annotation.JSONField;
-import com.alibaba.fastjson.annotation.JSONType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Value;

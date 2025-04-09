@@ -1,7 +1,6 @@
 package org.ricky.core.comment.service;
 
 import org.ricky.core.comment.domain.dto.CreateCommentDTO;
-import org.ricky.core.common.domain.ApiResult;
 
 /**
  * @author Ricky

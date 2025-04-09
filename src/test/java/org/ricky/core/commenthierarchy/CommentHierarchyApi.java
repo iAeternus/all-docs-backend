@@ -1,6 +1,5 @@
 package org.ricky.core.commenthierarchy;
 
-import com.alibaba.fastjson.TypeReference;
 import org.ricky.ApiTest;
 import org.ricky.core.commenthierarchy.domain.vo.CommentHierarchyVO;
 import org.springframework.test.web.servlet.MockMvc;

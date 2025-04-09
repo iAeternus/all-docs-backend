@@ -1,9 +1,10 @@
 package org.ricky;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.BooleanNode;
 import lombok.extern.slf4j.Slf4j;
+import org.ricky.common.spring.SpringApplicationContext;
+import org.ricky.core.common.util.MyObjectMapper;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -25,6 +26,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.ricky.common.constants.ConfigConstant.AUTHORIZATION;
 import static org.ricky.common.constants.ConfigConstant.BEARER;
 import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 
 /**
  * REST API 测试工具类，支持链式调用方式构建请求并验证响应
@@ -55,15 +57,17 @@ public class ApiTest {
     private String url;
     private Object requestBody;
     private Object[] uriVariables = new Object[0];
-    private MediaType contentType = MediaType.APPLICATION_JSON;
-    private MediaType accept = MediaType.APPLICATION_JSON;
+    private MediaType contentType = APPLICATION_JSON;
+    private MediaType accept = APPLICATION_JSON;
     private final Map<String, String> headers = new HashMap<>();
     private final Map<String, String> params = new HashMap<>();
     private final Map<String, MockMultipartFile> multipartFiles = new HashMap<>();
+    private final MyObjectMapper objectMapper;
     private Charset charset = UTF_8;
 
     private ApiTest(MockMvc mockMvc) {
         this.mockMvc = mockMvc;
+        this.objectMapper = SpringApplicationContext.getBean(MyObjectMapper.class);
     }
 
     /**
@@ -239,12 +243,15 @@ public class ApiTest {
      */
     public ResponseExecutor execute() {
         try {
-            final MockHttpServletRequestBuilder requestBuilder = buildRequest();
+            MockHttpServletRequestBuilder requestBuilder = buildRequestBase();
             configureRequest(requestBuilder);
             applyParameters(requestBuilder);
             applyRequestBody(requestBuilder);
 
-            return new ResponseExecutor(mockMvc.perform(requestBuilder).andReturn());
+            return new ResponseExecutor(
+                    mockMvc.perform(requestBuilder).andReturn(),
+                    objectMapper
+            );
         } catch (Exception e) {
             throw new RuntimeException("请求执行失败", e);
         }
@@ -253,8 +260,10 @@ public class ApiTest {
     /**
      * 构建基础请求对象
      */
-    private MockHttpServletRequestBuilder buildRequest() {
-        return hasMultipartFiles() ? buildMultipartRequest() : buildStandardRequest();
+    private MockHttpServletRequestBuilder buildRequestBase() {
+        return hasMultipartFiles() ?
+                buildMultipartRequest() :
+                buildStandardRequest();
     }
 
     /**
@@ -272,7 +281,9 @@ public class ApiTest {
      */
     private void applyParameters(MockHttpServletRequestBuilder builder) {
         if (hasMultipartFiles()) {
-            applyMultipartParameters((MockMultipartHttpServletRequestBuilder) builder);
+            params.forEach((k, v) -> ((MockMultipartHttpServletRequestBuilder) builder)
+                    .part(new MockPart(k, v.getBytes(StandardCharsets.UTF_8)))
+            );
         } else {
             params.forEach(builder::param);
         }
@@ -283,9 +294,11 @@ public class ApiTest {
      */
     private void applyRequestBody(MockHttpServletRequestBuilder builder) {
         if (requestBody != null && !hasMultipartFiles()) {
-            builder.content(requestBody instanceof String ?
-                    (String) requestBody :
-                    JSON.toJSONString(requestBody));
+            try {
+                builder.content(requestBody instanceof String ? (String) requestBody : objectMapper.writeValueAsString(requestBody));
+            } catch (Exception e) {
+                throw new RuntimeException("请求体序列化失败", e);
+            }
         }
     }
 
@@ -302,25 +315,11 @@ public class ApiTest {
     }
 
     private MockHttpServletRequestBuilder buildStandardRequest() {
-        if (GET.equals(httpMethod)) {
-            return MockMvcRequestBuilders.get(url, uriVariables);
-        } else if (POST.equals(httpMethod)) {
-            return MockMvcRequestBuilders.post(url, uriVariables);
-        } else if (PUT.equals(httpMethod)) {
-            return MockMvcRequestBuilders.put(url, uriVariables);
-        } else if (DELETE.equals(httpMethod)) {
-            return MockMvcRequestBuilders.delete(url, uriVariables);
-        } else if (PATCH.equals(httpMethod)) {
-            return MockMvcRequestBuilders.patch(url, uriVariables);
-        } else {
-            throw new IllegalArgumentException("Unsupported HTTP method: " + httpMethod);
-        }
+        return MockMvcRequestBuilders.request(httpMethod, url, uriVariables);
     }
 
     private void applyMultipartParameters(MockMultipartHttpServletRequestBuilder builder) {
-        params.forEach((name, value) ->
-                builder.part(new MockPart(name, value.getBytes(StandardCharsets.UTF_8)))
-        );
+        params.forEach((name, value) -> builder.part(new MockPart(name, value.getBytes(StandardCharsets.UTF_8))));
     }
 
     // 响应处理器
@@ -329,11 +328,13 @@ public class ApiTest {
      * 响应结果处理器，提供链式断言方法
      */
     public static class ResponseExecutor {
+        private final MyObjectMapper objectMapper;
         private final MockHttpServletResponse response;
         private final String responseContent;
-        private final JSONObject jsonBody;
+        private final JsonNode jsonBody;
 
-        private ResponseExecutor(MvcResult result) {
+        private ResponseExecutor(MvcResult result, MyObjectMapper objectMapper) {
+            this.objectMapper = objectMapper;
             this.response = result.getResponse();
             this.responseContent = parseResponseContent();
             this.jsonBody = parseJsonBody();
@@ -357,7 +358,7 @@ public class ApiTest {
          * @return 当前实例（链式调用）
          */
         public ResponseExecutor expectUserMessage(String expectMessage) {
-            assertEquals(expectMessage, jsonBody.get("userMessage"), "业务消息不符预期");
+            assertEquals(expectMessage, jsonBody.get("userMessage").asText(), "业务消息不符预期");
             return this;
         }
 
@@ -390,26 +391,25 @@ public class ApiTest {
         public <T> T as(Class<T> clazz) {
             try {
                 Object data = getDataField();
-                String jsonString = JSON.toJSONString(data);
-                log.info("反序列化原始JSON: {}", jsonString);
-                return JSON.parseObject(jsonString, clazz);
+                return objectMapper.convertValue(data, clazz);
             } catch (Exception e) {
                 log.error("data字段反序列化失败，目标类型: {}", clazz.getName());
                 throw new RuntimeException("data字段反序列化失败: " + clazz.getName(), e);
             }
         }
 
-        public <T> T as(TypeReference<T> typeRef) {
-            try {
-                Object data = getDataField();
-                String jsonString = JSON.toJSONString(data);
-                log.info("反序列化原始JSON: {}", jsonString);
-                return JSON.parseObject(jsonString, typeRef);
-            } catch (Exception e) {
-                log.error("data字段反序列化失败，目标类型: {}", typeRef.getType());
-                throw new RuntimeException("data字段反序列化失败: " + typeRef.getType(), e);
-            }
-        }
+        // public <T> T as(TypeReference<T> typeRef) {
+        //     try {
+        //         Object data = getDataField();
+        //         return objectMapper.readValue(
+        //                 objectMapper.writeValueAsString(data),
+        //                 typeRef
+        //         );
+        //     } catch (Exception e) {
+        //         log.error("data字段反序列化失败，目标类型: {}", typeRef.getType());
+        //         throw new RuntimeException("data字段反序列化失败: " + typeRef.getType(), e);
+        //     }
+        // }
 
         private String parseResponseContent() {
             try {
@@ -419,22 +419,31 @@ public class ApiTest {
             }
         }
 
-        private JSONObject parseJsonBody() {
-            return responseContent.isEmpty() ? new JSONObject() : JSON.parseObject(responseContent);
+        private JsonNode parseJsonBody() {
+            try {
+                return responseContent.isEmpty() ?
+                        objectMapper.createObjectNode() :
+                        objectMapper.readTree(responseContent);
+            } catch (Exception e) {
+                throw new RuntimeException("JSON解析失败", e);
+            }
         }
 
         private Object getDataField() {
-            Object data = jsonBody.get("data");
-            if (data == null) throw new RuntimeException("响应缺少data字段");
-            return data;
+            JsonNode dataNode = jsonBody.get("data");
+            if (dataNode == null || dataNode.isNull()) {
+                throw new RuntimeException("响应缺少data字段");
+            }
+            return dataNode;
         }
 
         private boolean getBooleanDataField() {
-            Object data = getDataField();
-            if (!(data instanceof Boolean)) {
-                throw new AssertionError("data字段不是布尔类型");
+            BooleanNode dataField = (BooleanNode) getDataField();
+            try {
+                return dataField.asBoolean();
+            } catch (Exception ex) {
+                throw new AssertionError("data字段不是布尔类型，data=" + dataField);
             }
-            return (Boolean) data;
         }
 
         // 元数据获取
