@@ -1,9 +1,11 @@
 package org.ricky.core.common.util;
 
-import org.apache.commons.lang3.RandomUtils;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+
+import static java.lang.Math.random;
+import static java.lang.Math.round;
 
 /**
  * @author Ricky
@@ -59,7 +61,7 @@ public class SnowflakeIdGenerator {
      * machine time may go backwards, if under 10 milliseconds we wait
      */
     private static final int MAX_TIMESTAMP_BACKWARDS_TO_WAIT = 10;
-    private static SnowflakeIdGenerator INSTANCE;
+    private static volatile SnowflakeIdGenerator INSTANCE;
     private final long WORKER_ID;
     private long sequence;
     private long lastTimestamp = -1L;
@@ -71,9 +73,13 @@ public class SnowflakeIdGenerator {
         this.WORKER_ID = workerId;
     }
 
-    private synchronized static SnowflakeIdGenerator getInstance() {
+    private static SnowflakeIdGenerator getInstance() {
         if (INSTANCE == null) {
-            INSTANCE = new SnowflakeIdGenerator(getWorkerId());
+            synchronized (SnowflakeIdGenerator.class) {
+                if (INSTANCE == null) {
+                    INSTANCE = new SnowflakeIdGenerator(getWorkerId());
+                }
+            }
         }
         return INSTANCE;
     }
@@ -89,7 +95,7 @@ public class SnowflakeIdGenerator {
         try {
             String[] ips = InetAddress.getLocalHost().getHostAddress().split("\\.");
             if (ips.length <= 1) {
-                return RandomUtils.nextLong(1, 1000);// 没有联网时无法获取ip,返回1-1000之间的随机数
+                return round(random() * 2000); // 没有联网时无法获取ip,返回1-1000之间的随机数
             }
 
             // third fragment (8 bits, from 17 to 24 bit of ip)
