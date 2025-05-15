@@ -49,26 +49,17 @@ public class FileStrategyFactory implements FileStrategy {
 
     @Override
     public void readText(InputStream is, String textFilePath) throws IOException {
-        executeWithDocType(docType -> {
-            FileStrategy strategy = getStrategy(docType);
-            strategy.readText(is, textFilePath);
-        });
+        executeWithDocType(docType -> getStrategy(docType).readText(is, textFilePath));
     }
 
     @Override
     public void makeThumb(InputStream is, String picPath) throws IOException {
-        executeWithDocType(docType -> {
-            FileStrategy strategy = getStrategy(docType);
-            strategy.makeThumb(is, picPath);
-        });
+        executeWithDocType(docType -> getStrategy(docType).makeThumb(is, picPath));
     }
 
     @Override
     public void makePreviewFile(InputStream is, DocTaskContext context) throws IOException {
-        executeWithDocType(docType -> {
-            FileStrategy strategy = getStrategy(docType);
-            strategy.makePreviewFile(is, context);
-        });
+        executeWithDocType(docType -> getStrategy(docType).makePreviewFile(is, context));
     }
 
     public FileTypeEnum getDocType() {
