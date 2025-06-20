@@ -83,7 +83,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @Transactional
+    // @Transactional
     public UserLoginVO login(UserLoginDTO userDTO) {
         rateLimiter.applyFor("User:Login", NORMAL_TPS);
 
